@@ -192,7 +192,7 @@ body {
 .rocket-grid {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     align-items: center;
     margin-bottom: 8px;
 }
@@ -202,7 +202,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 20px;
-    min-height: 60px;
+    min-height: 40px;
 }
 
 .row-label {
@@ -789,6 +789,62 @@ body {
     color: #4CAF50;
     pointer-events: none;
     z-index: 2;
+}
+
+/* Selected Die Styling */
+.die.selected {
+    border: 3px solid var(--color-accent-blue) !important;
+    box-shadow: 0 0 8px rgba(0, 85, 165, 0.4);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.die.selected .die-face rect {
+    stroke: var(--color-accent-blue);
+    stroke-width: 3;
+}
+
+/* Click-to-place feedback */
+.available-die {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.available-die:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.grid-slot {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.grid-slot.valid-for-selected {
+    border: 3px solid var(--color-accent-blue);
+    background-color: rgba(0, 85, 165, 0.15);
+    animation: selectedPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes selectedPulse {
+    0%, 100% { 
+        border-color: var(--color-accent-blue);
+        background-color: rgba(0, 85, 165, 0.15);
+    }
+    50% { 
+        border-color: rgba(0, 85, 165, 0.8);
+        background-color: rgba(0, 85, 165, 0.25);
+    }
+}
+
+.grid-slot.valid-for-selected:hover {
+    background-color: rgba(0, 85, 165, 0.3);
+    border-color: var(--color-accent-blue);
+}
+
+/* Fire Drop Zone Click Support */
+.fire-drop-zone {
+    cursor: pointer;
 }
 
 /* Responsive */

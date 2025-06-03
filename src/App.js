@@ -13,6 +13,7 @@ function App() {
     const [boosterRowLocked, setBoosterRowLocked] = useState(false);
     const [fireDice, setFireDice] = useState([]);
     const [showLaunchHelper, setShowLaunchHelper] = useState(false);
+    const [selectedDie, setSelectedDie] = useState(null);
 
     useEffect(() => {
         const grid = {};
@@ -122,6 +123,7 @@ function App() {
         setCurrentDice([]);
         setPlacedDice([]);
         setGameHistory([]);
+        setSelectedDie(null);
         const diceResults = [];
         for (let i = 0; i < currentPlayer.diceCount; i++) {
             diceResults.push({
@@ -241,6 +243,12 @@ function App() {
         setPlayers(updatedPlayers);
         if (firePile >= 5) {
             setGameState("results");
+            return;
+        }
+        if (players.length === 1) {
+            setTimeout(() => {
+                rollDiceForCurrentPlayer(updatedPlayers);
+            }, 100);
             return;
         }
         let nextIndex = (currentPlayerIndex + 1) % players.length;
@@ -371,6 +379,35 @@ function App() {
         setRocketGrid(grid);
     };
 
+    const selectDie = (die) => {
+        if (die.placed) return;
+        
+        // If clicking the same die, deselect it
+        if (selectedDie && selectedDie.id === die.id) {
+            setSelectedDie(null);
+        } else {
+            setSelectedDie(die);
+        }
+    };
+
+    const placeSelectedDie = (position) => {
+        if (!selectedDie) return false;
+        
+        const success = placeDie(selectedDie, position);
+        if (success) {
+            setSelectedDie(null); // Clear selection after successful placement
+        }
+        return success;
+    };
+
+    const sendSelectedToFire = () => {
+        if (!selectedDie) return false;
+        
+        sendToFire(selectedDie);
+        setSelectedDie(null); // Clear selection after sending to fire
+        return true;
+    };
+
     window.sendToFire = sendToFire;
     window.dropDieOnGrid = placeDie;
     window.attemptLaunch = attemptLaunch;
@@ -379,6 +416,9 @@ function App() {
     window.currentRocketHeight = rocketHeight;
     window.currentBoosterRowLocked = boosterRowLocked;
     window.setShowLaunchHelper = setShowLaunchHelper;
+    window.selectDie = selectDie;
+    window.selectedDie = selectedDie;
+    window.placeSelectedDie = placeSelectedDie;
 
     return (
         <div className="app">
@@ -514,6 +554,7 @@ function App() {
                                         );
                                     }
                                 }}
+                                onClick={sendSelectedToFire}
                             >
                                 <span className="fire-label">Fire:</span>
                                 <div className="fire-dice-container">

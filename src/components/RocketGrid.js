@@ -10,6 +10,7 @@ function RocketGrid({
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
     const [validPositions, setValidPositions] = useState(new Set());
+    const [selectedDieValidPositions, setSelectedDieValidPositions] = useState(new Set());
 
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
@@ -26,6 +27,20 @@ function RocketGrid({
                 ).forEach((pos) => positions.add(pos));
             });
             setValidPositions(positions);
+            
+            // Also compute valid positions for the selected die specifically
+            if (window.selectedDie && !window.selectedDie.placed) {
+                const selectedPositions = new Set();
+                getValidPositions(
+                    window.selectedDie.value,
+                    grid,
+                    rocketHeight,
+                    boosterRowLocked,
+                ).forEach((pos) => selectedPositions.add(pos));
+                setSelectedDieValidPositions(selectedPositions);
+            } else {
+                setSelectedDieValidPositions(new Set());
+            }
         }, 100);
         return () => clearTimeout(timer);
     }, [currentDice, grid, rocketHeight, boosterRowLocked]);
@@ -100,14 +115,22 @@ function RocketGrid({
         }
     };
 
+    const handleSlotClick = (pos) => {
+        if (window.selectedDie && window.placeSelectedDie) {
+            window.placeSelectedDie(pos);
+        }
+    };
+
     const renderSlot = (pos, label) => {
         const die = grid[pos];
         const canDrop = validPositions.has(pos);
+        const canPlaceSelected = selectedDieValidPositions.has(pos);
         const isOver = dragOverPosition === pos;
 
         let cls = "grid-slot";
         if (die) cls += " occupied";
         if (canDrop) cls += " valid-drop";
+        if (canPlaceSelected) cls += " valid-for-selected";
         if (isOver) cls += " drag-over";
 
         // Show "1/6", "2/6" for eligible, blank slots before any boosters are placed
@@ -140,6 +163,7 @@ function RocketGrid({
                 onDragOver={(e) => handleDragOver(e, pos)}
                 onDragLeave={clearDrag}
                 onDrop={(e) => handleDrop(e, pos)}
+                onClick={() => handleSlotClick(pos)}
             >
                 {die ? (
                     <Die die={die} className="placed-die" />

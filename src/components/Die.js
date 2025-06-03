@@ -1,4 +1,4 @@
-function Die({ die, draggable = false, onDragStart, onDragEnd, className = '' }) {
+function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, className = '', isSelected = false }) {
     const { useState } = React;
     const [touchData, setTouchData] = useState(null);
     const renderPips = (value) => {
@@ -152,15 +152,25 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, className = '' })
         if (onDragEnd) onDragEnd(e);
     };
 
+    const handleClick = (e) => {
+        // Don't trigger click if we're dragging or if it's a touch event handled by touch handlers
+        if (touchData) return;
+        
+        if (onClick) {
+            onClick(e);
+        }
+    };
+
     const isBooster = die.value === 6;
     const isFireDie = die.inFire;
 
     return (
         <div
-            className={`die ${className} ${die.placed ? 'placed' : ''} ${isBooster ? 'booster-die' : ''} ${isFireDie ? 'fire-die' : ''} player-${die.playerId}`}
+            className={`die ${className} ${die.placed ? 'placed' : ''} ${isBooster ? 'booster-die' : ''} ${isFireDie ? 'fire-die' : ''} ${isSelected ? 'selected' : ''} player-${die.playerId}`}
             draggable={draggable && !die.placed}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
+            onClick={handleClick}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}

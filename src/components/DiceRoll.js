@@ -20,6 +20,13 @@ function DiceRoll({ dice, onDragStart }) {
         setDraggedDie(null);
     };
 
+    const handleDieClick = (die) => {
+        if (die.placed || isRolling) return;
+        if (window.selectDie) {
+            window.selectDie(die);
+        }
+    };
+
     // Show rolling animation when new dice arrive
     useEffect(() => {
         if (dice.length > 0 && !dice.some(d => d.placed)) {
@@ -66,7 +73,9 @@ function DiceRoll({ dice, onDragStart }) {
                                 draggable={!isRolling}
                                 onDragStart={(e) => handleDragStart(e, die)}
                                 onDragEnd={handleDragEnd}
+                                onClick={() => handleDieClick(die)}
                                 className="available-die"
+                                isSelected={window.selectedDie && window.selectedDie.id === die.id}
                             />
                         ))}
                     </div>
@@ -95,7 +104,7 @@ function DiceRoll({ dice, onDragStart }) {
                     });
                     
                     if (hasValidPlacements) {
-                        return "Drag dice to the rocket body (1-5), add a booster (6s), or send a die to the fire";
+                        return "Drag dice to the rocket body (1-5), add a booster (6s), or send a die to the fire. Or click to select, then click a slot.";
                     } else {
                         return "No eligible parts, send a die to the fire!";
                     }
