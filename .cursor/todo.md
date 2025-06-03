@@ -3,14 +3,14 @@
 ## 🎯 High Priority Items
 
 ### Bugs
-- ~~Fix the single player bug. If 1 player, it should still work. Right now it gets stuck in a dead end after first roll.~~
-  - ✅ Fixed: Single player mode now properly advances turns and re-rolls dice for the same player after each turn.
-- Clear the game state when you go back to the setup screen. Make sure it really clears.
+
+- Clear the game state when you go back to the setup screen. Make sure it really clears. right now it doesnt.
 - When the 5th row is built, we still need room for a 6th row for the 6s (the boosters)
+- on a failed launch it should not give you your dice back! it should put one of hte dice into the fire, then advance to the next person's turn. check that is happening
+- handle the top row for when there are tons of players that spill too wide
 
 ### Mobile/PWA Improvements
-- ~~Improve touch interactions (tap to place dice as alternative to drag/drop)~~
-  - ✅ Implemented: Click/tap to select dice, then click/tap grid slots or fire zone to place them. Works on both mobile and desktop.
+
 - [ ] Test and fix responsive design on various mobile devices
 - [ ] Add haptic feedback for mobile devices, if this is possible as a mobile web app, not a native mobile app
 
@@ -19,13 +19,20 @@
 - [ ] Update the game tutorial with a drawer
 - [ ] Add confirmation animations for critical actions (send to fire, place dice)
 - [ ] Add sound effects and audio feedback
+- default to 3 players on the setup screen, not one player
 
 ### Visual Polish
+- upgrade all the modal alerts to be more natively integrated not browser alerts, like "You must place at least one die or send unused dice to the fire pile." and "Launch SUCCESS! Booster rolls"
+
+- upgrade the launch success page so it is clearer what level you achieved, maybe like it animates you getting past the planet levels and arriving to the planet level you got to. also it's duplicating the "row" thing and the booster thing by showing 6s in the body rows accidentally.
+
 - [ ] Enhance dice rolling animations
 - [ ] Add particle effects for fire pile and launch
 - [ ] Improve rocket launch animation sequence
 - [ ] Add visual indicators for victory tiers
 - [ ] Better loading states and transitions
+
+- try this https://www.8bitcn.com/
 
 
 ## Things to Organize

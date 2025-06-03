@@ -18,12 +18,12 @@
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
@@ -33,25 +33,25 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220.9 39.3% 11%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 216 12.2% 83.9%;
   }
 }
 
@@ -60,8 +60,49 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: "Courier New", "SF Mono", "Monaco", "Menlo", monospace;
+    background-color: var(--color-background);
+    color: var(--color-dark-gray);
+    line-height: 1.5;
   }
+}
+
+/* Custom scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-slate-100 dark:bg-slate-700/30 rounded-full;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-600 rounded-full;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400 dark:bg-slate-500;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.5) hsl(var(--muted) / 0.3);
+}
+
+/* Drawer specific fixes */
+[role="dialog"] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+}
+
+/* Ensure crisp text rendering in drawers and modals */
+.drawer-content {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* NYT Games Inspired Design */
@@ -85,7 +126,7 @@
 }
 
 body {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: "Courier New", "SF Mono", "Monaco", "Menlo", monospace;
     background-color: var(--color-background);
     color: var(--color-dark-gray);
     line-height: 1.5;
@@ -108,13 +149,15 @@ body {
 }
 
 .game-header h1 {
-    font-family: "Georgia", serif;
+    font-family: "Courier New", "SF Mono", "Monaco", "Menlo", monospace;
     font-size: 18px;
     font-weight: bold;
     color: var(--color-dark-gray);
     margin: 0;
     line-height: 1.1;
     padding: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 .game-header h1 i {
@@ -248,11 +291,13 @@ body {
 }
 
 .rocket-section h3 {
-    font-family: "Georgia", serif;
+    font-family: "Courier New", "SF Mono", "Monaco", "Menlo", monospace;
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 4px;
     color: var(--color-dark-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 .rocket-grid {
@@ -420,8 +465,9 @@ body {
 .dice-instructions {
     text-align: center;
     font-size: 12px;
-    color: var(--color-mid-gray);
+    color: var(--color-dark-gray);
     margin-top: 8px;
+    opacity: 0.8;
 }
 
 /* Fire Pile */
@@ -529,7 +575,11 @@ body {
 
 /* Welcome Screen */
 .welcome-screen {
-    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     background: #000000;
     display: flex;
     flex-direction: column;
@@ -537,6 +587,7 @@ body {
     justify-content: center;
     text-align: center;
     padding: 40px 20px;
+    z-index: 1000;
 }
 
 .welcome-icon {
@@ -556,7 +607,7 @@ body {
 .welcome-subtitle {
     font-size: 18px;
     color: #FFFFFF;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     opacity: 0.9;
 }
 
@@ -596,10 +647,12 @@ body {
 }
 
 .nav-title {
-    font-family: "Georgia", serif;
+    font-family: "Courier New", "SF Mono", "Monaco", "Menlo", monospace;
     font-size: 20px;
     font-weight: bold;
     color: var(--color-dark-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 .nav-actions {

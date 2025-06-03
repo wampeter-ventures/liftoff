@@ -5,6 +5,7 @@ import DiceRoll from '../components/DiceRoll';
 import RocketGrid from '../components/RocketGrid';
 import GameSetup from '../components/GameSetup';
 import GameResults from '../components/GameResults';
+import { Star } from 'lucide-react';
 
 export default function Home() {
     const [gameState, setGameState] = useState("welcome");
@@ -20,6 +21,7 @@ export default function Home() {
     const [fireDice, setFireDice] = useState([]);
     const [showLaunchHelper, setShowLaunchHelper] = useState(false);
     const [selectedDie, setSelectedDie] = useState(null);
+    const [stars, setStars] = useState([]);
 
     useEffect(() => {
         const grid = {};
@@ -29,6 +31,26 @@ export default function Home() {
             }
         }
         setRocketGrid(grid);
+    }, []);
+
+    // Generate stars on client-side only to avoid hydration mismatch
+    useEffect(() => {
+        const generatedStars = Array.from({ length: 80 }, (_, i) => {
+            const size = Math.random() * 4 + 2; // 2-6px
+            const opacity = Math.random() * 0.8 + 0.2; // 0.2-1.0
+            const isLucideStar = Math.random() > 0.6; // 40% chance for Lucide star
+            return {
+                id: i,
+                size,
+                opacity,
+                isLucideStar,
+                left: Math.random() * 100,
+                top: Math.random() * 100,
+                animationDelay: Math.random() * 3,
+                animationDuration: 2 + Math.random() * 2
+            };
+        });
+        setStars(generatedStars);
     }, []);
 
     useEffect(() => {
@@ -336,6 +358,107 @@ export default function Home() {
         return true;
     };
 
+    // Starry Background Component
+    const StarryBackground = () => (
+        <div className="absolute inset-0 overflow-hidden">
+            {/* Small varied stars */}
+            {stars.map((star) => (
+                <div
+                    key={star.id}
+                    className="absolute animate-pulse"
+                    style={{
+                        left: `${star.left}%`,
+                        top: `${star.top}%`,
+                        animationDelay: `${star.animationDelay}s`,
+                        animationDuration: `${star.animationDuration}s`,
+                        opacity: star.opacity
+                    }}
+                >
+                    {star.isLucideStar ? (
+                        <Star 
+                            size={star.size + 4} 
+                            className="text-white fill-white"
+                        />
+                    ) : (
+                        <div 
+                            className="bg-white rounded-full"
+                            style={{
+                                width: `${star.size}px`,
+                                height: `${star.size}px`
+                            }}
+                        />
+                    )}
+                </div>
+            ))}
+            
+            {/* Custom SVG Planets with rotation */}
+            {/* Saturn */}
+            <div 
+                className="absolute top-1/4 left-1/6 animate-spin opacity-30" 
+                style={{ animationDuration: '20s' }}
+            >
+                <svg width="40" height="40" viewBox="0 0 40 40" className="text-orange-300">
+                    <circle cx="20" cy="20" r="12" fill="currentColor" />
+                    <ellipse cx="20" cy="20" rx="18" ry="4" fill="none" stroke="currentColor" strokeWidth="2" />
+                    <ellipse cx="20" cy="20" rx="16" ry="3" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.6" />
+                </svg>
+            </div>
+            
+            {/* Earth */}
+            <div 
+                className="absolute top-3/4 right-1/4 animate-spin opacity-25" 
+                style={{ animationDuration: '25s' }}
+            >
+                <svg width="32" height="32" viewBox="0 0 32 32" className="text-blue-400">
+                    <circle cx="16" cy="16" r="12" fill="currentColor" />
+                    <path d="M8 12 Q12 8 16 12 Q20 8 24 12 Q20 16 16 20 Q12 16 8 12" fill="rgba(34, 197, 94, 0.8)" />
+                    <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+                </svg>
+            </div>
+            
+            {/* Mars */}
+            <div 
+                className="absolute top-1/2 right-1/6 animate-spin opacity-20" 
+                style={{ animationDuration: '30s' }}
+            >
+                <svg width="28" height="28" viewBox="0 0 28 28" className="text-red-400">
+                    <circle cx="14" cy="14" r="10" fill="currentColor" />
+                    <circle cx="10" cy="10" r="2" fill="rgba(139, 69, 19, 0.6)" />
+                    <circle cx="18" cy="16" r="1.5" fill="rgba(139, 69, 19, 0.6)" />
+                    <circle cx="12" cy="18" r="1" fill="rgba(139, 69, 19, 0.6)" />
+                </svg>
+            </div>
+            
+            {/* Jupiter */}
+            <div 
+                className="absolute top-1/6 right-1/3 animate-spin opacity-15" 
+                style={{ animationDuration: '35s' }}
+            >
+                <svg width="45" height="45" viewBox="0 0 45 45" className="text-yellow-500">
+                    <circle cx="22.5" cy="22.5" r="18" fill="currentColor" />
+                    <ellipse cx="22.5" cy="18" rx="16" ry="2" fill="rgba(255, 165, 0, 0.8)" />
+                    <ellipse cx="22.5" cy="22.5" rx="15" ry="1.5" fill="rgba(255, 140, 0, 0.8)" />
+                    <ellipse cx="22.5" cy="27" rx="14" ry="2" fill="rgba(255, 165, 0, 0.8)" />
+                    <circle cx="18" cy="20" r="1.5" fill="rgba(139, 69, 19, 0.6)" />
+                </svg>
+            </div>
+            
+            {/* Moon */}
+            <div 
+                className="absolute top-2/3 left-1/3 animate-spin opacity-35" 
+                style={{ animationDuration: '15s' }}
+            >
+                <svg width="24" height="24" viewBox="0 0 24 24" className="text-gray-300">
+                    <circle cx="12" cy="12" r="10" fill="currentColor" />
+                    <circle cx="8" cy="8" r="1.5" fill="rgba(156, 163, 175, 0.6)" />
+                    <circle cx="16" cy="10" r="1" fill="rgba(156, 163, 175, 0.6)" />
+                    <circle cx="10" cy="16" r="0.8" fill="rgba(156, 163, 175, 0.6)" />
+                    <circle cx="14" cy="16" r="1.2" fill="rgba(156, 163, 175, 0.6)" />
+                </svg>
+            </div>
+        </div>
+    );
+
     return (
         <div className="app">
             {/* LAUNCH HELPER DIALOG */}
@@ -371,44 +494,153 @@ export default function Home() {
 
             {gameState === "welcome" && (
                 <div className="welcome-screen">
-                    <div className="welcome-icon">🚀</div>
-                    <h1 className="welcome-title">Liftoff</h1>
-                    <p className="welcome-subtitle">
-                        Build rockets with dice and reach for the stars!
-                    </p>
-                    <button
-                        className="btn btn-primary btn-large"
-                        onClick={() => setGameState("setup")}
-                    >
-                        Play
-                    </button>
-                    <div className="welcome-date">
-                        {new Date().toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        })}
+                    <StarryBackground />
+                    
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col items-center">
+                        <div className="welcome-icon mb-8">
+                            <svg 
+                                width="120" 
+                                height="120" 
+                                viewBox="0 0 100 100" 
+                                fill="none" 
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="text-white drop-shadow-lg"
+                            >
+                                {/* Rocket body */}
+                                <path 
+                                    d="M50 10 L62 25 L62 70 L55 80 L45 80 L38 70 L38 25 Z" 
+                                    stroke="currentColor" 
+                                    strokeWidth="2.5" 
+                                    fill="none"
+                                />
+                                {/* Rocket tip */}
+                                <path 
+                                    d="M38 25 L50 10 L62 25" 
+                                    stroke="currentColor" 
+                                    strokeWidth="2.5" 
+                                    fill="none"
+                                />
+                                {/* Window */}
+                                <circle 
+                                    cx="50" 
+                                    cy="35" 
+                                    r="10" 
+                                    stroke="currentColor" 
+                                    strokeWidth="2.5" 
+                                    fill="none"
+                                />
+                                {/* Window inner */}
+                                <circle 
+                                    cx="50" 
+                                    cy="35" 
+                                    r="6" 
+                                    stroke="currentColor" 
+                                    strokeWidth="1.5" 
+                                    fill="none"
+                                    opacity="0.6"
+                                />
+                                {/* Body details */}
+                                <line 
+                                    x1="42" y1="50" 
+                                    x2="58" y2="50" 
+                                    stroke="currentColor" 
+                                    strokeWidth="1.5"
+                                    opacity="0.7"
+                                />
+                                <line 
+                                    x1="42" y1="60" 
+                                    x2="58" y2="60" 
+                                    stroke="currentColor" 
+                                    strokeWidth="1.5"
+                                    opacity="0.7"
+                                />
+                                {/* Fins */}
+                                <path 
+                                    d="M38 70 L28 85 L33 85 L38 75" 
+                                    stroke="currentColor" 
+                                    strokeWidth="2.5" 
+                                    fill="none"
+                                />
+                                <path 
+                                    d="M62 70 L72 85 L67 85 L62 75" 
+                                    stroke="currentColor" 
+                                    strokeWidth="2.5" 
+                                    fill="none"
+                                />
+                                {/* Flame */}
+                                <path 
+                                    d="M45 80 L47 92 L50 87 L53 92 L55 80" 
+                                    stroke="#FFA500" 
+                                    strokeWidth="2.5" 
+                                    fill="none"
+                                    className="animate-pulse"
+                                />
+                                <path 
+                                    d="M47 85 L48 90 L50 88 L52 90 L53 85" 
+                                    stroke="#FF6B35" 
+                                    strokeWidth="2" 
+                                    fill="none"
+                                    className="animate-pulse"
+                                    style={{ animationDelay: '0.3s' }}
+                                />
+                            </svg>
+                        </div>
+                        <h1 
+                            className="welcome-title mb-4" 
+                            style={{ 
+                                fontFamily: '"Courier New", "SF Mono", "Monaco", "Menlo", monospace',
+                                fontWeight: 'bold',
+                                letterSpacing: '0.02em',
+                                textTransform: 'uppercase',
+                                fontSize: '3.5rem',
+                                textShadow: '0 0 20px rgba(255, 255, 255, 0.3)'
+                            }}
+                        >
+                            Liftoff
+                        </h1>
+                        <p className="welcome-subtitle mb-6">
+                            Build. Boost. Blast or BOOM!
+                        </p>
+                        <p 
+                            className="welcome-subtitle mb-4 opacity-90"
+                            style={{ fontSize: '14px' }}
+                        >
+                            How far can you fly?
+                        </p>
+                        <button
+                            className="btn btn-primary btn-large mb-6 text-white border-none transition-all duration-300"
+                            style={{ 
+                                backgroundColor: '#f97316', 
+                                border: 'none' 
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#db7127'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = '#f97316'}
+                            onClick={() => setGameState("setup")}
+                        >
+                            Play
+                        </button>
+                        <div className="welcome-date">
+                            {new Date().toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            })}
+                        </div>
                     </div>
                 </div>
             )}
 
             {gameState === "setup" && (
-                <>
-                    <div className="top-nav">
-                        <button
-                            className="nav-back"
-                            onClick={() => setGameState("welcome")}
-                        >
-                            ←
-                        </button>
-                        <span className="nav-title">Liftoff</span>
-                        <div className="nav-actions">
-                            <button className="nav-icon">?</button>
-                            <button className="nav-icon">⚙️</button>
-                        </div>
+                <div className="fixed inset-0 bg-black">
+                    <StarryBackground />
+                    <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+                        <GameSetup 
+                            onStartGame={startGame} 
+                            onBack={() => setGameState("welcome")}
+                        />
                     </div>
-                    <GameSetup onStartGame={startGame} />
-                </>
+                </div>
             )}
 
             {gameState === "playing" && (

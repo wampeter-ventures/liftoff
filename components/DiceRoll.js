@@ -96,9 +96,9 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie }) {
                     const hasValidPlacements = true; // Simplified for now
                     
                     if (hasValidPlacements) {
-                        return "Drag dice to the rocket body (1-5), add a booster (6s), or send a die to the fire. Or click to select, then click a slot.";
+                        return "Click or drag dice: ⚙️ Rocket body  (1-5)  🔋 Boosters (6)";
                     } else {
-                        return "No eligible parts, send a die to the fire!";
+                        return "No eligible body parts or boosters, send a die to the fire! 🔥 ";
                     }
                 })()}
             </div>
