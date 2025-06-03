@@ -60,7 +60,7 @@ Families, friends, classrooms, clubs, and anyone who loves dice, space, and a bi
 ## 📖 TL;DR Rules
 
 - **ROLL** your dice.
-- **PLACE** at least one (matching number, touching rocket).
+- **PLACE** at least one body part or rocket booster.
 - **CAN’T PLACE?** One die to Fire Pile.
 - **FIVE IN FIRE?** Boom, you lose!
 - **READY TO LAUNCH?** Roll your Boosters—if any 6s, you win!
@@ -69,7 +69,7 @@ Families, friends, classrooms, clubs, and anyone who loves dice, space, and a bi
 
 ## 📢 Want to Play?
 
-Try it at [playliftoff.com] or just go play with your own dice!
+Try it at (PlayLiftoff.com)[playliftoff.com] or just go play with your own dice!
 
 ---
 
