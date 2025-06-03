@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Liftoff</title>
+        <link rel="stylesheet" href="src/nyt-styles.css" />
+        <link rel="manifest" href="manifest.json" />
+        <meta name="theme-color" content="#1a1a2e" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent"
+        />
+        <link rel="apple-touch-icon" href="icon-192.png" />
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+    </head>
+    <body>
+        <div id="root"></div>
+
+        <!-- ───────────────────────── GAME‑LOGIC CORE ─────────────────────────  -->
+        <script>
+            //  Unified placement rules for body rows (1‑5) and booster row (6‑only)
+
+            const GameLogic = {
+                /* ------------------------------------------------ isValidPlacement */
+                isValidPlacement(
+                    position,
+                    dieValue,
+                    rocketGrid,
+                    rocketHeight,
+                    boosterRowLocked,
+                ) {
+                    if (rocketGrid[position]) return false;
+                    const [rowStr, colStr] = position.split("-");
+                    const row = parseInt(rowStr, 10),
+                        col = parseInt(colStr, 10);
+
+                    // For 1–5: must match slot label, can't mix with 6s, can't go below boosters
+                    if (dieValue >= 1 && dieValue <= 5) {
+                        const rowHasSix = Object.keys(rocketGrid).some((k) => {
+                            const [r] = k.split("-");
+                            return (
+                                parseInt(r) === row &&
+                                rocketGrid[k] &&
+                                rocketGrid[k].value === 6
+                            );
+                        });
+                        if (rowHasSix) return false;
+                        if (dieValue !== col) return false;
+                        if (boosterRowLocked && row > rocketHeight)
+                            return false;
+                        return GameLogic.hasAdjacentDie(
+                            position,
+                            rocketGrid,
+                            rocketHeight,
+                        );
+                    }
+
+                    // For 6s
+                    if (dieValue === 6) {
+                        // Can't mix with 1-5s in the same row
+                        const rowHasRegular = Object.keys(rocketGrid).some(
+                            (k) => {
+                                const [r] = k.split("-");
+                                return (
+                                    parseInt(r) === row &&
+                                    rocketGrid[k] &&
+                                    rocketGrid[k].value !== 6
+                                );
+                            },
+                        );
+                        if (rowHasRegular) return false;
+
+                        // What is the booster row? (lowest body row with any die + 1)
+                        let lowestBodyRow = 0;
+                        Object.keys(rocketGrid).forEach((k) => {
+                            const [r] = k.split("-");
+                            const d = rocketGrid[k];
+                            if (d && d.value >= 1 && d.value <= 5) {
+                                lowestBodyRow = Math.max(
+                                    lowestBodyRow,
+                                    parseInt(r),
+                                );
+                            }
+                        });
+                        const boosterRow = lowestBodyRow + 1;
+
+                        // If boosters are not yet locked, can only place 6s into the booster row
+                        if (!boosterRowLocked) {
+                            if (row !== boosterRow) return false;
+                        } else {
+                            // If locked, can only fill into the locked booster row
+                            const lockedRow = Object.keys(rocketGrid)
+                                .filter(
+                                    (k) =>
+                                        rocketGrid[k] &&
+                                        rocketGrid[k].value === 6,
+                                )
+                                .map((k) => parseInt(k.split("-")[0]))[0];
+                            if (row !== lockedRow) return false;
+                        }
+
+                        // Must be adjacent to any existing die
+                        return GameLogic.hasAdjacentDie(
+                            position,
+                            rocketGrid,
+                            rocketHeight,
+                        );
+                    }
+
+                    // Not valid otherwise
+                    return false;
+                },
+
+                hasAdjacentDie(position, rocketGrid, rocketHeight) {
+                    const placed = Object.values(rocketGrid).filter((d) => d);
+                    if (placed.length === 0) {
+                        return position === "1-1";
+                    }
+                    const adjacent = GameLogic.getAdjacentPositions(
+                        position,
+                        rocketHeight,
+                    );
+                    return adjacent.some((p) => rocketGrid[p]);
+                },
+
+                getAdjacentPositions(position, rocketHeight) {
+                    const [rowPart, colPart] = position.split("-");
+                    const col = parseInt(colPart, 10);
+                    const adj = [];
+                    const row = parseInt(rowPart, 10);
+
+                    if (col > 1) adj.push(`${row}-${col - 1}`);
+                    if (col < row) adj.push(`${row}-${col + 1}`);
+                    if (row < 5) {
+                        const up = row + 1;
+                        adj.push(`${up}-${col}`);
+                        if (col <= up - 1) adj.push(`${up}-${col + 1}`);
+                    }
+                    if (row > 1) {
+                        const down = row - 1;
+                        if (col <= down) adj.push(`${down}-${col}`);
+                        if (col > 1 && col - 1 <= down)
+                            adj.push(`${down}-${col - 1}`);
+                    }
+                    return adj;
+                },
+
+                getValidPositions(
+                    dieValue,
+                    rocketGrid,
+                    rocketHeight,
+                    boosterRowLocked,
+                ) {
+                    const positions = [];
+                    for (let row = 1; row <= 5; row++) {
+                        for (let col = 1; col <= row; col++) {
+                            const pos = `${row}-${col}`;
+                            if (
+                                GameLogic.isValidPlacement(
+                                    pos,
+                                    dieValue,
+                                    rocketGrid,
+                                    rocketHeight,
+                                    boosterRowLocked,
+                                )
+                            ) {
+                                positions.push(pos);
+                            }
+                        }
+                    }
+                    return positions;
+                },
+
+                getCompletedRows(rocketGrid) {
+                    const complete = [];
+                    for (let r = 1; r <= 5; r++) {
+                        let full = true;
+                        for (let c = 1; c <= r; c++) {
+                            if (!rocketGrid[`${r}-${c}`]) {
+                                full = false;
+                                break;
+                            }
+                        }
+                        if (full) complete.push(r);
+                    }
+                    return complete;
+                },
+
+                calculateVictoryLevel(
+                    rocketGrid,
+                    rocketHeight,
+                    boosterRowLocked,
+                ) {
+                    if (!boosterRowLocked) return 0; // need at least one booster
+                    const rows = GameLogic.getCompletedRows(rocketGrid).length;
+                    if (rows >= 5) return 3;
+                    if (rows >= 3) return 2;
+                    if (rows >= 1) return 1;
+                    return 0;
+                },
+
+                hasBoosters(rocketGrid) {
+                    return Object.values(rocketGrid).some(
+                        (v) => v && v.value === 6,
+                    );
+                },
+            };
+
+            window.GameLogic = GameLogic;
+        </script>
+
+        <!-- ─────────────────────── COMPONENT BUNDLE LOADS ──────────────────── -->
+        <script type="text/babel" src="src/components/Die.js?v=2"></script>
+        <script type="text/babel" src="src/components/FirePile.js?v=2"></script>
+        <script
+            type="text/babel"
+            src="src/components/GameSetup.js?v=2"
+        ></script>
+        <script type="text/babel" src="src/components/DiceRoll.js?v=2"></script>
+        <script
+            type="text/babel"
+            src="src/components/RocketGrid.js?v=2"
+        ></script>
+        <script
+            type="text/babel"
+            src="src/components/GameResults.js?v=2"
+        ></script>
+        <script type="text/babel" src="src/App.js?v=2"></script>
+        <script>
+            if ("serviceWorker" in navigator) {
+                window.addEventListener("load", () => {
+                    navigator.serviceWorker
+                        .register("/sw.js")
+                        .then((reg) => console.log("SW registered:", reg))
+                        .catch((err) =>
+                            console.log("SW registration failed:", err),
+                        );
+                });
+            }
+        </script>
+    </body>
+</html>

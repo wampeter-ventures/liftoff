@@ -1,0 +1,108 @@
+function DiceRoll({ dice, onDragStart }) {
+    const { useState, useEffect } = React;
+    const [draggedDie, setDraggedDie] = useState(null);
+    const [isRolling, setIsRolling] = useState(false);
+    const [rollingDice, setRollingDice] = useState([]);
+
+    const handleDragStart = (e, die) => {
+        if (die.placed) return;
+        
+        setDraggedDie(die);
+        e.dataTransfer.setData('text/plain', JSON.stringify(die));
+        e.dataTransfer.effectAllowed = 'move';
+        
+        // Add visual feedback
+        e.target.classList.add('dragging');
+    };
+
+    const handleDragEnd = (e) => {
+        e.target.classList.remove('dragging');
+        setDraggedDie(null);
+    };
+
+    // Show rolling animation when new dice arrive
+    useEffect(() => {
+        if (dice.length > 0 && !dice.some(d => d.placed)) {
+            setIsRolling(true);
+            // Generate random rolling dice for animation
+            const rolling = dice.map(d => ({ ...d, value: Math.floor(Math.random() * 6) + 1 }));
+            setRollingDice(rolling);
+            
+            const interval = setInterval(() => {
+                setRollingDice(prev => prev.map(d => ({ ...d, value: Math.floor(Math.random() * 6) + 1 })));
+            }, 100);
+            
+            setTimeout(() => {
+                clearInterval(interval);
+                setIsRolling(false);
+                setRollingDice([]);
+            }, 1000);
+            
+            return () => clearInterval(interval);
+        }
+    }, [dice.length]);
+
+    const availableDice = dice.filter(d => !d.placed);
+    const displayDice = isRolling ? rollingDice : availableDice;
+
+    return (
+        <div className="dice-roll-container">
+            <h3>
+                {availableDice.length > 0 ? availableDice[0].playerName : 'Available Dice'}
+            </h3>
+            
+            {availableDice.length === 0 ? (
+                <div className="no-dice">
+                    <i className="fas fa-check-circle"></i>
+                    All dice placed!
+                </div>
+            ) : (
+                <div className="player-dice-group">
+                    <div className="dice-container">
+                        {displayDice.map(die => (
+                            <Die
+                                key={die.id}
+                                die={die}
+                                draggable={!isRolling}
+                                onDragStart={(e) => handleDragStart(e, die)}
+                                onDragEnd={handleDragEnd}
+                                className="available-die"
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <div className="dice-instructions">
+                {(() => {
+                    if (availableDice.length === 0) return '';
+                    
+                    // Check if any unplaced dice can be placed
+                    const unplacedDice = availableDice.filter(die => !die.placed);
+                    if (unplacedDice.length === 0) return '';
+                    
+                    const hasValidPlacements = unplacedDice.some(die => {
+                        if (window.GameLogic && window.GameLogic.getValidPositions) {
+                            const validPositions = window.GameLogic.getValidPositions(
+                                die.value, 
+                                window.currentRocketGrid || {}, 
+                                window.currentRocketHeight || 0, 
+                                window.currentBoosterRowLocked || false
+                            );
+                            return validPositions.length > 0;
+                        }
+                        return true;
+                    });
+                    
+                    if (hasValidPlacements) {
+                        return "Drag dice to the rocket body (1-5), add a booster (6s), or send a die to the fire";
+                    } else {
+                        return "No eligible parts, send a die to the fire!";
+                    }
+                })()}
+            </div>
+        </div>
+    );
+}
+
+window.DiceRoll = DiceRoll;
