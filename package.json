@@ -1,0 +1,34 @@
+{
+  "name": "liftoff-game",
+  "version": "1.0.0",
+  "description": "A collaborative dice-building game where players work together to assemble rockets and reach for the stars",
+  "main": "pages/index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "game",
+    "dice",
+    "rocket",
+    "multiplayer",
+    "react",
+    "nextjs"
+  ],
+  "author": "Wampeter Ventures",
+  "license": "MIT"
+} 

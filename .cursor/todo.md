@@ -28,6 +28,33 @@
 - [ ] Better loading states and transitions
 
 
+## Things to Organize
+
+- Put instructions on popup drawer, re-initiated with a click on a ? on the top right
+
+
+- Animate the moment where you remove the excess rocket body rows when you add a six and move on to the launch phase. We want the user to see that those rows get crossed out then fade away and the sixes animate as they slide  up. 
+
+- Add a better launch screen that has Dice rolling and clarity about the fact that you’re hoping to roll a six rolling one die at a time 
+
+
+
+- Change the canvas when you get to phase 2 (first booster placed)
+- Change again when you get to phase 3 (complete body, still building boosters)
+- Change again when you get to phase 4 (complete body and complete boosters)
+
+
+
+
+- At launch, Animate the rocket moving then the 6s rolling one by one, and if they all sputter out, then the rocket touches back down, but if one is a 6, then the rocket takes off and flies up and off the page.
+
+
+
+- Add a toggle that lets you visualize the rocket in picture mode
+- Add special features that let you build different rocket ships
+
+
+
 ## 🔧 Medium Priority Items
 
 ### Game Features
