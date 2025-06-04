@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import Die from './Die';
+import GameLogic from '../lib/gameLogic';
 
-function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie }) {
+function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, rocketHeight, boosterRowLocked }) {
     const [draggedDie, setDraggedDie] = useState(null);
     const [isRolling, setIsRolling] = useState(false);
     const [rollingDice, setRollingDice] = useState([]);
@@ -92,13 +93,28 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie }) {
                     const unplacedDice = availableDice.filter(die => !die.placed);
                     if (unplacedDice.length === 0) return '';
                     
-                    // This will be updated to use GameLogic import in the main component
-                    const hasValidPlacements = true; // Simplified for now
+                    // Check if any dice from this roll have already been placed
+                    const anyDicePlaced = dice.some(die => die.placed);
+                    
+                    // Check if any of the unplaced dice have valid placements on the rocket
+                    const hasValidPlacements = unplacedDice.some(die => {
+                        const validPositions = GameLogic.getValidPositions(
+                            die.value,
+                            rocketGrid,
+                            rocketHeight,
+                            boosterRowLocked
+                        );
+                        return validPositions.length > 0;
+                    });
                     
                     if (hasValidPlacements) {
                         return "Click or drag dice: ⚙️ Rocket body  (1-5)  🔋 Boosters (6)";
-                    } else {
+                    } else if (!anyDicePlaced) {
+                        // Only show fire message if this is a fresh roll with no eligible dice
                         return "No eligible body parts or boosters, send a die to the fire! 🔥 ";
+                    } else {
+                        // Some dice were already placed, show regular message
+                        return "Click or drag dice: ⚙️ Rocket body  (1-5)  🔋 Boosters (6)";
                     }
                 })()}
             </div>

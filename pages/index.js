@@ -9,6 +9,7 @@ import IntroSequence from '../components/IntroSequence';
 import GameModal from '../components/GameModal';
 import { Star, Flame, X, CheckCircle, AlertTriangle, Rocket } from 'lucide-react';
 import Head from "next/head";
+import LaunchResults from '../components/LaunchResults';
 
 export default function Home() {
     const [gameState, setGameState] = useState("welcome");
@@ -325,14 +326,14 @@ export default function Home() {
         const hasSuccessfulBooster = boosterRolls.some((roll) => roll === 6);
         if (hasSuccessfulBooster) {
             showModal(
-                'success',
-                'Launch Success!',
-                'Your rocket has successfully launched!',
+                'launch',
+                'LIFTOFF!!!',
+                'Your rocket travels upward into the glorious cosmos!',
                 { boosterRolls, success: true }
             );
             setTimeout(() => {
                 setGameState("results");
-            }, 2000);
+            }, 4000);
         } else {
             const newGrid = { ...rocketGrid };
             boosters.forEach(([pos], i) => {
@@ -345,20 +346,21 @@ export default function Home() {
             setRocketGrid(newGrid);
             setBoosterRowLocked(false);
             showModal(
-                'error',
-                'Launch Failed',
-                'Your rocket failed to launch. One booster added to fire. Continue playing.',
+                'launch',
+                '💨 FIZZLE! FAIL! 💥',
+                'Your boosters wheezed like a deflating balloon! No sixes means no flight. Your rocket remains earthbound like a very expensive paperweight.',
                 { boosterRolls, success: false }
             );
             if (firePile + 1 >= 5) {
                 setTimeout(() => {
                     setGameState("results");
-                }, 1500);
+                }, 3000);
             }
         }
     };
 
     const resetGame = () => {
+        // Clear ALL game state
         setGameState("setup");
         setPlayers([]);
         setCurrentPlayerIndex(0);
@@ -371,6 +373,12 @@ export default function Home() {
         setBoosterRowLocked(false);
         setFireDice([]);
         setSelectedDie(null);
+        setShowLaunchHelper(false);
+        
+        // Close any open modals
+        closeModal();
+        
+        // Reset the rocket grid to empty
         const grid = {};
         for (let row = 1; row <= 5; row++) {
             for (let col = 1; col <= row; col++) {
@@ -409,6 +417,28 @@ export default function Home() {
         setSelectedDie(null); // Clear selection after sending to fire
         return true;
     };
+
+    // Handle mobile fire drop events
+    useEffect(() => {
+        const handleMobileFireDrop = (e) => {
+            if (e.detail && e.detail.die) {
+                sendToFire(e.detail.die);
+            }
+        };
+
+        // Add event listener to fire drop zone
+        const fireDropZone = document.querySelector('.fire-drop-zone');
+        if (fireDropZone) {
+            fireDropZone.addEventListener('fireDropMobile', handleMobileFireDrop);
+        }
+
+        return () => {
+            // Cleanup
+            if (fireDropZone) {
+                fireDropZone.removeEventListener('fireDropMobile', handleMobileFireDrop);
+            }
+        };
+    }, [firePile]); // Re-run when fire pile changes
 
     // Starry Background Component
     const StarryBackground = () => (
@@ -526,19 +556,10 @@ export default function Home() {
                 message={modal.message}
             >
                 {modal.data && modal.data.boosterRolls && (
-                    <div className="launch-results">
-                        <div className={`booster-rolls ${modal.data.success ? 'launch-success' : ''}`}>
-                            <div className="booster-rolls-title">Booster Rolls:</div>
-                            <div className="booster-rolls-values">
-                                {modal.data.boosterRolls.join(', ')}
-                            </div>
-                        </div>
-                        {!modal.data.success && (
-                            <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-dark-gray)', opacity: 0.8 }}>
-                                Need at least one 6 to launch successfully.
-                            </p>
-                        )}
-                    </div>
+                    <LaunchResults 
+                        boosterRolls={modal.data.boosterRolls}
+                        success={modal.data.success}
+                    />
                 )}
             </GameModal>
             
@@ -737,7 +758,7 @@ export default function Home() {
                         <div className="top-status">
                             <button
                                 className="nav-back-inline"
-                                onClick={() => setGameState("setup")}
+                                onClick={resetGame}
                             >
                                 ←
                             </button>
@@ -768,7 +789,7 @@ export default function Home() {
 
                         <div className="fire-status">
                             <div
-                                className="fire-display fire-drop-zone"
+                                className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''}`}
                                 onDragOver={(e) => {
                                     e.preventDefault();
                                     e.dataTransfer.dropEffect = "move";
@@ -837,6 +858,9 @@ export default function Home() {
                                 dice={currentDice}
                                 selectedDie={selectedDie}
                                 onSelectDie={selectDie}
+                                rocketGrid={rocketGrid}
+                                rocketHeight={rocketHeight}
+                                boosterRowLocked={boosterRowLocked}
                             />
 
                             <div className="game-controls">

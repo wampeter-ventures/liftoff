@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, className = '', isSelected = false }) {
-    const [touchData, setTouchData] = useState(null);
+    const [isDragging, setIsDragging] = useState(false);
     
     const renderPips = (value) => {
         const pipConfigs = {
@@ -38,127 +38,123 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
         );
     };
 
+    const handleDragStartEvent = (e) => {
+        if (!draggable || die.placed) return;
+        setIsDragging(true);
+        if (onDragStart) {
+            onDragStart(e, die);
+        }
+    };
+
+    const handleDragEndEvent = (e) => {
+        setIsDragging(false);
+        if (onDragEnd) {
+            onDragEnd(e);
+        }
+    };
+
     const handleTouchStart = (e) => {
         if (!draggable || die.placed) return;
+        setIsDragging(true);
         
+        // Store initial touch position for mobile drag detection
         const touch = e.touches[0];
+        e.target.dataset.touchStartX = touch.clientX;
+        e.target.dataset.touchStartY = touch.clientY;
+        e.target.dataset.hasMoved = 'false';
         
-        // Create a simple visual indicator for dragging
-        const rect = e.target.getBoundingClientRect();
-        const dragIndicator = document.createElement('div');
-        
-        dragIndicator.style.position = 'fixed';
-        dragIndicator.style.top = rect.top + 'px';
-        dragIndicator.style.left = rect.left + 'px';
-        dragIndicator.style.width = '60px';
-        dragIndicator.style.height = '60px';
-        dragIndicator.style.backgroundColor = '#ff0000';
-        dragIndicator.style.border = '3px solid #000';
-        dragIndicator.style.borderRadius = '8px';
-        dragIndicator.style.zIndex = '99999';
-        dragIndicator.style.pointerEvents = 'none';
-        dragIndicator.style.opacity = '0.8';
-        dragIndicator.style.display = 'flex';
-        dragIndicator.style.alignItems = 'center';
-        dragIndicator.style.justifyContent = 'center';
-        dragIndicator.style.fontSize = '24px';
-        dragIndicator.style.fontWeight = 'bold';
-        dragIndicator.style.color = '#fff';
-        dragIndicator.textContent = die.value;
-        dragIndicator.id = 'drag-indicator';
-        
-        document.body.appendChild(dragIndicator);
-        console.log('Drag indicator created:', dragIndicator);
-        
-        setTouchData({
-            startX: touch.clientX,
-            startY: touch.clientY,
-            die: die,
-            clone: dragIndicator,
-            originalRect: rect
-        });
-        
-        // Hide original
-        e.target.style.opacity = '0.3';
-        
-        // Call drag start for consistency
-        if (onDragStart) {
-            const mockEvent = {
-                dataTransfer: {
-                    setData: () => {},
-                    effectAllowed: 'move'
-                },
-                target: e.target
-            };
-            onDragStart(mockEvent, die);
-        }
+        // Add visual feedback for mobile
+        e.target.style.transform = 'scale(1.1)';
+        e.target.style.opacity = '0.8';
+        e.target.style.zIndex = '1000';
     };
 
     const handleTouchMove = (e) => {
-        if (!touchData || !touchData.clone) return;
-        e.preventDefault();
+        if (!isDragging) return;
         
         const touch = e.touches[0];
-        const deltaX = touch.clientX - touchData.startX;
-        const deltaY = touch.clientY - touchData.startY;
+        const startX = parseFloat(e.target.dataset.touchStartX || '0');
+        const startY = parseFloat(e.target.dataset.touchStartY || '0');
         
-        // Move the clone with finger
-        const newLeft = touchData.originalRect.left + deltaX;
-        const newTop = touchData.originalRect.top + deltaY;
+        const deltaX = Math.abs(touch.clientX - startX);
+        const deltaY = Math.abs(touch.clientY - startY);
         
-        touchData.clone.style.left = newLeft + 'px';
-        touchData.clone.style.top = newTop + 'px';
+        // If user has moved more than 10px, mark as dragging
+        if (deltaX > 10 || deltaY > 10) {
+            e.target.dataset.hasMoved = 'true';
+        }
         
-        console.log('Moving clone to:', newLeft, newTop);
+        // Prevent scrolling while dragging
+        e.preventDefault();
     };
 
     const handleTouchEnd = (e) => {
-        if (!touchData) return;
-        
-        const touch = e.changedTouches[0];
-        const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-        
-        // Clean up clone
-        if (touchData.clone) {
-            document.body.removeChild(touchData.clone);
-        }
+        if (!isDragging) return;
         
         // Reset visual state
-        e.target.style.opacity = '';
         e.target.style.transform = '';
+        e.target.style.opacity = '';
         e.target.style.zIndex = '';
-        e.target.style.position = '';
-        e.target.style.pointerEvents = '';
         
-        // Find drop target
-        let dropTarget = elementBelow;
-        while (dropTarget && !dropTarget.dataset.position && !dropTarget.classList.contains('fire-drop-zone')) {
-            dropTarget = dropTarget.parentElement;
-        }
+        const hasMoved = e.target.dataset.hasMoved === 'true';
         
-        if (dropTarget) {
-            if (dropTarget.dataset.position) {
-                // Drop on grid position
-                if (window.dropDieOnGrid) {
-                    window.dropDieOnGrid(touchData.die, dropTarget.dataset.position);
+        if (hasMoved) {
+            // This was a drag operation
+            const touch = e.changedTouches[0];
+            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (elementBelow) {
+                // Find the drop target by traversing up the DOM
+                let dropTarget = elementBelow;
+                while (dropTarget && 
+                       !dropTarget.dataset.position && 
+                       !dropTarget.classList.contains('fire-drop-zone') &&
+                       dropTarget !== document.body) {
+                    dropTarget = dropTarget.parentElement;
                 }
-            } else if (dropTarget.classList.contains('fire-drop-zone')) {
-                // Drop on fire
-                if (window.sendToFire) {
-                    window.sendToFire(touchData.die);
+                
+                if (dropTarget && dropTarget.dataset.position) {
+                    // Create a synthetic drop event for the grid slot
+                    const mockEvent = {
+                        preventDefault: () => {},
+                        dataTransfer: {
+                            getData: () => JSON.stringify(die)
+                        }
+                    };
+                    
+                    // Trigger the drop event on the grid slot
+                    const dropEvent = new CustomEvent('drop', {
+                        bubbles: true,
+                        detail: { mockEvent, die, position: dropTarget.dataset.position }
+                    });
+                    dropTarget.dispatchEvent(dropEvent);
+                } else if (dropTarget && dropTarget.classList.contains('fire-drop-zone')) {
+                    // Handle fire drop
+                    const fireDropEvent = new CustomEvent('fireDropMobile', {
+                        bubbles: true,
+                        detail: { die }
+                    });
+                    dropTarget.dispatchEvent(fireDropEvent);
                 }
+            }
+        } else {
+            // This was a tap, treat as click
+            if (onClick) {
+                onClick(e);
             }
         }
         
-        setTouchData(null);
-        if (onDragEnd) onDragEnd(e);
+        setIsDragging(false);
+        
+        // Clean up
+        delete e.target.dataset.touchStartX;
+        delete e.target.dataset.touchStartY;
+        delete e.target.dataset.hasMoved;
     };
 
     const handleClick = (e) => {
-        // Don't trigger click if we're dragging or if it's a touch event handled by touch handlers
-        if (touchData) return;
-        
-        if (onClick) {
+        // Only handle click if it wasn't a drag operation
+        if (!isDragging && onClick) {
             onClick(e);
         }
     };
@@ -170,14 +166,15 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
         <div
             className={`die ${className} ${die.placed ? 'placed' : ''} ${isBooster ? 'booster-die' : ''} ${isFireDie ? 'fire-die' : ''} ${isSelected ? 'selected' : ''} player-${die.playerId}`}
             draggable={draggable && !die.placed}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
+            onDragStart={handleDragStartEvent}
+            onDragEnd={handleDragEndEvent}
             onClick={handleClick}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             data-value={die.value}
             data-player={die.playerName}
+            style={{ touchAction: 'none' }} // Prevent default touch behaviors
         >
             {renderPips(die.value)}
         </div>
