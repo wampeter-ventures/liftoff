@@ -243,7 +243,7 @@ function GameResults({
                             <p
                                 className={`text-xs sm:text-sm mt-0.5 ${isExplosion ? "text-red-600 dark:text-red-300" : "text-slate-600 dark:text-slate-300"}`}
                             >
-                                Dice in Fire Pile
+                                Dice in Fire!
                             </p>
                         </div>
                     </div>

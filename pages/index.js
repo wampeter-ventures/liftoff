@@ -6,7 +6,8 @@ import RocketGrid from '../components/RocketGrid';
 import GameSetup from '../components/GameSetup';
 import GameResults from '../components/GameResults';
 import IntroSequence from '../components/IntroSequence';
-import { Star, Flame } from 'lucide-react';
+import GameModal from '../components/GameModal';
+import { Star, Flame, X, CheckCircle, AlertTriangle, Rocket } from 'lucide-react';
 import Head from "next/head";
 
 export default function Home() {
@@ -24,6 +25,35 @@ export default function Home() {
     const [showLaunchHelper, setShowLaunchHelper] = useState(false);
     const [selectedDie, setSelectedDie] = useState(null);
     const [stars, setStars] = useState([]);
+    
+    // Modal state
+    const [modal, setModal] = useState({
+        isOpen: false,
+        type: 'info',
+        title: '',
+        message: '',
+        data: null
+    });
+
+    const showModal = (type, title, message, data = null) => {
+        setModal({
+            isOpen: true,
+            type,
+            title,
+            message,
+            data
+        });
+    };
+
+    const closeModal = () => {
+        setModal({
+            isOpen: false,
+            type: 'info',
+            title: '',
+            message: '',
+            data: null
+        });
+    };
 
     useEffect(() => {
         const grid = {};
@@ -177,8 +207,10 @@ export default function Home() {
         const unplacedDice = currentDice.filter((d) => !d.placed);
         const totalDice = currentDice.length;
         if (unplacedDice.length === totalDice) {
-            alert(
-                "You must place at least one die or send unused dice to the fire pile.",
+            showModal(
+                'warning',
+                'Action Required',
+                'You must place at least one die onto the ⚙️ Rocket Body (1-5) or use it as 🔋 a Booster (6), or send one die to the fire 🔥.'
             );
             return;
         }
@@ -267,12 +299,23 @@ export default function Home() {
     };
 
     const attemptLaunch = () => {
+        if (!canLaunch()) {
+            showModal(
+                'warning',
+                'Launch Not Ready',
+                'Complete your rocket body first! All rows above your boosters must be filled before launch.'
+            );
+            return;
+        }
+        
         const boosters = Object.entries(rocketGrid).filter(
             ([, d]) => d && d.value === 6,
         );
         if (!boosters.length) {
-            alert(
-                "No boosters found! You need at least one booster to launch.",
+            showModal(
+                'error',
+                'Launch Failed',
+                'No boosters found! You need at least one booster to launch.'
             );
             return;
         }
@@ -281,8 +324,15 @@ export default function Home() {
         );
         const hasSuccessfulBooster = boosterRolls.some((roll) => roll === 6);
         if (hasSuccessfulBooster) {
-            alert(`Launch SUCCESS! Booster rolls: ${boosterRolls.join(", ")}.`);
-            setGameState("results");
+            showModal(
+                'success',
+                'Launch Success!',
+                'Your rocket has successfully launched!',
+                { boosterRolls, success: true }
+            );
+            setTimeout(() => {
+                setGameState("results");
+            }, 2000);
         } else {
             const newGrid = { ...rocketGrid };
             boosters.forEach(([pos], i) => {
@@ -294,11 +344,16 @@ export default function Home() {
             });
             setRocketGrid(newGrid);
             setBoosterRowLocked(false);
-            alert(
-                `Launch failed! Booster rolls: ${boosterRolls.join(", ")}. Need at least one 6. One booster added to fire, continue playing.`,
+            showModal(
+                'error',
+                'Launch Failed',
+                'Your rocket failed to launch. One booster added to fire. Continue playing.',
+                { boosterRolls, success: false }
             );
             if (firePile + 1 >= 5) {
-                setGameState("results");
+                setTimeout(() => {
+                    setGameState("results");
+                }, 1500);
             }
         }
     };
@@ -373,15 +428,15 @@ export default function Home() {
                 >
                     {star.size === 'large' ? (
                         <Star 
-                            size={20} 
+                            size={10} 
                             className="text-white fill-white"
                         />
                     ) : (
                         <div 
                             className="bg-white rounded-full"
                             style={{
-                                width: '4px',
-                                height: '4px'
+                                width: '2px',
+                                height: '2px'
                             }}
                         />
                     )}
@@ -461,6 +516,32 @@ export default function Home() {
             <Head>
                 <title>Liftoff</title>
             </Head>
+            
+            {/* Game Modal */}
+            <GameModal 
+                isOpen={modal.isOpen}
+                onClose={closeModal}
+                type={modal.type}
+                title={modal.title}
+                message={modal.message}
+            >
+                {modal.data && modal.data.boosterRolls && (
+                    <div className="launch-results">
+                        <div className={`booster-rolls ${modal.data.success ? 'launch-success' : ''}`}>
+                            <div className="booster-rolls-title">Booster Rolls:</div>
+                            <div className="booster-rolls-values">
+                                {modal.data.boosterRolls.join(', ')}
+                            </div>
+                        </div>
+                        {!modal.data.success && (
+                            <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-dark-gray)', opacity: 0.8 }}>
+                                Need at least one 6 to launch successfully.
+                            </p>
+                        )}
+                    </div>
+                )}
+            </GameModal>
+            
             {/* LAUNCH HELPER DIALOG */}
             {showLaunchHelper && (
                 <div

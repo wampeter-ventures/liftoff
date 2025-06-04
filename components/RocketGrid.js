@@ -236,10 +236,10 @@ function RocketGrid({
                         <button
                             className={`btn btn-launch ${!onCanLaunch() ? "btn-disabled" : "btn-primary"}`}
                             onClick={() => {
-                                if (!onCanLaunch()) {
-                                    onSetShowLaunchHelper && onSetShowLaunchHelper(true);
-                                } else {
+                                if (onCanLaunch()) {
                                     onAttemptLaunch();
+                                } else {
+                                    onSetShowLaunchHelper && onSetShowLaunchHelper(true);
                                 }
                             }}
                         >
