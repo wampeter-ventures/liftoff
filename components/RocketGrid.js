@@ -17,6 +17,8 @@ function RocketGrid({
     const [dragOverPosition, setDragOverPosition] = useState(null);
     const [validPositions, setValidPositions] = useState(new Set());
     const [selectedDieValidPositions, setSelectedDieValidPositions] = useState(new Set());
+    const [hasAnyPlacedDice, setHasAnyPlacedDice] = useState(false);
+    const [showInitialGuide, setShowInitialGuide] = useState(true);
 
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
@@ -46,9 +48,19 @@ function RocketGrid({
             } else {
                 setSelectedDieValidPositions(new Set());
             }
+
+            // Check if there are any placed dice
+            const placedDice = Object.keys(grid).filter((k) => grid[k] && grid[k].placed);
+            const hasDice = placedDice.length > 0;
+            setHasAnyPlacedDice(hasDice);
+            
+            // After first die is placed, hide the initial guide
+            if (hasDice && showInitialGuide) {
+                setShowInitialGuide(false);
+            }
         }, 100);
         return () => clearTimeout(timer);
-    }, [currentDice, grid, rocketHeight, boosterRowLocked, selectedDie]);
+    }, [currentDice, grid, rocketHeight, boosterRowLocked, selectedDie, showInitialGuide]);
 
     // Compute eligibility *for display* for every slot on the grid
     const eligibleLabels = React.useMemo(() => {
@@ -181,48 +193,62 @@ function RocketGrid({
 
     // Render
     return (
-        <div className="rocket-grid-container">
-            <div className="rocket-grid">
-                {[1, 2, 3, 4, 5]
-                    .filter((row) => {
-                        // Only hide rows if there is actually a 6 (booster) placed
-                        const boosters = Object.keys(grid)
-                            .filter((k) => grid[k] && grid[k].value === 6)
-                            .map((k) => parseInt(k.split("-")[0]));
-                        if (!boosters.length) return true;
-                        const boosterRow = Math.min(...boosters);
-                        return row <= boosterRow;
-                    })
-
-                    .map((row) => (
-                        <div key={row} className={`rocket-row row-${row}`}>
-                            <div className="row-slots">
-                                {Array.from({ length: row }, (_, i) => {
-                                    const pos = `${row}-${i + 1}`;
-                                    return renderSlot(pos, i + 1);
-                                })}
-                            </div>
-                        </div>
-                    ))}
-            </div>
-
-            {boosterRowLocked && (
-                <div className="launch-section">
-                    <button
-                        className={`btn btn-launch ${!onCanLaunch() ? "btn-disabled" : "btn-primary"}`}
-                        onClick={() => {
-                            if (!onCanLaunch()) {
-                                onSetShowLaunchHelper && onSetShowLaunchHelper(true);
-                            } else {
-                                onAttemptLaunch();
-                            }
-                        }}
-                    >
-                        Launch Rocket!
-                    </button>
+        <>
+            <h3 className="rocket-section-header">Rocket Assembly</h3>
+            <div className="rocket-grid-container">
+                {/* Rocket Guide Overlay */}
+                <div 
+                    className={`rocket-guide-overlay ${hasAnyPlacedDice ? 'fade-to-hidden' : 'show-background'}`}
+                >
+                    <img 
+                        src="/rocket_big.png" 
+                        alt="Rocket building guide" 
+                        className="rocket-guide-image"
+                    />
                 </div>
-            )}
-        </div>
+                
+                <div className="rocket-grid">
+                    {[1, 2, 3, 4, 5]
+                        .filter((row) => {
+                            // Only hide rows if there is actually a 6 (booster) placed
+                            const boosters = Object.keys(grid)
+                                .filter((k) => grid[k] && grid[k].value === 6)
+                                .map((k) => parseInt(k.split("-")[0]));
+                            if (!boosters.length) return true;
+                            const boosterRow = Math.min(...boosters);
+                            return row <= boosterRow;
+                        })
+
+                        .map((row) => (
+                            <div key={row} className={`rocket-row row-${row}`}>
+                                <div className="row-slots">
+                                    {Array.from({ length: row }, (_, i) => {
+                                        const pos = `${row}-${i + 1}`;
+                                        return renderSlot(pos, i + 1);
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                </div>
+
+                {boosterRowLocked && (
+                    <div className="launch-section">
+                        <button
+                            className={`btn btn-launch ${!onCanLaunch() ? "btn-disabled" : "btn-primary"}`}
+                            onClick={() => {
+                                if (!onCanLaunch()) {
+                                    onSetShowLaunchHelper && onSetShowLaunchHelper(true);
+                                } else {
+                                    onAttemptLaunch();
+                                }
+                            }}
+                        >
+                            Launch Rocket!
+                        </button>
+                    </div>
+                )}
+            </div>
+        </>
     );
 }
 

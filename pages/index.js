@@ -5,7 +5,9 @@ import DiceRoll from '../components/DiceRoll';
 import RocketGrid from '../components/RocketGrid';
 import GameSetup from '../components/GameSetup';
 import GameResults from '../components/GameResults';
-import { Star } from 'lucide-react';
+import IntroSequence from '../components/IntroSequence';
+import { Star, Flame } from 'lucide-react';
+import Head from "next/head";
 
 export default function Home() {
     const [gameState, setGameState] = useState("welcome");
@@ -25,9 +27,10 @@ export default function Home() {
 
     useEffect(() => {
         const grid = {};
-        for (let row = 1; row <= 6; row++) {
+        for (let row = 1; row <= 5; row++) {
             for (let col = 1; col <= row; col++) {
-                grid[`${row}-${col}`] = null;
+                const pos = `${row}-${col}`;
+                grid[pos] = null;
             }
         }
         setRocketGrid(grid);
@@ -35,21 +38,14 @@ export default function Home() {
 
     // Generate stars on client-side only to avoid hydration mismatch
     useEffect(() => {
-        const generatedStars = Array.from({ length: 80 }, (_, i) => {
-            const size = Math.random() * 4 + 2; // 2-6px
-            const opacity = Math.random() * 0.8 + 0.2; // 0.2-1.0
-            const isLucideStar = Math.random() > 0.6; // 40% chance for Lucide star
-            return {
-                id: i,
-                size,
-                opacity,
-                isLucideStar,
-                left: Math.random() * 100,
-                top: Math.random() * 100,
-                animationDelay: Math.random() * 3,
-                animationDuration: 2 + Math.random() * 2
-            };
-        });
+        const generatedStars = Array.from({ length: 50 }, (_, i) => ({
+            id: i,
+            left: Math.random() * 100,
+            top: Math.random() * 100,
+            delay: Math.random() * 3,
+            duration: 2 + Math.random() * 2,
+            size: Math.random() > 0.6 ? 'large' : 'small'
+        }));
         setStars(generatedStars);
     }, []);
 
@@ -66,8 +62,8 @@ export default function Home() {
 
     const startGame = (playerData) => {
         setPlayers(playerData);
-        setGameState("playing");
         setCurrentPlayerIndex(0);
+        setGameState("intro");
         rollDiceForCurrentPlayer(playerData);
     };
 
@@ -321,9 +317,10 @@ export default function Home() {
         setFireDice([]);
         setSelectedDie(null);
         const grid = {};
-        for (let row = 1; row <= 6; row++) {
+        for (let row = 1; row <= 5; row++) {
             for (let col = 1; col <= row; col++) {
-                grid[`${row}-${col}`] = null;
+                const pos = `${row}-${col}`;
+                grid[pos] = null;
             }
         }
         setRocketGrid(grid);
@@ -369,22 +366,22 @@ export default function Home() {
                     style={{
                         left: `${star.left}%`,
                         top: `${star.top}%`,
-                        animationDelay: `${star.animationDelay}s`,
-                        animationDuration: `${star.animationDuration}s`,
-                        opacity: star.opacity
+                        animationDelay: `${star.delay}s`,
+                        animationDuration: `${star.duration}s`,
+                        opacity: star.size === 'large' ? 0.8 : 0.4
                     }}
                 >
-                    {star.isLucideStar ? (
+                    {star.size === 'large' ? (
                         <Star 
-                            size={star.size + 4} 
+                            size={20} 
                             className="text-white fill-white"
                         />
                     ) : (
                         <div 
                             className="bg-white rounded-full"
                             style={{
-                                width: `${star.size}px`,
-                                height: `${star.size}px`
+                                width: '4px',
+                                height: '4px'
                             }}
                         />
                     )}
@@ -461,6 +458,9 @@ export default function Home() {
 
     return (
         <div className="app">
+            <Head>
+                <title>Liftoff</title>
+            </Head>
             {/* LAUNCH HELPER DIALOG */}
             {showLaunchHelper && (
                 <div
@@ -643,6 +643,13 @@ export default function Home() {
                 </div>
             )}
 
+            {gameState === "intro" && (
+                <IntroSequence 
+                    onComplete={() => setGameState("playing")}
+                    stars={stars}
+                />
+            )}
+
             {gameState === "playing" && (
                 <>
                     <div className="game-container">
@@ -706,11 +713,15 @@ export default function Home() {
                                 <span className="fire-label">Fire:</span>
                                 <div className="fire-dice-container">
                                     {fireDice.map((die, index) => (
-                                        <Die
+                                        <div
                                             key={die.id}
-                                            die={{ ...die, inFire: true }}
-                                            className="fire-die-small"
-                                        />
+                                            className={`fire-flame fire-flame-${index + 1}`}
+                                        >
+                                            <Flame
+                                                size={24}
+                                                className="flame-icon"
+                                            />
+                                        </div>
                                     ))}
                                     {Array.from(
                                         { length: 5 - firePile },
