@@ -8,19 +8,36 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
     const [rollingDice, setRollingDice] = useState([]);
 
     const handleDragStart = (e, die) => {
-        if (die.placed) return;
+        console.log('🎮 DiceRoll handleDragStart called:', { die: die.value, placed: die.placed });
         
+        if (die.placed) {
+            console.log('❌ DiceRoll drag prevented: die already placed');
+            return;
+        }
+        
+        console.log('✅ DiceRoll setting up drag data and visual feedback');
         setDraggedDie(die);
         e.dataTransfer.setData('text/plain', JSON.stringify(die));
         e.dataTransfer.effectAllowed = 'move';
         
         // Add visual feedback
         e.target.classList.add('dragging');
+        console.log('✅ Added .dragging class to:', e.target);
+        
+        // Call parent onDragStart if provided
+        if (onDragStart) {
+            console.log('📞 Calling parent onDragStart');
+            onDragStart(e, die);
+        } else {
+            console.log('❌ No parent onDragStart provided!');
+        }
     };
 
     const handleDragEnd = (e) => {
+        console.log('🏁 DiceRoll handleDragEnd called');
         e.target.classList.remove('dragging');
         setDraggedDie(null);
+        console.log('✅ Removed .dragging class and cleared draggedDie');
     };
 
     const handleDieClick = (die) => {

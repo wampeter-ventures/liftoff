@@ -845,6 +845,10 @@ export default function Home() {
                                 dice={currentDice}
                                 selectedDie={selectedDie}
                                 onSelectDie={selectDie}
+                                onDragStart={(e, die) => {
+                                    // This enables drag functionality
+                                    console.log('🌟 Main page onDragStart called:', { die: die.value });
+                                }}
                                 rocketGrid={rocketGrid}
                                 rocketHeight={rocketHeight}
                                 boosterRowLocked={boosterRowLocked}

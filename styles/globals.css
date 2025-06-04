@@ -496,6 +496,7 @@ body {
     height: 100%;
 }
 
+/* Available dice in the dice tray */
 .available-die {
     width: 36px;
     height: 36px;
@@ -512,6 +513,15 @@ body {
 
 .available-die:active {
     cursor: grabbing;
+}
+
+/* Dragging state for dice */
+.die.dragging {
+    opacity: 0.7;
+    transform: scale(1.1) rotate(5deg);
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .no-dice {

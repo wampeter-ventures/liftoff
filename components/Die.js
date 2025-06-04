@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
 function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, className = '', isSelected = false }) {
-    const [isDragging, setIsDragging] = useState(false);
-    
     const renderPips = (value) => {
         const pipConfigs = {
             1: [[2, 2]],
@@ -38,141 +36,49 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
         );
     };
 
-    const handleDragStartEvent = (e) => {
-        if (!draggable || die.placed) return;
+    // Desktop drag handlers - these work perfectly and include visual feedback
+    const handleDragStart = (e) => {
+        console.log('🎯 Die handleDragStart called:', { die: die.value, draggable, placed: die.placed });
+        
+        if (!draggable || die.placed) {
+            console.log('❌ Die drag prevented:', { draggable, placed: die.placed });
+            e.preventDefault();
+            return;
+        }
+        
+        console.log('✅ Die drag starting, calling onDragStart prop');
         if (onDragStart) {
-            onDragStart(e, die);
+            onDragStart(e, die);  // This calls DiceRoll's handleDragStart which adds .dragging class and sets dataTransfer
+        } else {
+            console.log('❌ No onDragStart prop provided!');
         }
     };
 
-    const handleDragEndEvent = (e) => {
+    const handleDragEnd = (e) => {
+        console.log('🏁 Die handleDragEnd called');
         if (onDragEnd) {
-            onDragEnd(e);
+            onDragEnd(e);  // This calls DiceRoll's handleDragEnd which removes .dragging class
+        } else {
+            console.log('❌ No onDragEnd prop provided!');
         }
     };
 
+    // Simple touch handlers that don't interfere with clicks
     const handleTouchStart = (e) => {
+        // Only add minimal data, don't prevent anything
         if (!draggable || die.placed) return;
-        
-        const touch = e.touches[0];
-        
-        // Store touch data for drag detection
-        e.currentTarget.touchStartData = {
-            startX: touch.clientX,
-            startY: touch.clientY,
-            startTime: Date.now(),
-            moved: false
-        };
-        
-        // Visual feedback - make it more visible but keep the die visible
-        e.currentTarget.style.transform = 'scale(1.15)';
-        e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-        e.currentTarget.style.zIndex = '100';
-    };
-
-    const handleTouchMove = (e) => {
-        if (!draggable || die.placed) return;
-        
-        const touch = e.touches[0];
-        const touchData = e.currentTarget.touchStartData;
-        
-        if (touchData) {
-            const deltaX = Math.abs(touch.clientX - touchData.startX);
-            const deltaY = Math.abs(touch.clientY - touchData.startY);
-            
-            // If moved more than 15px, consider it a drag
-            if (deltaX > 15 || deltaY > 15) {
-                touchData.moved = true;
-                setIsDragging(true);
-                
-                // Enhance visual feedback for drag
-                e.currentTarget.style.opacity = '0.8';
-                
-                // Prevent scrolling during drag
-                e.preventDefault();
-            }
-        }
+        e.currentTarget.touchData = { startTime: Date.now() };
     };
 
     const handleTouchEnd = (e) => {
-        if (!draggable || die.placed) return;
-        
-        const touchData = e.currentTarget.touchStartData;
-        
-        // Reset visual styles
-        e.currentTarget.style.transform = '';
-        e.currentTarget.style.boxShadow = '';
-        e.currentTarget.style.zIndex = '';
-        e.currentTarget.style.opacity = '';
-        
-        if (touchData) {
-            const touch = e.changedTouches[0];
-            const timeDiff = Date.now() - touchData.startTime;
-            
-            if (touchData.moved && timeDiff > 100) {
-                // This was a drag - find what's under the touch point
-                const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-                
-                if (elementBelow) {
-                    // Look for drop targets
-                    let dropTarget = elementBelow;
-                    let maxAttempts = 5; // Prevent infinite loops
-                    
-                    while (dropTarget && maxAttempts > 0) {
-                        if (dropTarget.dataset && dropTarget.dataset.position) {
-                            // Found a grid slot - trigger standard drop handling
-                            const fakeEvent = {
-                                preventDefault: () => {},
-                                dataTransfer: {
-                                    getData: () => JSON.stringify(die)
-                                }
-                            };
-                            
-                            // Find and call the drop handler
-                            if (dropTarget.ondrop) {
-                                dropTarget.ondrop(fakeEvent);
-                            } else {
-                                // Dispatch a regular drop event
-                                const dropEvent = new DragEvent('drop', {
-                                    bubbles: true,
-                                    cancelable: true
-                                });
-                                Object.defineProperty(dropEvent, 'dataTransfer', {
-                                    value: {
-                                        getData: () => JSON.stringify(die)
-                                    }
-                                });
-                                dropTarget.dispatchEvent(dropEvent);
-                            }
-                            break;
-                        } else if (dropTarget.classList && dropTarget.classList.contains('fire-drop-zone')) {
-                            // Found fire zone - trigger click handler
-                            if (dropTarget.onclick) {
-                                dropTarget.onclick(e);
-                            }
-                            break;
-                        }
-                        
-                        dropTarget = dropTarget.parentElement;
-                        maxAttempts--;
-                    }
-                }
-            } else {
-                // This was a tap/click - call the click handler
-                if (onClick) {
-                    onClick(e);
-                }
-            }
-            
-            // Clean up
-            delete e.currentTarget.touchStartData;
+        // Clean up without interfering
+        if (e.currentTarget.touchData) {
+            delete e.currentTarget.touchData;
         }
-        
-        setIsDragging(false);
     };
 
+    // Regular click handler - this handles mobile taps and desktop clicks
     const handleClick = (e) => {
-        // Always handle clicks for desktop
         if (onClick) {
             onClick(e);
         }
@@ -185,12 +91,18 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
         <div
             className={`die ${className} ${die.placed ? 'placed' : ''} ${isBooster ? 'booster-die' : ''} ${isFireDie ? 'fire-die' : ''} ${isSelected ? 'selected' : ''} player-${die.playerId}`}
             draggable={draggable && !die.placed}
-            onDragStart={handleDragStartEvent}
-            onDragEnd={handleDragEndEvent}
-            onClick={handleClick}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
             onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onClick={() => {
+                console.log('🖱️ Die clicked:', { die: die.value, draggable, placed: die.placed });
+                if (onClick) onClick(die);
+            }}
+            style={{
+                cursor: draggable && !die.placed ? 'grab' : (onClick ? 'pointer' : 'default'),
+                opacity: die.placed ? 0.5 : 1
+            }}
             data-value={die.value}
             data-player={die.playerName}
         >
