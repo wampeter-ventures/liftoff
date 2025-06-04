@@ -40,14 +40,12 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
 
     const handleDragStartEvent = (e) => {
         if (!draggable || die.placed) return;
-        setIsDragging(true);
         if (onDragStart) {
             onDragStart(e, die);
         }
     };
 
     const handleDragEndEvent = (e) => {
-        setIsDragging(false);
         if (onDragEnd) {
             onDragEnd(e);
         }
@@ -55,106 +53,127 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
 
     const handleTouchStart = (e) => {
         if (!draggable || die.placed) return;
-        setIsDragging(true);
         
-        // Store initial touch position for mobile drag detection
         const touch = e.touches[0];
-        e.target.dataset.touchStartX = touch.clientX;
-        e.target.dataset.touchStartY = touch.clientY;
-        e.target.dataset.hasMoved = 'false';
         
-        // Add visual feedback for mobile
-        e.target.style.transform = 'scale(1.1)';
-        e.target.style.opacity = '0.8';
-        e.target.style.zIndex = '1000';
+        // Store touch data for drag detection
+        e.currentTarget.touchStartData = {
+            startX: touch.clientX,
+            startY: touch.clientY,
+            startTime: Date.now(),
+            moved: false
+        };
+        
+        // Visual feedback - make it more visible but keep the die visible
+        e.currentTarget.style.transform = 'scale(1.15)';
+        e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+        e.currentTarget.style.zIndex = '100';
     };
 
     const handleTouchMove = (e) => {
-        if (!isDragging) return;
+        if (!draggable || die.placed) return;
         
         const touch = e.touches[0];
-        const startX = parseFloat(e.target.dataset.touchStartX || '0');
-        const startY = parseFloat(e.target.dataset.touchStartY || '0');
+        const touchData = e.currentTarget.touchStartData;
         
-        const deltaX = Math.abs(touch.clientX - startX);
-        const deltaY = Math.abs(touch.clientY - startY);
-        
-        // If user has moved more than 10px, mark as dragging
-        if (deltaX > 10 || deltaY > 10) {
-            e.target.dataset.hasMoved = 'true';
+        if (touchData) {
+            const deltaX = Math.abs(touch.clientX - touchData.startX);
+            const deltaY = Math.abs(touch.clientY - touchData.startY);
+            
+            // If moved more than 15px, consider it a drag
+            if (deltaX > 15 || deltaY > 15) {
+                touchData.moved = true;
+                setIsDragging(true);
+                
+                // Enhance visual feedback for drag
+                e.currentTarget.style.opacity = '0.8';
+                
+                // Prevent scrolling during drag
+                e.preventDefault();
+            }
         }
-        
-        // Prevent scrolling while dragging
-        e.preventDefault();
     };
 
     const handleTouchEnd = (e) => {
-        if (!isDragging) return;
+        if (!draggable || die.placed) return;
         
-        // Reset visual state
-        e.target.style.transform = '';
-        e.target.style.opacity = '';
-        e.target.style.zIndex = '';
+        const touchData = e.currentTarget.touchStartData;
         
-        const hasMoved = e.target.dataset.hasMoved === 'true';
+        // Reset visual styles
+        e.currentTarget.style.transform = '';
+        e.currentTarget.style.boxShadow = '';
+        e.currentTarget.style.zIndex = '';
+        e.currentTarget.style.opacity = '';
         
-        if (hasMoved) {
-            // This was a drag operation
+        if (touchData) {
             const touch = e.changedTouches[0];
-            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const timeDiff = Date.now() - touchData.startTime;
             
-            if (elementBelow) {
-                // Find the drop target by traversing up the DOM
-                let dropTarget = elementBelow;
-                while (dropTarget && 
-                       !dropTarget.dataset.position && 
-                       !dropTarget.classList.contains('fire-drop-zone') &&
-                       dropTarget !== document.body) {
-                    dropTarget = dropTarget.parentElement;
-                }
+            if (touchData.moved && timeDiff > 100) {
+                // This was a drag - find what's under the touch point
+                const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
                 
-                if (dropTarget && dropTarget.dataset.position) {
-                    // Create a synthetic drop event for the grid slot
-                    const mockEvent = {
-                        preventDefault: () => {},
-                        dataTransfer: {
-                            getData: () => JSON.stringify(die)
-                        }
-                    };
+                if (elementBelow) {
+                    // Look for drop targets
+                    let dropTarget = elementBelow;
+                    let maxAttempts = 5; // Prevent infinite loops
                     
-                    // Trigger the drop event on the grid slot
-                    const dropEvent = new CustomEvent('drop', {
-                        bubbles: true,
-                        detail: { mockEvent, die, position: dropTarget.dataset.position }
-                    });
-                    dropTarget.dispatchEvent(dropEvent);
-                } else if (dropTarget && dropTarget.classList.contains('fire-drop-zone')) {
-                    // Handle fire drop
-                    const fireDropEvent = new CustomEvent('fireDropMobile', {
-                        bubbles: true,
-                        detail: { die }
-                    });
-                    dropTarget.dispatchEvent(fireDropEvent);
+                    while (dropTarget && maxAttempts > 0) {
+                        if (dropTarget.dataset && dropTarget.dataset.position) {
+                            // Found a grid slot - trigger standard drop handling
+                            const fakeEvent = {
+                                preventDefault: () => {},
+                                dataTransfer: {
+                                    getData: () => JSON.stringify(die)
+                                }
+                            };
+                            
+                            // Find and call the drop handler
+                            if (dropTarget.ondrop) {
+                                dropTarget.ondrop(fakeEvent);
+                            } else {
+                                // Dispatch a regular drop event
+                                const dropEvent = new DragEvent('drop', {
+                                    bubbles: true,
+                                    cancelable: true
+                                });
+                                Object.defineProperty(dropEvent, 'dataTransfer', {
+                                    value: {
+                                        getData: () => JSON.stringify(die)
+                                    }
+                                });
+                                dropTarget.dispatchEvent(dropEvent);
+                            }
+                            break;
+                        } else if (dropTarget.classList && dropTarget.classList.contains('fire-drop-zone')) {
+                            // Found fire zone - trigger click handler
+                            if (dropTarget.onclick) {
+                                dropTarget.onclick(e);
+                            }
+                            break;
+                        }
+                        
+                        dropTarget = dropTarget.parentElement;
+                        maxAttempts--;
+                    }
+                }
+            } else {
+                // This was a tap/click - call the click handler
+                if (onClick) {
+                    onClick(e);
                 }
             }
-        } else {
-            // This was a tap, treat as click
-            if (onClick) {
-                onClick(e);
-            }
+            
+            // Clean up
+            delete e.currentTarget.touchStartData;
         }
         
         setIsDragging(false);
-        
-        // Clean up
-        delete e.target.dataset.touchStartX;
-        delete e.target.dataset.touchStartY;
-        delete e.target.dataset.hasMoved;
     };
 
     const handleClick = (e) => {
-        // Only handle click if it wasn't a drag operation
-        if (!isDragging && onClick) {
+        // Always handle clicks for desktop
+        if (onClick) {
             onClick(e);
         }
     };
@@ -174,7 +193,6 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
             onTouchEnd={handleTouchEnd}
             data-value={die.value}
             data-player={die.playerName}
-            style={{ touchAction: 'none' }} // Prevent default touch behaviors
         >
             {renderPips(die.value)}
         </div>

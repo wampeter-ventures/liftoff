@@ -359,9 +359,8 @@ export default function Home() {
         }
     };
 
-    const resetGame = () => {
-        // Clear ALL game state
-        setGameState("setup");
+    const clearAllGameState = () => {
+        // Clear ALL game state variables
         setPlayers([]);
         setCurrentPlayerIndex(0);
         setRocketGrid({});
@@ -387,6 +386,16 @@ export default function Home() {
             }
         }
         setRocketGrid(grid);
+    };
+
+    const resetGame = () => {
+        clearAllGameState();
+        setGameState("setup");
+    };
+
+    const goToWelcome = () => {
+        clearAllGameState();
+        setGameState("welcome");
     };
 
     const selectDie = (die) => {
@@ -417,28 +426,6 @@ export default function Home() {
         setSelectedDie(null); // Clear selection after sending to fire
         return true;
     };
-
-    // Handle mobile fire drop events
-    useEffect(() => {
-        const handleMobileFireDrop = (e) => {
-            if (e.detail && e.detail.die) {
-                sendToFire(e.detail.die);
-            }
-        };
-
-        // Add event listener to fire drop zone
-        const fireDropZone = document.querySelector('.fire-drop-zone');
-        if (fireDropZone) {
-            fireDropZone.addEventListener('fireDropMobile', handleMobileFireDrop);
-        }
-
-        return () => {
-            // Cleanup
-            if (fireDropZone) {
-                fireDropZone.removeEventListener('fireDropMobile', handleMobileFireDrop);
-            }
-        };
-    }, [firePile]); // Re-run when fire pile changes
 
     // Starry Background Component
     const StarryBackground = () => (
@@ -739,7 +726,7 @@ export default function Home() {
                     <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
                         <GameSetup 
                             onStartGame={startGame} 
-                            onBack={() => setGameState("welcome")}
+                            onBack={goToWelcome}
                         />
                     </div>
                 </div>

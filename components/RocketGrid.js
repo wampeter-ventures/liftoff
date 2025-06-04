@@ -138,28 +138,6 @@ function RocketGrid({
         }
     };
 
-    // Handle mobile touch drop events
-    useEffect(() => {
-        const handleMobileDrop = (e) => {
-            if (e.detail && e.detail.die && e.detail.position) {
-                onDropDie(e.detail.die, e.detail.position);
-            }
-        };
-
-        // Add event listeners to all grid slots
-        const gridSlots = document.querySelectorAll('[data-position]');
-        gridSlots.forEach(slot => {
-            slot.addEventListener('drop', handleMobileDrop);
-        });
-
-        return () => {
-            // Cleanup
-            gridSlots.forEach(slot => {
-                slot.removeEventListener('drop', handleMobileDrop);
-            });
-        };
-    }, [onDropDie, grid]); // Re-run when grid changes
-
     const renderSlot = (pos, label) => {
         const die = grid[pos];
         const canDrop = validPositions.has(pos);
