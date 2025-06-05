@@ -6,9 +6,13 @@
 
 - oops, new bug introduced, i think when we did the click-to-place: now dragging and dropping on mobile isn't working. fix!
 
+- Clear the game state when you go back to the setup screen. Make sure it really clears. right now it doesnt.
+
+
 - When the 5th row is built, we still need room for a 6th row for the 6s (the boosters)
 
-- Clear the game state when you go back to the setup screen. Make sure it really clears. right now it doesnt.
+- 💨 FIZZLE! FAIL! 💥 wait on this header til the dice are done rolling
+
 
 - on a failed launch it should not give you your dice back! it should put one of hte dice into the fire, then advance to the next person's turn. check that is happening
 

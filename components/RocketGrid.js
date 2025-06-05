@@ -114,21 +114,28 @@ function RocketGrid({
     }, [grid, rocketHeight, boosterRowLocked]);
 
     const handleDragOver = (e, pos) => {
+        console.log('🎯 RocketGrid handleDragOver:', { pos, canDrop: validPositions.has(pos) });
         e.preventDefault();
         setDragOverPosition(pos);
         e.dataTransfer.dropEffect = validPositions.has(pos) ? "move" : "none";
     };
 
-    const clearDrag = () => setDragOverPosition(null);
+    const clearDrag = () => {
+        console.log('🧹 RocketGrid clearDrag called');
+        setDragOverPosition(null);
+    };
 
     const handleDrop = (e, pos) => {
+        console.log('📥 RocketGrid handleDrop called:', { pos });
         e.preventDefault();
         clearDrag();
         try {
             const die = JSON.parse(e.dataTransfer.getData("text/plain"));
+            console.log('✅ RocketGrid parsed die data:', die);
+            console.log('📞 RocketGrid calling onDropDie:', { die, pos });
             onDropDie(die, pos);
         } catch (err) {
-            console.error("Bad drop payload", err);
+            console.error("❌ RocketGrid bad drop payload:", err);
         }
     };
 
