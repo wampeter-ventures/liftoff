@@ -58,7 +58,7 @@ export default function Home() {
 
     useEffect(() => {
         const grid = {};
-        for (let row = 1; row <= 5; row++) {
+        for (let row = 1; row <= 6; row++) {
             for (let col = 1; col <= row; col++) {
                 const pos = `${row}-${col}`;
                 grid[pos] = null;
@@ -211,7 +211,7 @@ export default function Home() {
             showModal(
                 'warning',
                 'Action Required',
-                'You must place at least one die onto the ⚙️ Rocket Body (1-5) or use it as 🔋 a Booster (6), or send one die to the fire 🔥.'
+                'You must place at least one die onto the ⚙️ Rocket Body (1-6) or use it as 🔋 a Booster (6), or send one die to the fire 🔥.'
             );
             return;
         }
@@ -379,7 +379,7 @@ export default function Home() {
         
         // Reset the rocket grid to empty
         const grid = {};
-        for (let row = 1; row <= 5; row++) {
+        for (let row = 1; row <= 6; row++) {
             for (let col = 1; col <= row; col++) {
                 const pos = `${row}-${col}`;
                 grid[pos] = null;

@@ -76,7 +76,7 @@ function RocketGrid({
                 })
                 .find((row) => row !== null);
 
-        for (let row = 1; row <= 5; row++) {
+        for (let row = 1; row <= 6; row++) {
             for (let col = 1; col <= row; col++) {
                 const pos = `${row}-${col}`;
                 // If boosters are locked, only display labels for the booster row
@@ -215,7 +215,7 @@ function RocketGrid({
                 </div>
                 
                 <div className="rocket-grid">
-                    {[1, 2, 3, 4, 5]
+                    {[1, 2, 3, 4, 5, 6]
                         .filter((row) => {
                             // Only hide rows if there is actually a 6 (booster) placed
                             const boosters = Object.keys(grid)
