@@ -1,5 +1,18 @@
 # Liftoff Game - Development Roadmap
 
+New things:
+
+- player setup: Remove "Number of Players" dropdown, and just have it be a list of Players, and a + button to add more rows and a delete button to delete a row
+
+
+- haptics for dice rolling and placing into body and into fire
+
+
+
+
+
+-----
+
 ## 🚨 Critical Issues (P0 - Immediate)
 
 ### #001 - Mobile Drag and Drop System Failure
@@ -29,69 +42,38 @@
 
 ### #002 - Game State Persistence and Reset Issues
 
+**Status:** ✅ RESOLVED  
 **Description:** When players navigate back to setup or start a new game, clear the previous game data BUT retain the original/previous player count, player names and dice counts at the setup screen, so that they can replay the game with the same criteria.
 
+**Implementation Summary:**
+- Added `originalPlayerSetup` state to track initial player configuration
+- Modified `startGame()` to store original setup data
+- Created `resetGamePreservingSetup()` function for game resets that maintain player data
+- Updated `GameSetup` component to accept and use preserved player configuration
+- Modified back button and restart functions to use setup-preserving reset
 
 **Acceptance Criteria:**
-- [ ] Game state reset when returning to setup screen
-- [ ] All game state variables properly initialized to default values
-- [ ] Rocket grid visually clears all dice positions
-- [ ] Player configuration arrays reset to original choice (player count, player names and dice count)
-- [ ] Fire pile counter returns to 0
-- [ ] Current dice roll array emptied
-- [ ] Turn tracking reset to player 1
-- [ ] Booster lock state reset to false
+- [x] Game state reset when returning to setup screen
+- [x] All game state variables properly initialized to default values
+- [x] Rocket grid visually clears all dice positions
+- [x] Player configuration arrays reset to original choice (player count, player names and dice count)
+- [x] Fire pile counter returns to 0
+- [x] Current dice roll array emptied
+- [x] Turn tracking reset to player 1
+- [x] Booster lock state reset to false
 
+**Testing Notes:**
+- Setup screen now pre-populates with previous player configuration when returning from game
+- Going to welcome screen clears preserved setup (fresh start)
+- All game state properly resets while preserving original player setup
 
 ---
 
-## 🎮 Core Gameplay (P1 - High Priority)
 
-### #003 - Rocket Layout Accommodation for Boosters
-**Status:** Visual Bug  
-**Impact:** Layout breaks when transitioning to booster phase  
-**Description:** When players fill all 5 body rows, there's insufficient visual space allocated for the 6th row where booster dice (6s) must be placed, causing layout overflow and confusion.
-
-**Acceptance Criteria:**
-- [ ] Dynamic space allocation based on rocket progression
-- [ ] 6th row space reserved and clearly indicated for booster dice
-- [ ] Visual distinction between body rows (1-5) and booster row (6)
-- [ ] Smooth layout transitions as rocket grows
-- [ ] Proper spacing maintains usability on mobile devices
-- [ ] Grid remains centered and proportional at all stages
-
-**Technical Approach:**
-- Implement dynamic CSS grid sizing
-- Add visual indicators for booster zone
-- Consider collapsible/expandable row system
-
----
-
-### #004 - Failed Launch Consequences and Balance
-**Status:** Game Balance Issue  
-**Impact:** Game lacks proper risk/reward balance  
-**Description:** Currently, failed launches return all dice to the player, making failure inconsequential. This undermines the tension and strategy that should define the booster rolling phase.
-
-**Current vs. Desired Behavior:**
-- **Current:** Failed launch → all booster dice returned to player
-- **Desired:** Failed launch → one booster die lost to fire pile, rest remain as boosters
-
-**Acceptance Criteria:**
-- [ ] On failed launch, randomly select one booster die for fire pile
-- [ ] Remaining booster dice stay in position for next attempt
-- [ ] Turn advances to next player after processing failure
-- [ ] Clear messaging explains the consequence to players
-- [ ] Fire pile counter increments appropriately
-- [ ] Statistics track failed launches separately from successful ones
-
-**Game Design Rationale:**
-This change increases strategic tension by making booster accumulation risky. Players must balance between adding more boosters (higher success chance) vs. risking more dice to fire.
-
----
 
 ### #005 - End Game State Detection and Flow
 **Status:** Game Flow Bug  
-**Impact:** Players get stuck when all dice are exhausted  
+**Impact:** Players get stuck when all dice from all players are exhausted  
 **Description:** When all players have zero dice remaining, the game doesn't automatically detect this condition or guide players toward resolution, leading to confusion about how to proceed.
 
 **Scenarios to Handle:**
@@ -137,32 +119,6 @@ This change increases strategic tension by making booster accumulation risky. Pl
 ---
 
 ## 🎨 User Experience (P1-P2)
-
-### #007 - Comprehensive Help and Tutorial System
-**Status:** Missing Feature  
-**Impact:** New players cannot learn the game independently  
-**Description:** No in-game instructions exist, creating a barrier to entry for new players who want to understand rules and strategies.
-
-**Content Requirements:**
-- Basic rules explanation
-- Visual examples of valid/invalid moves
-- Strategy tips and common patterns
-- Keyboard shortcuts and controls
-- Troubleshooting for common issues
-
-**Acceptance Criteria:**
-- [ ] Help button prominently placed (top-right corner)
-- [ ] Slide-out drawer or modal with tabbed sections
-- [ ] Interactive examples showing valid dice placement
-- [ ] Rules explanation with visual diagrams
-- [ ] Mobile-optimized help content
-- [ ] Searchable help content for advanced users
-- [ ] "First time playing?" prompt for new users
-
-**Implementation Approach:**
-- Use progressive disclosure (basic → advanced)
-- Include animated examples where helpful
-- Make dismissible but easily re-accessible
 
 ---
 
@@ -248,129 +204,6 @@ This change increases strategic tension by making booster accumulation risky. Pl
 - Level 3: Interplanetary Mission (excellent execution)
 - Level 4+: Deep Space Explorer (exceptional performance)
 
----
-
-## 🔧 Technical Infrastructure (P2-P3)
-
-### #011 - Application Error Boundaries and Recovery
-**Status:** Stability Enhancement  
-**Impact:** App crashes provide poor user experience  
-**Description:** No error handling exists for React component failures, leading to white screen crashes instead of graceful degradation.
-
-**Acceptance Criteria:**
-- [ ] Error boundaries around major component trees
-- [ ] Graceful fallback UI with recovery options
-- [ ] Error reporting for debugging (non-PII)
-- [ ] Local storage recovery for game state when possible
-- [ ] User-friendly error messages with action steps
-- [ ] Automatic error reporting with context
-
-**Error Boundary Locations:**
-- Main game component
-- Dice rolling system
-- Rocket grid rendering
-- Setup and results screens
-
----
-
-### #012 - State Management Architecture Review
-**Status:** Technical Debt  
-**Impact:** Complex prop drilling makes maintenance difficult  
-**Description:** Current state management uses complex prop passing through multiple component layers, making debugging and feature addition challenging.
-
-**Evaluation Criteria:**
-- Current prop drilling depth and complexity
-- Frequency of state updates and re-renders
-- Component coupling and testability
-- Bundle size impact
-
-**Acceptance Criteria:**
-- [ ] Evaluate Redux Toolkit vs. Zustand vs. enhanced Context
-- [ ] Create proof-of-concept with chosen solution
-- [ ] Migrate component tree to centralized state management
-- [ ] Maintain all existing functionality during migration
-- [ ] Improve component testability and isolation
-- [ ] Document state management patterns for future development
-
----
-
-### #013 - Comprehensive Test Coverage
-**Status:** Quality Assurance Gap  
-**Impact:** Risk of regression bugs in core functionality  
-**Description:** No automated testing exists for game logic or component behavior, making confident iteration difficult.
-
-**Test Coverage Priorities:**
-1. Game logic functions (highest ROI)
-2. Component rendering and basic interactions
-3. State management and data flow
-4. Integration testing for complete game flows
-
-**Acceptance Criteria:**
-- [ ] Jest testing framework setup with appropriate configurations
-- [ ] Unit tests for all `gameLogic.js` functions with edge cases
-- [ ] React Testing Library tests for critical component interactions
-- [ ] Integration tests for complete game scenarios
-- [ ] CI/CD pipeline integration with test requirements
-- [ ] Test coverage reporting and minimum thresholds
-- [ ] Mock strategies for complex dependencies
-
-**Priority Test Cases:**
-- `isValidPlacement()` with all rule combinations
-- State transitions between game phases
-- End-game condition detection
-- Mobile touch interaction handling
-
----
-
-## 📱 Mobile and Accessibility (P2)
-
-### #014 - Mobile Device Compatibility Audit
-**Status:** Platform Support Gap  
-**Impact:** Unknown issues on various mobile platforms  
-**Description:** Systematic testing on different mobile devices and browsers hasn't been conducted, potentially leaving user segments unable to play.
-
-**Device Matrix Testing:**
-- iOS Safari (iPhone, iPad)
-- Android Chrome (phone, tablet)
-- Mobile Firefox, Edge
-- Various screen sizes and orientations
-
-**Acceptance Criteria:**
-- [ ] Complete functional testing on target device matrix
-- [ ] Document and fix layout issues on small screens
-- [ ] Optimize touch targets for mobile interaction patterns
-- [ ] Test landscape vs. portrait orientations
-- [ ] Verify performance on older/slower devices
-- [ ] Address platform-specific interaction patterns
-- [ ] PWA functionality testing (add to home screen, offline capability)
-
-**Performance Requirements:**
-- < 3 second load time on 3G
-- Smooth animations at 30+ FPS
-- Responsive touch feedback (< 100ms delay)
-
----
-
-### #015 - Progressive Web App Enhancement
-**Status:** Platform Integration  
-**Impact:** Suboptimal mobile experience and discoverability  
-**Description:** While basic PWA setup exists, advanced features like offline play, push notifications, and native-like experience aren't fully implemented.
-
-**PWA Feature Audit:**
-- [x] Web app manifest
-- [x] Basic service worker
-- [ ] Offline game play capability
-- [ ] Push notifications for multiplayer
-- [ ] Native sharing integration
-- [ ] App store optimization
-
-**Acceptance Criteria:**
-- [ ] Full offline game functionality (local multiplayer)
-- [ ] Native sharing API integration for results
-- [ ] App store submission readiness (iOS, Android)
-- [ ] Push notification system for turn-based remote play
-- [ ] Background sync for game state
-- [ ] Platform-specific optimizations (iOS notch, Android gestures)
 
 ---
 
@@ -604,33 +437,8 @@ This change increases strategic tension by making booster accumulation risky. Pl
 
 ---
 
-## 🏗️ Development Process
-
-### Priority Classification System
-- **P0 (Critical):** Blocks core functionality, requires immediate attention
-- **P1 (High):** Significantly impacts user experience, schedule for next sprint
-- **P2 (Medium):** Important improvements, plan for upcoming releases  
-- **P3 (Low):** Quality of life enhancements, add to product backlog
-- **P4 (Future):** Long-term vision items, requires research phase
-
-### Definition of Done Checklist
-Each issue completion must satisfy:
-- [ ] **Implementation:** Code complete and functional
-- [ ] **Testing:** Manual testing completed on desktop and mobile
-- [ ] **Review:** Code review completed by second developer
-- [ ] **Documentation:** Technical documentation updated if needed
-- [ ] **Regression:** No existing functionality broken
-- [ ] **Performance:** No significant performance degradation
-- [ ] **Accessibility:** Basic accessibility requirements met
-
-### Issue Lifecycle
-1. **Research** → 2. **Design** → 3. **Implementation** → 4. **Testing** → 5. **Review** → 6. **Deployment** → 7. **Monitoring**
-
----
-
-*Last Updated: [Current Date]*  
-*Total Issues: 23*  
-*P0 Issues: 2 | P1 Issues: 4 | P2 Issues: 5 | P3 Issues: 8 | P4 Issues: 4*
 
 
+Recent improvements, running log:
 
+- 

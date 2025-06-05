@@ -98,6 +98,12 @@
   -webkit-backface-visibility: hidden;
 }
 
+/* Simple drawer width constraint */
+.constrain-drawer-width {
+  max-width: 500px !important;
+  margin: 0 auto !important;
+}
+
 /* Ensure crisp text rendering in drawers and modals */
 .drawer-content {
   text-rendering: optimizeLegibility;
