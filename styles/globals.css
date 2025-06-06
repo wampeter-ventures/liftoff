@@ -563,6 +563,7 @@ body {
     z-index: 1000;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     transition: none; /* Disable transitions during drag for responsiveness */
+    pointer-events: none; /* Allow touch detection of drop targets */
 }
 
 .die {

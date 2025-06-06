@@ -97,6 +97,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
             
             // Add visual feedback
             e.target.classList.add('dragging');
+            e.target.style.pointerEvents = 'none';
             
             // Apply live transform to follow finger
             const offsetX = touch.clientX - dragStartPos.x;
@@ -156,6 +157,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
             e.target.style.transform = '';
             e.target.style.zIndex = '';
             e.target.classList.remove('dragging');
+            e.target.style.pointerEvents = '';
 
             // Clear drag-over states
             document.querySelectorAll('.drag-over').forEach(el => {
