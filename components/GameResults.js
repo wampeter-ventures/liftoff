@@ -215,9 +215,9 @@ function GameResults({
             <Card
                 className={`w-full max-w-md shadow-xl dark:bg-slate-800 mx-auto overflow-hidden border-transparent`}
             >
-                <CardHeader className={`text-center p-4 sm:p-6 ${destination.bgColor}`}>
-                    <div className="flex justify-center mb-3 sm:mb-4">{destination.icon}</div>
-                    <CardTitle className={`text-lg sm:text-xl font-bold tracking-tight ${destination.textColor}`}>
+                <CardHeader className={`text-center p-4 sm:p-6 space-y-2 sm:space-y-3 ${destination.bgColor}`}>
+                    <div className="flex justify-center mb-2 sm:mb-4">{destination.icon}</div>
+                    <CardTitle className={`text-base sm:text-xl font-bold tracking-tight ${destination.textColor}`}>
                         {destination.name}
                     </CardTitle>
                     <CardDescription className={`text-xs sm:text-sm mt-1 ${destination.textColor} opacity-90 px-2 leading-relaxed`}>
