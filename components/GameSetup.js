@@ -22,7 +22,6 @@ import {
   AlertTriangle,
   Sparkles,
   Bomb,
-  ArrowLeft,
   HelpCircle,
   Settings as SettingsIcon,
   BookOpenText,
@@ -160,7 +159,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
     <div className="w-full max-w-md mx-auto bg-card dark:bg-slate-800 rounded-lg shadow-xl mt-4">
       <div className="flex items-center justify-between p-3 border-b dark:border-slate-700">
         <Button variant="ghost" size="icon" className="text-slate-600 dark:text-slate-400" onClick={onBack}>
-          <ArrowLeft className="h-5 w-5" />
+          <span className="text-lg font-bold">&lt;</span>
           <span className="sr-only">Back</span>
         </Button>
         <h1 
