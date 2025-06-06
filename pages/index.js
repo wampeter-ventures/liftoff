@@ -6,7 +6,6 @@ import GameSetup, { HelpDrawer } from '../components/GameSetup';
 import GameResults from '../components/GameResults';
 import IntroSequence from '../components/IntroSequence';
 import GameModal from '../components/GameModal';
-import { HelpDrawer } from '../components/GameSetup';
 import {
     Star,
     Flame,
