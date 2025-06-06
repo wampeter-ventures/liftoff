@@ -215,17 +215,17 @@ function GameResults({
             <Card
                 className={`w-full max-w-md shadow-xl dark:bg-slate-800 mx-auto overflow-hidden border-transparent`}
             >
-                <CardHeader className={`text-center p-4 sm:p-6 ${destination.bgColor}`}>
+                <CardHeader className={`text-center p-4 sm:p-6 pb-6 sm:pb-8 ${destination.bgColor}`}>
                     <div className="flex justify-center mb-3 sm:mb-4">{destination.icon}</div>
                     <CardTitle className={`text-lg sm:text-xl font-bold tracking-tight ${destination.textColor}`}>
                         {destination.name}
                     </CardTitle>
-                    <CardDescription className={`text-xs sm:text-sm mt-1 ${destination.textColor} opacity-90 px-2 leading-relaxed`}>
+                    <CardDescription className={`text-xs sm:text-sm mt-2 ${destination.textColor} opacity-90 px-2 leading-relaxed`}>
                         {destination.description}
                     </CardDescription>
                 </CardHeader>
 
-                <CardContent className="p-4 sm:p-5 space-y-3 sm:space-y-4">
+                <CardContent className="p-4 sm:p-5 space-y-3 sm:space-y-4 pt-6 sm:pt-8">
                     <div className="grid grid-cols-2 gap-3 sm:gap-4 text-center">
                         <div className="p-2 sm:p-3 bg-slate-100 dark:bg-slate-700/50 rounded-md">
                             <div className="flex items-center justify-center text-sky-600 dark:text-sky-400">
@@ -252,7 +252,7 @@ function GameResults({
                     </div>
                     {renderRocketSummary()}
                 </CardContent>
-                <CardFooter className="p-4 sm:p-5 border-t dark:border-slate-700/50">
+                <CardFooter className="p-4 sm:p-5 pt-6 sm:pt-8 border-t dark:border-slate-700/50">
                     <Button
                         size="lg"
                         onClick={onRestart}

@@ -336,7 +336,7 @@ export default function Home() {
         if (hasSuccessfulBooster) {
             showModal(
                 'launch',
-                '🎲 CMON SIXES, WE NEED A SIX...',
+                '🎲 CMON SIXES...',
                 'The fate of your rocket hangs in the balance...',
                 { boosterRolls, success: true }
             );
@@ -356,7 +356,7 @@ export default function Home() {
             setBoosterRowLocked(false);
             showModal(
                 'launch',
-                '🎲 CMON SIXES, WE NEED A SIX...',
+                '🎲 CMON SIXES...',
                 'The fate of your rocket hangs in the balance...',
                 { boosterRolls, success: false }
             );
@@ -783,28 +783,51 @@ export default function Home() {
                             >
                                 ←
                             </button>
-                            <div className="players-compact">
-                                {players.map((player, index) => (
-                                    <div
-                                        key={player.name || index}
-                                        className={`player-compact ${
-                                            index === currentPlayerIndex
-                                                ? "current"
-                                                : ""
-                                        } ${player.diceCount === 0 ? "eliminated" : ""}`}
-                                    >
-                                        <div className="player-name-short">
-                                            {player.name.startsWith("Player ")
-                                                ? `P${index + 1}`
-                                                : player.name.length <= 3
-                                                  ? player.name
-                                                  : player.name.substring(0, 3)}
-                                        </div>
-                                        <div className="dice-count-small">
-                                            {player.diceCount}🎲
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="players-compact-container">
+                                <div className="players-compact">
+                                    {(() => {
+                                        // Filter out eliminated players (0 dice)
+                                        const activePlayers = players.filter(player => player.diceCount > 0);
+                                        const activeCurrentIndex = activePlayers.findIndex((_, index) => 
+                                            players.indexOf(activePlayers[index]) === currentPlayerIndex
+                                        );
+                                        
+                                        // Calculate which players to show (center around current player)
+                                        const maxVisible = 5; // Maximum players to show at once
+                                        let startIndex = Math.max(0, activeCurrentIndex - Math.floor(maxVisible / 2));
+                                        let endIndex = Math.min(activePlayers.length, startIndex + maxVisible);
+                                        
+                                        // Adjust if we're near the end
+                                        if (endIndex - startIndex < maxVisible && activePlayers.length > maxVisible) {
+                                            startIndex = Math.max(0, endIndex - maxVisible);
+                                        }
+                                        
+                                        const visiblePlayers = activePlayers.slice(startIndex, endIndex);
+                                        
+                                        return visiblePlayers.map((player, visIndex) => {
+                                            const originalIndex = players.indexOf(player);
+                                            return (
+                                                <div
+                                                    key={player.name || originalIndex}
+                                                    className={`player-compact ${
+                                                        originalIndex === currentPlayerIndex ? "current" : ""
+                                                    }`}
+                                                >
+                                                    <div className="player-name-short">
+                                                        {player.name.startsWith("Player ")
+                                                            ? `P${originalIndex + 1}`
+                                                            : player.name.length <= 3
+                                                              ? player.name
+                                                              : player.name.substring(0, 3)}
+                                                    </div>
+                                                    <div className="dice-count-small">
+                                                        {player.diceCount}🎲
+                                                    </div>
+                                                </div>
+                                            );
+                                        });
+                                    })()}
+                                </div>
                             </div>
                         </div>
 
