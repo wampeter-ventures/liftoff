@@ -1032,7 +1032,7 @@ export default function Home() {
                         </div>
 
                         <div className="game-board">
-                            <div className="rocket-section">
+                            <div className={`rocket-section ${launchCountdown > 0 ? 'on-top' : ''}`}>
                                 <RocketGrid
                                     grid={rocketGrid}
                                     onDropDie={placeDie}
