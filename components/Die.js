@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, className = '', isSelected = false }) {
     const [isDragging, setIsDragging] = useState(false);
     const [dragStartPos, setDragStartPos] = useState(null);
+    const dragRef = useRef(null);
 
     const renderPips = (value) => {
         const pipConfigs = {
@@ -69,10 +70,11 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
     // Enhanced touch handlers for mobile drag simulation
     const handleTouchStart = (e) => {
         if (!draggable || die.placed) return;
-        
+
         const touch = e.touches[0];
         setDragStartPos({ x: touch.clientX, y: touch.clientY });
         setIsDragging(false);
+        dragRef.current = e.currentTarget;
         
         // Prevent default to avoid scrolling
         e.preventDefault();
@@ -86,24 +88,26 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
         const deltaY = Math.abs(touch.clientY - dragStartPos.y);
         
         // Start dragging if moved more than 10px
+        const dieEl = dragRef.current || e.currentTarget;
+
         if (!isDragging && (deltaX > 10 || deltaY > 10)) {
             setIsDragging(true);
             console.log('📱 Mobile drag started');
-            
+
             // Select the die first (for click-to-place system)
             if (onClick) {
                 onClick(die);
             }
-            
+
             // Add visual feedback
-            e.target.classList.add('dragging');
-            e.target.style.pointerEvents = 'none';
-            
+            dieEl.classList.add('dragging');
+            dieEl.style.pointerEvents = 'none';
+
             // Apply live transform to follow finger
             const offsetX = touch.clientX - dragStartPos.x;
             const offsetY = touch.clientY - dragStartPos.y;
-            e.target.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.1) rotate(5deg)`;
-            e.target.style.zIndex = '1000';
+            dieEl.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.1) rotate(5deg)`;
+            dieEl.style.zIndex = '1000';
             
             // Simulate drag start for desktop compatibility
             if (onDragStart) {
@@ -122,7 +126,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
             // Update position to follow finger
             const offsetX = touch.clientX - dragStartPos.x;
             const offsetY = touch.clientY - dragStartPos.y;
-            e.target.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.1) rotate(5deg)`;
+            dieEl.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.1) rotate(5deg)`;
             
             // Find element under touch point
             const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -150,14 +154,16 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
     const handleTouchEnd = (e) => {
         if (!draggable || die.placed) return;
         
+        const dieEl = dragRef.current || e.currentTarget;
+
         if (isDragging) {
             console.log('📱 Mobile drag ended');
-            
+
             // Clean up visual transforms
-            e.target.style.transform = '';
-            e.target.style.zIndex = '';
-            e.target.classList.remove('dragging');
-            e.target.style.pointerEvents = '';
+            dieEl.style.transform = '';
+            dieEl.style.zIndex = '';
+            dieEl.classList.remove('dragging');
+            dieEl.style.pointerEvents = '';
 
             // Clear drag-over states
             document.querySelectorAll('.drag-over').forEach(el => {
@@ -185,7 +191,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
             
             // Simulate drag end
             if (onDragEnd) {
-                onDragEnd({ target: e.target });
+                onDragEnd({ target: dieEl });
             }
         } else if (dragStartPos) {
             // This was a tap, not a drag
@@ -203,6 +209,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
         
         setIsDragging(false);
         setDragStartPos(null);
+        dragRef.current = null;
         e.preventDefault();
     };
 
