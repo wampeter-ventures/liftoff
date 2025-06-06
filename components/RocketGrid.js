@@ -241,7 +241,7 @@ function RocketGrid({
                 {boosterRowLocked && (
                     <div className="launch-section">
                         <button
-                            className={`btn btn-launch ${!onCanLaunch() ? "btn-disabled" : "btn-primary"}`}
+                            className={`btn ${onCanLaunch() ? "btn-launch-ready" : "btn-launch-disabled"}`}
                             onClick={() => {
                                 if (onCanLaunch()) {
                                     onAttemptLaunch();

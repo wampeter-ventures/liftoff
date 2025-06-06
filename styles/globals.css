@@ -652,20 +652,20 @@ body {
     border: 1px solid var(--color-mid-gray);
 }
 
-.btn-launch {
+.btn-launch-ready {
     background-color: var(--color-accent-gold);
     color: var(--color-dark-gray);
-    opacity: 1 !important;
+    opacity: 1;
 }
 
-.btn-disabled {
+.btn-launch-disabled {
     background-color: #FFA366;
     color: #8B4513;
     cursor: not-allowed;
     opacity: 0.8;
 }
 
-.btn-disabled:hover {
+.btn-launch-disabled:hover {
     transform: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
