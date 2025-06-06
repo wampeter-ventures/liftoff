@@ -244,6 +244,22 @@ body {
     font-size: 12px;
 }
 
+.players-compact-container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    max-width: 280px;
+}
+
+.players-compact {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
 .player-compact {
     display: flex;
     flex-direction: column;
@@ -320,6 +336,21 @@ body {
     text-align: center;
 }
 
+.rocket-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.picture-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--color-dark-gray);
+}
+
 .rocket-grid-container {
     position: relative;
     display: flex;
@@ -335,7 +366,7 @@ body {
     transform: translateX(-50%);
     z-index: 1;
     pointer-events: none;
-    transition: opacity 5s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
 }
 
 .rocket-guide-overlay.show-guide {
@@ -354,6 +385,10 @@ body {
     opacity: 0.05;
 }
 
+.rocket-guide-overlay.on-top {
+    z-index: 20;
+}
+
 .rocket-guide-image {
     width: auto;
     height: 400px;
@@ -367,6 +402,10 @@ body {
     flex-direction: column;
     gap: 5px;
     align-items: center;
+}
+
+.rocket-grid.pre-launch {
+    animation: rocketShake 0.2s linear infinite;
 }
 
 .rocket-row {
@@ -387,6 +426,25 @@ body {
 
 .booster-row .row-label {
     color: var(--color-fire-red);
+}
+
+.rocket-grid.pre-launch .booster-row .grid-slot .die {
+    animation: boosterGlow 0.6s alternate infinite, boosterBounce 0.4s ease-in-out infinite;
+    position: relative;
+}
+
+.rocket-grid.pre-launch .booster-row .grid-slot .die::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: smokePuff 0.8s ease-out infinite;
 }
 
 .row-slots {
@@ -451,7 +509,7 @@ body {
     padding: 4px 8px;
     position: relative;
     z-index: 10;
-    margin-top: 50px;
+    margin-top: 24px;
 }
 
 .dice-roll-container h3 {
@@ -548,6 +606,7 @@ body {
     color: var(--color-dark-gray);
     margin-top: 8px;
     opacity: 0.8;
+    white-space: pre-line;
 }
 
 /* Fire Pile */
@@ -600,7 +659,12 @@ body {
     display: flex;
     gap: 12px;
     justify-content: center;
-    margin-top: 16px;
+    margin-top: 8px;
+    position: sticky;
+    bottom: 0;
+    background-color: var(--color-background);
+    z-index: 20;
+    padding: 8px 0;
 }
 
 /* Buttons */
@@ -647,6 +711,24 @@ body {
     color: #8B4513;
     cursor: not-allowed;
     opacity: 0.8;
+}
+
+.btn-next-disabled {
+    background-color: #d0e8ff;
+    color: #4a5568;
+    cursor: not-allowed;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.3) 0,
+        rgba(255, 255, 255, 0.3) 10px,
+        rgba(255, 255, 255, 0.5) 10px,
+        rgba(255, 255, 255, 0.5) 20px
+    );
+}
+
+.btn-next-disabled:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-disabled:hover {
@@ -1423,7 +1505,7 @@ body {
 }
 
 .modal-footer {
-    padding: 16px 24px 24px 24px;
+    padding: 8px 24px 16px 24px;
     display: flex;
     justify-content: flex-end;
 }
@@ -1513,9 +1595,9 @@ body {
 .booster-dice-container {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 8px;
     margin: 16px 0;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .booster-die-wrapper {
@@ -1535,8 +1617,8 @@ body {
 }
 
 .booster-die {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     transition: all 0.3s ease;
 }
 
@@ -1620,4 +1702,78 @@ body {
     0% { transform: rotate(0deg) scale(1); }
     50% { transform: rotate(180deg) scale(1.2); }
     100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes rocketShake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-1px, 1px); }
+    50% { transform: translate(1px, -1px); }
+    75% { transform: translate(-1px, 1px); }
+}
+
+@keyframes boosterGlow {
+    0% { box-shadow: 0 0 4px #ff0000; }
+    50% { box-shadow: 0 0 8px #ff9900; }
+    100% { box-shadow: 0 0 4px #ffff00; }
+}
+
+@keyframes smokePuff {
+    0% { transform: translate(-50%, 0) scale(0.5); opacity: 0.8; }
+    100% { transform: translate(-50%, -10px) scale(1); opacity: 0; }
+}
+
+@keyframes boosterBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.launch-countdown-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+    font-weight: 800;
+    color: rgba(128, 128, 128, 0.8);
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Starry background for results screen */
+.results-background {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.results-background .star,
+.results-background .planet,
+.results-background .fun-icon {
+    position: absolute;
+    animation-name: diagonalDrift;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.results-background .star {
+    animation-name: starTwinkle, diagonalDrift;
+    animation-timing-function: ease-in-out, linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes starTwinkle {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 0.3; }
+}
+
+@keyframes diagonalDrift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(300px, -300px); }
 }

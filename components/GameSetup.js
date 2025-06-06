@@ -22,7 +22,6 @@ import {
   AlertTriangle,
   Sparkles,
   Bomb,
-  ArrowLeft,
   HelpCircle,
   Settings as SettingsIcon,
   BookOpenText,
@@ -48,6 +47,35 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const [hasLoadedPreservedSetup, setHasLoadedPreservedSetup] = useState(false);
   const { toast } = useToast();
 
+  // Load any saved setup from localStorage if no preserved setup provided
+  useEffect(() => {
+    if ((preservedPlayerSetup?.length || 0) > 0 || hasLoadedPreservedSetup) return;
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('playerSetup') : null;
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setPlayerCount(parsed.length);
+          setPlayers(parsed.map((p, i) => ({ id: p.id || Date.now() + i, ...p })));
+          setHasLoadedPreservedSetup(true);
+        }
+      } catch (err) {
+        console.error('Failed to load player setup from localStorage', err);
+      }
+    }
+  }, [preservedPlayerSetup, hasLoadedPreservedSetup]);
+
+  // Persist player setup whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('playerSetup', JSON.stringify(players));
+      } catch (err) {
+        console.error('Failed to save player setup', err);
+      }
+    }
+  }, [players]);
+
   // Initialize with preserved setup if available
   useEffect(() => {
     if (preservedPlayerSetup && preservedPlayerSetup.length > 0 && !hasLoadedPreservedSetup) {
@@ -62,8 +90,8 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   }, [preservedPlayerSetup, hasLoadedPreservedSetup]);
 
   useEffect(() => {
-    // Don't auto-generate if we have preserved setup or if we just loaded it
-    if (hasLoadedPreservedSetup || (preservedPlayerSetup && preservedPlayerSetup.length > 0)) {
+    // Skip auto-generation on initial mount if a preserved setup exists
+    if (!hasLoadedPreservedSetup && preservedPlayerSetup && preservedPlayerSetup.length > 0) {
       return;
     }
     
@@ -114,8 +142,6 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
 
   const handlePlayerCountChange = (newCount) => {
     setPlayerCount(newCount);
-    // If manually changing player count, reset the preserved setup flag
-    setHasLoadedPreservedSetup(false);
   };
 
   const handleAttemptStartMission = () => {
@@ -137,6 +163,13 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   };
 
   const handleConfirmAndStartGame = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('playerSetup', JSON.stringify(players));
+      } catch (err) {
+        console.error('Failed to save player setup', err);
+      }
+    }
     onStartGame(players);
     setIsDrawerOpen(false);
     toast({
@@ -160,7 +193,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
     <div className="w-full max-w-md mx-auto bg-card dark:bg-slate-800 rounded-lg shadow-xl mt-4">
       <div className="flex items-center justify-between p-3 border-b dark:border-slate-700">
         <Button variant="ghost" size="icon" className="text-slate-600 dark:text-slate-400" onClick={onBack}>
-          <ArrowLeft className="h-5 w-5" />
+          <span className="text-lg font-bold">&lt;</span>
           <span className="sr-only">Back</span>
         </Button>
         <h1 

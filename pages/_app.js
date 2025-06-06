@@ -6,7 +6,10 @@ function MyApp({ Component, pageProps }) {
     <>
       <Head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+        />
         <title>Liftoff - Build. Boost. Blast...or BOOM!</title>
         <meta name="description" content="A collaborative dice game where players work together to assemble rockets and reach for the stars. Will you launch to victory or explode in spectacular failure?" />
         <meta name="keywords" content="dice game, rocket, multiplayer, collaborative, space, board game" />

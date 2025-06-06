@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import Die from './Die';
 import GameLogic from '../lib/gameLogic';
 
@@ -12,13 +13,50 @@ function RocketGrid({
     onPlaceSelectedDie,
     onCanLaunch,
     onAttemptLaunch,
-    onSetShowLaunchHelper
+    onSetShowLaunchHelper,
+    preparingLaunch
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
     const [validPositions, setValidPositions] = useState(new Set());
     const [selectedDieValidPositions, setSelectedDieValidPositions] = useState(new Set());
     const [hasAnyPlacedDice, setHasAnyPlacedDice] = useState(false);
     const [showInitialGuide, setShowInitialGuide] = useState(true);
+    const [showPictureMode, setShowPictureMode] = useState(false);
+
+    const getPlanetName = (height) => {
+        if (height >= 5) return 'Neptune';
+        if (height >= 4) return 'Saturn';
+        if (height >= 3) return 'Jupiter';
+        if (height >= 2) return 'Mars';
+        if (height >= 1) return 'Moon';
+        return 'Earth';
+    };
+
+    const rocketComplete = React.useMemo(() => {
+        if (!boosterRowLocked) return false;
+        const boosterRow = rocketHeight + 1;
+        for (let row = 1; row <= rocketHeight; row++) {
+            for (let col = 1; col <= row; col++) {
+                if (!grid[`${row}-${col}`]) return false;
+            }
+        }
+        for (let col = 1; col <= boosterRow; col++) {
+            const die = grid[`${boosterRow}-${col}`];
+            if (!die || die.value !== 6) return false;
+        }
+        return true;
+    }, [grid, boosterRowLocked, rocketHeight]);
+
+    const headerText = React.useMemo(() => {
+        if (!boosterRowLocked) return 'Rocket Assembly';
+        if (rocketComplete) return 'Ready to Attempt Launch';
+        return `Mission: ${getPlanetName(rocketHeight)}`;
+    }, [boosterRowLocked, rocketComplete, rocketHeight]);
+
+    const boostersPlaced = Object.keys(grid)
+        .filter((k) => grid[k] && grid[k].value === 6)
+        .map((k) => parseInt(k.split("-")[0]));
+    const boosterRow = boostersPlaced.length ? Math.min(...boostersPlaced) : null;
 
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
@@ -66,7 +104,7 @@ function RocketGrid({
     const eligibleLabels = React.useMemo(() => {
         const labels = {};
         // Only show booster row if a 6 has been placed
-        const boosterRow =
+        const boosterRowForLabels =
             boosterRowLocked &&
             Object.keys(grid)
                 .map((k) => {
@@ -80,11 +118,11 @@ function RocketGrid({
             for (let col = 1; col <= row; col++) {
                 const pos = `${row}-${col}`;
                 // If boosters are locked, only display labels for the booster row
-                if (boosterRowLocked && row !== boosterRow) {
+                if (boosterRowLocked && row !== boosterRowForLabels) {
                     labels[pos] = [];
                     continue;
                 }
-                let eligible = [];
+                const eligible = new Set();
                 if (
                     GameLogic.isValidPlacement(
                         pos,
@@ -94,7 +132,7 @@ function RocketGrid({
                         boosterRowLocked,
                     )
                 ) {
-                    eligible.push(col);
+                    eligible.add(col);
                 }
                 if (
                     GameLogic.isValidPlacement(
@@ -105,9 +143,9 @@ function RocketGrid({
                         boosterRowLocked,
                     )
                 ) {
-                    eligible.push(6);
+                    eligible.add(6);
                 }
-                labels[pos] = eligible;
+                labels[pos] = Array.from(eligible);
             }
         }
         return labels;
@@ -123,6 +161,10 @@ function RocketGrid({
     const clearDrag = () => {
         console.log('🧹 RocketGrid clearDrag called');
         setDragOverPosition(null);
+    };
+
+    const togglePictureMode = () => {
+        setShowPictureMode((prev) => !prev);
     };
 
     const handleDrop = (e, pos) => {
@@ -201,11 +243,25 @@ function RocketGrid({
     // Render
     return (
         <>
-            <h3 className="rocket-section-header">Rocket Assembly</h3>
+            <div className="rocket-header">
+                <h3 className="rocket-section-header">{headerText}</h3>
+                <button
+                    type="button"
+                    className="picture-toggle"
+                    onClick={togglePictureMode}
+                    aria-label="Toggle rocket view"
+                >
+                    {showPictureMode ? (
+                        <EyeOff size={20} />
+                    ) : (
+                        <Eye size={20} />
+                    )}
+                </button>
+            </div>
             <div className="rocket-grid-container">
                 {/* Rocket Guide Overlay */}
-                <div 
-                    className={`rocket-guide-overlay ${hasAnyPlacedDice ? 'fade-to-hidden' : 'show-background'}`}
+                <div
+                    className={`rocket-guide-overlay ${showPictureMode ? 'on-top show-guide' : 'fade-to-background'}`}
                 >
                     <img 
                         src="/rocket_big.png" 
@@ -214,20 +270,15 @@ function RocketGrid({
                     />
                 </div>
                 
-                <div className="rocket-grid">
+                <div className={`rocket-grid ${preparingLaunch ? 'pre-launch' : ''}`}> 
                     {[1, 2, 3, 4, 5, 6]
                         .filter((row) => {
-                            // Only hide rows if there is actually a 6 (booster) placed
-                            const boosters = Object.keys(grid)
-                                .filter((k) => grid[k] && grid[k].value === 6)
-                                .map((k) => parseInt(k.split("-")[0]));
-                            if (!boosters.length) return true;
-                            const boosterRow = Math.min(...boosters);
+                            if (!boosterRow) return true;
                             return row <= boosterRow;
                         })
 
                         .map((row) => (
-                            <div key={row} className={`rocket-row row-${row}`}>
+                            <div key={row} className={`rocket-row row-${row} ${boosterRow === row ? 'booster-row' : ''}`}> 
                                 <div className="row-slots">
                                     {Array.from({ length: row }, (_, i) => {
                                         const pos = `${row}-${i + 1}`;

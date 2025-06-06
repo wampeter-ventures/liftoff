@@ -26,6 +26,8 @@ export default function Home() {
     const [boosterRowLocked, setBoosterRowLocked] = useState(false);
     const [fireDice, setFireDice] = useState([]);
     const [showLaunchHelper, setShowLaunchHelper] = useState(false);
+    const [preparingLaunch, setPreparingLaunch] = useState(false);
+    const [launchCountdown, setLaunchCountdown] = useState(0);
     const [selectedDie, setSelectedDie] = useState(null);
     const [stars, setStars] = useState([]);
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
@@ -59,6 +61,22 @@ export default function Home() {
         });
     };
 
+    // Load any saved player setup from localStorage on mount
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const stored = localStorage.getItem('playerSetup');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    setOriginalPlayerSetup(parsed);
+                }
+            } catch (err) {
+                console.error('Failed to parse saved player setup', err);
+            }
+        }
+    }, []);
+
     useEffect(() => {
         const grid = {};
         for (let row = 1; row <= 6; row++) {
@@ -83,6 +101,15 @@ export default function Home() {
         setStars(generatedStars);
     }, []);
 
+    // Preload rocket assets so they're ready when needed
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        ['/icon-192.png', '/rocket_big.png'].forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    }, []);
+
     useEffect(() => {
         if (gameState === "playing" && players.length > 0) {
             setCurrentDice([]);
@@ -100,7 +127,16 @@ export default function Home() {
             ...player,
             diceCount: player.diceCount // Preserve original dice count
         })));
-        
+
+        // Persist setup so it survives page refreshes
+        if (typeof window !== 'undefined') {
+            try {
+                localStorage.setItem('playerSetup', JSON.stringify(playerData));
+            } catch (err) {
+                console.error('Failed to save player setup', err);
+            }
+        }
+
         setPlayers(playerData);
         setCurrentPlayerIndex(0);
         setGameState("intro");
@@ -317,7 +353,6 @@ export default function Home() {
             );
             return;
         }
-        
         const boosters = Object.entries(rocketGrid).filter(
             ([, d]) => d && d.value === 6,
         );
@@ -333,39 +368,51 @@ export default function Home() {
             () => Math.floor(Math.random() * 6) + 1,
         );
         const hasSuccessfulBooster = boosterRolls.some((roll) => roll === 6);
-        if (hasSuccessfulBooster) {
-            showModal(
-                'launch',
-                '🎲 CMON SIXES, WE NEED A SIX...',
-                'The fate of your rocket hangs in the balance...',
-                { boosterRolls, success: true }
-            );
-            setTimeout(() => {
-                setGameState("results");
-            }, 4000);
-        } else {
-            const newGrid = { ...rocketGrid };
-            boosters.forEach(([pos], i) => {
-                if (i === 0) {
-                    setFireDice((fireDice) => [...fireDice, rocketGrid[pos]]);
-                    setFirePile((pile) => pile + 1);
+        setPreparingLaunch(true);
+        let count = 5;
+        setLaunchCountdown(count);
+        const countdown = setInterval(() => {
+            count -= 1;
+            setLaunchCountdown(count);
+            if (count === 0) {
+                clearInterval(countdown);
+                setPreparingLaunch(false);
+                setLaunchCountdown(0);
+                if (hasSuccessfulBooster) {
+                    showModal(
+                        'launch',
+                        '🎲 CMON SIXES, WE NEED A SIX...',
+                        'The fate of your rocket hangs in the balance...',
+                        { boosterRolls, success: true }
+                    );
+                    setTimeout(() => {
+                        setGameState("results");
+                    }, 4000);
+                } else {
+                    const newGrid = { ...rocketGrid };
+                    boosters.forEach(([pos], i) => {
+                        if (i === 0) {
+                            setFireDice((fireDice) => [...fireDice, rocketGrid[pos]]);
+                            setFirePile((pile) => pile + 1);
+                        }
+                        newGrid[pos] = null;
+                    });
+                    setRocketGrid(newGrid);
+                    setBoosterRowLocked(false);
+                    showModal(
+                        'launch',
+                        '🎲 CMON SIXES, WE NEED A SIX...',
+                        'The fate of your rocket hangs in the balance...',
+                        { boosterRolls, success: false }
+                    );
+                    if (firePile + 1 >= 5) {
+                        setTimeout(() => {
+                            setGameState("results");
+                        }, 3000);
+                    }
                 }
-                newGrid[pos] = null;
-            });
-            setRocketGrid(newGrid);
-            setBoosterRowLocked(false);
-            showModal(
-                'launch',
-                '🎲 CMON SIXES, WE NEED A SIX...',
-                'The fate of your rocket hangs in the balance...',
-                { boosterRolls, success: false }
-            );
-            if (firePile + 1 >= 5) {
-                setTimeout(() => {
-                    setGameState("results");
-                }, 3000);
             }
-        }
+        }, 1000);
     };
 
     const clearAllGameState = () => {
@@ -382,6 +429,7 @@ export default function Home() {
         setFireDice([]);
         setSelectedDie(null);
         setShowLaunchHelper(false);
+        setLaunchCountdown(0);
         
         // Close any open modals
         closeModal();
@@ -761,19 +809,17 @@ export default function Home() {
             {gameState === "playing" && (
                 <>
                     {/* Gameplay Help Drawer */}
-                    <HelpDrawer 
-                        isOpen={showGameplayHelp} 
-                        onOpenChange={setShowGameplayHelp} 
+                    <HelpDrawer
+                        isOpen={showGameplayHelp}
+                        onOpenChange={setShowGameplayHelp}
                     />
+
+                    {launchCountdown > 0 && (
+                        <div className="launch-countdown-overlay">
+                            {launchCountdown}
+                        </div>
+                    )}
                     
-                    {/* Persistent Help Button */}
-                    <button
-                        onClick={() => setShowGameplayHelp(true)}
-                        className="fixed top-4 right-4 z-50 bg-slate-600 hover:bg-slate-700 text-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-105"
-                        style={{ fontSize: '16px' }}
-                    >
-                        <HelpCircle size={18} />
-                    </button>
                     
                     <div className="game-container">
                         <div className="top-status">
@@ -781,31 +827,61 @@ export default function Home() {
                                 className="nav-back-inline"
                                 onClick={resetGamePreservingSetup}
                             >
-                                ←
+                                &lt;
                             </button>
-                            <div className="players-compact">
-                                {players.map((player, index) => (
-                                    <div
-                                        key={player.name || index}
-                                        className={`player-compact ${
-                                            index === currentPlayerIndex
-                                                ? "current"
-                                                : ""
-                                        } ${player.diceCount === 0 ? "eliminated" : ""}`}
-                                    >
-                                        <div className="player-name-short">
-                                            {player.name.startsWith("Player ")
-                                                ? `P${index + 1}`
-                                                : player.name.length <= 3
-                                                  ? player.name
-                                                  : player.name.substring(0, 3)}
-                                        </div>
-                                        <div className="dice-count-small">
-                                            {player.diceCount}🎲
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="players-compact-container">
+                                <div className="players-compact">
+                                    {(() => {
+                                        // Filter out eliminated players (0 dice)
+                                        const activePlayers = players.filter(player => player.diceCount > 0);
+                                        const activeCurrentIndex = activePlayers.findIndex((_, index) => 
+                                            players.indexOf(activePlayers[index]) === currentPlayerIndex
+                                        );
+                                        
+                                        // Calculate which players to show (center around current player)
+                                        const maxVisible = 5; // Maximum players to show at once
+                                        let startIndex = Math.max(0, activeCurrentIndex - Math.floor(maxVisible / 2));
+                                        let endIndex = Math.min(activePlayers.length, startIndex + maxVisible);
+                                        
+                                        // Adjust if we're near the end
+                                        if (endIndex - startIndex < maxVisible && activePlayers.length > maxVisible) {
+                                            startIndex = Math.max(0, endIndex - maxVisible);
+                                        }
+                                        
+                                        const visiblePlayers = activePlayers.slice(startIndex, endIndex);
+                                        
+                                        return visiblePlayers.map((player, visIndex) => {
+                                            const originalIndex = players.indexOf(player);
+                                            return (
+                                                <div
+                                                    key={player.name || originalIndex}
+                                                    className={`player-compact ${
+                                                        originalIndex === currentPlayerIndex ? "current" : ""
+                                                    }`}
+                                                >
+                                                    <div className="player-name-short">
+                                                        {player.name.startsWith("Player ")
+                                                            ? `P${originalIndex + 1}`
+                                                            : player.name.length <= 3
+                                                              ? player.name
+                                                              : player.name.substring(0, 3)}
+                                                    </div>
+                                                    <div className="dice-count-small">
+                                                        {player.diceCount}🎲
+                                                    </div>
+                                                </div>
+                                            );
+                                        });
+                                    })()}
+                                </div>
                             </div>
+                            <button
+                                className="nav-back-inline"
+                                onClick={() => setShowGameplayHelp(true)}
+                                style={{ marginLeft: 'auto' }}
+                            >
+                                <HelpCircle size={18} />
+                            </button>
                         </div>
 
                         <div className="fire-status">
@@ -872,6 +948,7 @@ export default function Home() {
                                     onCanLaunch={canLaunch}
                                     onAttemptLaunch={attemptLaunch}
                                     onSetShowLaunchHelper={setShowLaunchHelper}
+                                    preparingLaunch={preparingLaunch}
                                 />
                             </div>
 
@@ -880,8 +957,7 @@ export default function Home() {
                                 selectedDie={selectedDie}
                                 onSelectDie={selectDie}
                                 onDragStart={(e, die) => {
-                                    // This enables drag functionality
-                                    console.log('🌟 Main page onDragStart called:', { die: die.value });
+                                    // Enable drag functionality
                                 }}
                                 rocketGrid={rocketGrid}
                                 rocketHeight={rocketHeight}
@@ -898,7 +974,7 @@ export default function Home() {
                                 </button>
                                 <button
                                     onClick={nextPlayer}
-                                    className="btn btn-primary"
+                                    className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? "btn-next-disabled" : ""}`}
                                 >
                                     Next Player →
                                 </button>
@@ -912,7 +988,6 @@ export default function Home() {
                 <GameResults
                     rocketGrid={rocketGrid}
                     firePile={firePile}
-                    rocketHeight={rocketHeight}
                     boosterRowLocked={boosterRowLocked}
                     onRestart={resetGamePreservingSetup}
                 />
