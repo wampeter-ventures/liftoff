@@ -295,6 +295,12 @@ export default function Home() {
             }, 100);
             return;
         }
+        if (nextIndex === currentPlayerIndex) {
+            setTimeout(() => {
+                rollDiceForCurrentPlayer(updatedPlayers);
+            }, 100);
+            return;
+        }
         setCurrentPlayerIndex(nextIndex);
     };
 
