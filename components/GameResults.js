@@ -15,6 +15,7 @@ import {
   AlertOctagon,
 } from "lucide-react";
 import GameLogic from '../lib/gameLogic';
+import StarryBackground from "./StarryBackground";
 
 function GameResults({
     rocketGrid,
@@ -211,7 +212,9 @@ function GameResults({
     };
 
     return (
-        <div className="game-results mt-4 px-4">
+        <div className="relative min-h-screen overflow-hidden flex items-center justify-center">
+            <StarryBackground />
+            <div className="relative z-10 game-results mt-4 px-4">
             <Card
                 className={`w-full max-w-md shadow-xl dark:bg-slate-800 mx-auto overflow-hidden border-transparent`}
             >
@@ -262,6 +265,7 @@ function GameResults({
                     </Button>
                 </CardFooter>
             </Card>
+        </div>
         </div>
     );
 }
