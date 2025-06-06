@@ -59,6 +59,22 @@ export default function Home() {
         });
     };
 
+    // Load any saved player setup from localStorage on mount
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const stored = localStorage.getItem('playerSetup');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    setOriginalPlayerSetup(parsed);
+                }
+            } catch (err) {
+                console.error('Failed to parse saved player setup', err);
+            }
+        }
+    }, []);
+
     useEffect(() => {
         const grid = {};
         for (let row = 1; row <= 6; row++) {
@@ -100,7 +116,16 @@ export default function Home() {
             ...player,
             diceCount: player.diceCount // Preserve original dice count
         })));
-        
+
+        // Persist setup so it survives page refreshes
+        if (typeof window !== 'undefined') {
+            try {
+                localStorage.setItem('playerSetup', JSON.stringify(playerData));
+            } catch (err) {
+                console.error('Failed to save player setup', err);
+            }
+        }
+
         setPlayers(playerData);
         setCurrentPlayerIndex(0);
         setGameState("intro");
