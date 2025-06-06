@@ -182,10 +182,16 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
             
             if (dropTarget) {
                 // For mobile drag, we'll use the existing selection system
-                if (dropTarget.classList.contains('grid-slot') || dropTarget.classList.contains('fire-drop-zone')) {
-                    // Simply click on the target - this will place the die if one is selected
-                    // and the selection happens when dragging starts
-                    dropTarget.click();
+                if (
+                    dropTarget.classList.contains('grid-slot') ||
+                    dropTarget.classList.contains('fire-drop-zone')
+                ) {
+                    // Dispatch a click after releasing to place the die
+                    setTimeout(() => {
+                        dropTarget.dispatchEvent(
+                            new MouseEvent('click', { bubbles: true })
+                        );
+                    }, 0);
                 }
             }
             
