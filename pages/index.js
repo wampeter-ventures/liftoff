@@ -99,6 +99,15 @@ export default function Home() {
         setStars(generatedStars);
     }, []);
 
+    // Preload rocket assets so they're ready when needed
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        ['/icon-192.png', '/rocket_big.png'].forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    }, []);
+
     useEffect(() => {
         if (gameState === "playing" && players.length > 0) {
             setCurrentDice([]);
