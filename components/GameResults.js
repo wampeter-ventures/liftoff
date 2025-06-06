@@ -16,12 +16,15 @@ import {
 } from "lucide-react";
 import GameLogic from '../lib/gameLogic';
 
+import StarryBackground from './StarryBackground';
+
 function GameResults({
     rocketGrid,
     firePile,
     rocketHeight,
     boosterRowLocked,
     onRestart,
+    stars = [],
 }) {
     const { getCompletedRows } = GameLogic;
 
@@ -54,6 +57,28 @@ function GameResults({
     };
 
     const victoryLevel = calculateVictoryLevel();
+    const starColor = isExplosion || victoryLevel === 0 ? '#ff4d4f' : '#ffffff';
+
+    const renderBackdropPlanet = () => {
+        const size = 160;
+        if (isExplosion) {
+            return <Bomb style={{ width: size, height: size, opacity: 0.25 }} className="text-red-700" />;
+        }
+        switch (victoryLevel) {
+            case 1:
+                return <Moon style={{ width: size, height: size, opacity: 0.25 }} className="text-slate-500" />;
+            case 2:
+                return <Orbit style={{ width: size, height: size, opacity: 0.25 }} className="text-orange-500" />;
+            case 3:
+                return <Planet style={{ width: size, height: size, opacity: 0.25 }} className="text-purple-500" />;
+            case 4:
+                return <Disc3 style={{ width: size, height: size, opacity: 0.25 }} className="text-amber-500" />;
+            case 5:
+                return <Planet style={{ width: size, height: size, opacity: 0.25 }} className="text-blue-500" />;
+            default:
+                return <XCircle style={{ width: size, height: size, opacity: 0.25 }} className="text-gray-500" />;
+        }
+    };
 
     const getDestinationDetails = () => {
         if (isExplosion) {
@@ -211,9 +236,14 @@ function GameResults({
     };
 
     return (
-        <div className="game-results mt-4 px-4">
+        <div className="game-results relative mt-4 px-4 flex items-center justify-center min-h-screen">
+            <StarryBackground stars={stars} starColor={starColor}>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    {renderBackdropPlanet()}
+                </div>
+            </StarryBackground>
             <Card
-                className={`w-full max-w-md shadow-xl dark:bg-slate-800 mx-auto overflow-hidden border-transparent`}
+                className={`relative z-10 w-full max-w-md shadow-xl dark:bg-slate-800 mx-auto overflow-hidden border-transparent`}
             >
                 <CardHeader className={`text-center p-4 sm:p-6 pb-6 sm:pb-8 ${destination.bgColor}`}>
                     <div className="flex justify-center mb-3 sm:mb-4">{destination.icon}</div>
