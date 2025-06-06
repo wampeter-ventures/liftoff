@@ -84,7 +84,7 @@ function RocketGrid({
                     labels[pos] = [];
                     continue;
                 }
-                let eligible = [];
+                const eligible = new Set();
                 if (
                     GameLogic.isValidPlacement(
                         pos,
@@ -94,7 +94,7 @@ function RocketGrid({
                         boosterRowLocked,
                     )
                 ) {
-                    eligible.push(col);
+                    eligible.add(col);
                 }
                 if (
                     GameLogic.isValidPlacement(
@@ -105,9 +105,9 @@ function RocketGrid({
                         boosterRowLocked,
                     )
                 ) {
-                    eligible.push(6);
+                    eligible.add(6);
                 }
-                labels[pos] = eligible;
+                labels[pos] = Array.from(eligible);
             }
         }
         return labels;
