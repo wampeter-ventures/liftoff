@@ -336,8 +336,8 @@ export default function Home() {
         if (hasSuccessfulBooster) {
             showModal(
                 'launch',
-                'LIFTOFF!!!',
-                'Your rocket travels upward into the glorious cosmos!',
+                '🎲 CMON SIXES, WE NEED A SIX...',
+                'The fate of your rocket hangs in the balance...',
                 { boosterRolls, success: true }
             );
             setTimeout(() => {
@@ -356,8 +356,8 @@ export default function Home() {
             setBoosterRowLocked(false);
             showModal(
                 'launch',
-                '💨 FIZZLE! FAIL! 💥',
-                'Your boosters wheezed like a deflating balloon! No sixes means no flight. Your rocket remains earthbound like a very expensive paperweight.',
+                '🎲 CMON SIXES, WE NEED A SIX...',
+                'The fate of your rocket hangs in the balance...',
                 { boosterRolls, success: false }
             );
             if (firePile + 1 >= 5) {

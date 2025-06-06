@@ -7,7 +7,6 @@ import {
   Orbit,
   Globe as Planet,
   Disc3,
-  CircleDot,
   XCircle,
   Bomb,
   CheckCircle2,
@@ -24,15 +23,37 @@ function GameResults({
     boosterRowLocked,
     onRestart,
 }) {
-    const { calculateVictoryLevel, getCompletedRows } = GameLogic;
+    const { getCompletedRows } = GameLogic;
 
-    const victoryLevel = calculateVictoryLevel(
-        rocketGrid,
-        rocketHeight,
-        boosterRowLocked,
-    );
-    const completedBodyRows = getCompletedRows(rocketGrid);
+    const allCompletedRows = getCompletedRows(rocketGrid);
     const isExplosion = firePile >= 5;
+    
+    // Filter to only count body rows (exclude booster rows that contain only 6s)
+    const completedBodyRows = allCompletedRows.filter(rowNum => {
+        // Check if this row contains any non-6 dice (making it a body row)
+        for (let col = 1; col <= rowNum; col++) {
+            const position = `${rowNum}-${col}`;
+            const die = rocketGrid[position];
+            if (die && die.value !== 6) {
+                return true; // This is a body row
+            }
+        }
+        return false; // This row only contains 6s (booster row)
+    });
+    
+    // Calculate victory level based on completed BODY rows only: 1=Moon, 2=Mars, 3=Jupiter, 4=Saturn, 5=Neptune
+    const calculateVictoryLevel = () => {
+        if (!boosterRowLocked) return 0; // need at least one booster
+        const bodyRowCount = completedBodyRows.length;
+        if (bodyRowCount >= 5) return 5; // Neptune
+        if (bodyRowCount >= 4) return 4; // Saturn  
+        if (bodyRowCount >= 3) return 3; // Jupiter
+        if (bodyRowCount >= 2) return 2; // Mars
+        if (bodyRowCount >= 1) return 1; // Moon
+        return 0;
+    };
+
+    const victoryLevel = calculateVictoryLevel();
 
     const getDestinationDetails = () => {
         if (isExplosion) {
@@ -47,7 +68,7 @@ function GameResults({
         }
 
         switch (victoryLevel) {
-            case 1: // Moon
+            case 1: // Moon (1 row)
                 return {
                     name: "TOUCHDOWN ON THE MOON!",
                     icon: <Moon className="h-16 w-16 sm:h-20 sm:w-20 text-slate-500" />,
@@ -56,7 +77,7 @@ function GameResults({
                     bgColor: "bg-slate-100 dark:bg-slate-700/30",
                     textColor: "text-slate-700 dark:text-slate-300",
                 };
-            case 2: // Mars
+            case 2: // Mars (2 rows)
                 return {
                     name: "MARTIAN GETAWAY!",
                     icon: <Orbit className="h-16 w-16 sm:h-20 sm:w-20 text-orange-500" />,
@@ -65,7 +86,7 @@ function GameResults({
                     bgColor: "bg-orange-100 dark:bg-orange-900/30",
                     textColor: "text-orange-700 dark:text-orange-300",
                 };
-            case 3: // Jupiter
+            case 3: // Jupiter (3 rows)
                 return {
                     name: "JUPITER CONQUERED!",
                     icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-purple-500" />,
@@ -74,7 +95,7 @@ function GameResults({
                     bgColor: "bg-purple-100 dark:bg-purple-900/30",
                     textColor: "text-purple-700 dark:text-purple-300",
                 };
-            case 4: // Saturn
+            case 4: // Saturn (4 rows)
                 return {
                     name: "SATURN'S RINGSIDE SEATS!",
                     icon: <Disc3 className="h-16 w-16 sm:h-20 sm:w-20 text-amber-500" />,
@@ -83,32 +104,14 @@ function GameResults({
                     bgColor: "bg-amber-100 dark:bg-amber-900/30",
                     textColor: "text-amber-700 dark:text-amber-300",
                 };
-            case 5: // Uranus
-                return {
-                    name: "URANUS: THE FINAL FRONTIER (Almost)!",
-                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-cyan-500" />,
-                    description:
-                        "It's cold, it's gassy, it's Uranus! You've ventured into the icy outer reaches. Don't forget your thermal underwear!",
-                    bgColor: "bg-cyan-100 dark:bg-cyan-900/30",
-                    textColor: "text-cyan-700 dark:text-cyan-300",
-                };
-            case 6: // Neptune
+            case 5: // Neptune (5 rows)
                 return {
                     name: "NEPTUNE'S DEEP BLUE YONDER!",
-                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-indigo-500" />,
+                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-blue-500" />,
                     description:
                         "You've reached the windy, azure giant, Neptune! If you see any tridents, probably best to steer clear. What an epic journey!",
-                    bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
-                    textColor: "text-indigo-700 dark:text-indigo-300",
-                };
-            case 7: // Pluto
-                return {
-                    name: "PLUTO: EDGE OF THE SOLAR SYSTEM (ish)!",
-                    icon: <CircleDot className="h-16 w-16 sm:h-20 sm:w-20 text-gray-400" />,
-                    description:
-                        "To Pluto and beyond (not really beyond, Pluto's pretty far)! You've reached the beloved dwarf planet. Send a postcard from the Kuiper Belt!",
-                    bgColor: "bg-gray-200 dark:bg-gray-700/50",
-                    textColor: "text-gray-700 dark:text-gray-300",
+                    bgColor: "bg-blue-100 dark:bg-blue-900/30",
+                    textColor: "text-blue-700 dark:text-blue-300",
                 };
             default: // Victory Level 0 or unhandled
                 return {
@@ -208,16 +211,16 @@ function GameResults({
     };
 
     return (
-        <div className="game-results">
+        <div className="game-results mt-4 px-4">
             <Card
-                className={`w-full max-w-md shadow-xl dark:bg-slate-800 mx-auto overflow-hidden ${destination.borderColor ?? "border-transparent"}`}
+                className={`w-full max-w-md shadow-xl dark:bg-slate-800 mx-auto overflow-hidden border-transparent`}
             >
                 <CardHeader className={`text-center p-4 sm:p-6 ${destination.bgColor}`}>
                     <div className="flex justify-center mb-3 sm:mb-4">{destination.icon}</div>
-                    <CardTitle className={`text-xl sm:text-2xl font-bold tracking-tight ${destination.textColor}`}>
+                    <CardTitle className={`text-lg sm:text-xl font-bold tracking-tight ${destination.textColor}`}>
                         {destination.name}
                     </CardTitle>
-                    <CardDescription className={`text-sm sm:text-base mt-1 ${destination.textColor} opacity-90 px-2`}>
+                    <CardDescription className={`text-xs sm:text-sm mt-1 ${destination.textColor} opacity-90 px-2 leading-relaxed`}>
                         {destination.description}
                     </CardDescription>
                 </CardHeader>
