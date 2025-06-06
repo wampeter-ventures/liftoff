@@ -255,7 +255,7 @@ export default function Home() {
             setBoosterRowLocked(true);
             if (!wasBoosterLocked) {
                 setShowBoosterAnim(true);
-                setTimeout(() => setShowBoosterAnim(false), 2500);
+                setTimeout(() => setShowBoosterAnim(false), 4000);
             }
         } else {
             const row = parseInt(position.split('-')[0]);

@@ -5,13 +5,15 @@
   "main": "pages/index.js",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/generate-sw.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "lint:strict": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix-all": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "lint:check": "next lint --max-warnings 0"
+    "lint:check": "next lint --max-warnings 0",
+    "generate-sw": "node scripts/generate-sw.js"
   },
   "dependencies": {
     "lucide-react": "^0.512.0",
