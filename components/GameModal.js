@@ -17,7 +17,7 @@ function GameModal({ isOpen, onClose, type = 'info', title, message, children, s
 
             // Dramatic rolling animation
             const intervals = [];
-            
+
             // Fast initial rolling (100ms intervals)
             const fastRoll = setInterval(() => {
                 setAnimatedRolls(rolls.map(() => Math.floor(Math.random() * 6) + 1));
@@ -70,6 +70,7 @@ function GameModal({ isOpen, onClose, type = 'info', title, message, children, s
     const overlayClass = type === 'launch' ? 'modal-overlay launch-overlay' : 'modal-overlay';
 
     return (
+
         <div className={overlayClass} onClick={onClose}>
             <div 
                 className={`modal-content ${getModalClass()}`}
@@ -84,15 +85,15 @@ function GameModal({ isOpen, onClose, type = 'info', title, message, children, s
                         <X size={18} />
                     </button>
                 </div>
-                
+
                 <div className="modal-body">
                     {message && <p className="modal-message">{message}</p>}
                     {children}
                 </div>
-                
+
                 {showOkButton && (
                     <div className="modal-footer">
-                        <button 
+                        <button
                             className="btn btn-primary modal-ok-btn"
                             onClick={onClose}
                         >
@@ -105,4 +106,4 @@ function GameModal({ isOpen, onClose, type = 'info', title, message, children, s
     );
 }
 
-export default GameModal; 
+export default GameModal;

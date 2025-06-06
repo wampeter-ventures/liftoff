@@ -9,21 +9,21 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
 
     const handleDragStart = (e, die) => {
         console.log('🎮 DiceRoll handleDragStart called:', { die: die.value, placed: die.placed });
-        
+
         if (die.placed) {
             console.log('❌ DiceRoll drag prevented: die already placed');
             return;
         }
-        
+
         console.log('✅ DiceRoll setting up drag data and visual feedback');
         setDraggedDie(die);
         e.dataTransfer.setData('text/plain', JSON.stringify(die));
         e.dataTransfer.effectAllowed = 'move';
-        
+
         // Add visual feedback
         e.target.classList.add('dragging');
         console.log('✅ Added .dragging class to:', e.target);
-        
+
         // Call parent onDragStart if provided
         if (onDragStart) {
             console.log('📞 Calling parent onDragStart');
@@ -54,17 +54,17 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
             // Generate random rolling dice for animation
             const rolling = dice.map(d => ({ ...d, value: Math.floor(Math.random() * 6) + 1 }));
             setRollingDice(rolling);
-            
+
             const interval = setInterval(() => {
                 setRollingDice(prev => prev.map(d => ({ ...d, value: Math.floor(Math.random() * 6) + 1 })));
             }, 100);
-            
+
             setTimeout(() => {
                 clearInterval(interval);
                 setIsRolling(false);
                 setRollingDice([]);
             }, 1000);
-            
+
             return () => clearInterval(interval);
         }
     }, [dice.length]);
@@ -77,7 +77,7 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
             <h3>
                 {availableDice.length > 0 ? availableDice[0].playerName : 'Available Dice'}
             </h3>
-            
+
             {availableDice.length === 0 ? (
                 <div className="no-dice">
                     <i className="fas fa-check-circle"></i>
@@ -105,14 +105,14 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
             <div className="dice-instructions">
                 {(() => {
                     if (availableDice.length === 0) return '';
-                    
+
                     // Check if any unplaced dice can be placed
                     const unplacedDice = availableDice.filter(die => !die.placed);
                     if (unplacedDice.length === 0) return '';
-                    
+
                     // Check if any dice from this roll have already been placed
                     const anyDicePlaced = dice.some(die => die.placed);
-                    
+
                     // Check if any of the unplaced dice have valid placements on the rocket
                     const hasValidPlacements = unplacedDice.some(die => {
                         const validPositions = GameLogic.getValidPositions(
@@ -123,13 +123,13 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
                         );
                         return validPositions.length > 0;
                     });
-                    
+
                     if (hasValidPlacements) {
                         return `Click or drag dice:
 ⚙️ Body part (1-5) 🔋 Boosters (6)`;
                     } else if (!anyDicePlaced) {
                         // Only show fire message if this is a fresh roll with no eligible dice
-                        return "No eligible body parts or boosters, send a die to the fire! 🔥 ";
+                        return 'No eligible body parts or boosters, send a die to the fire! 🔥 ';
                     } else {
                         // Some dice were already placed, show regular message
                         return `Click or drag dice:
@@ -141,4 +141,4 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
     );
 }
 
-export default DiceRoll; 
+export default DiceRoll;

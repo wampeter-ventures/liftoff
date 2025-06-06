@@ -15,15 +15,15 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
         };
 
         const pips = pipConfigs[value] || [];
-        
+
         return (
             <svg className="die-face" viewBox="0 0 100 100">
-                <rect 
-                    x="5" y="5" 
-                    width="90" height="90" 
-                    rx="15" 
-                    fill="white" 
-                    stroke="#333" 
+                <rect
+                    x="5" y="5"
+                    width="90" height="90"
+                    rx="15"
+                    fill="white"
+                    stroke="#333"
                     strokeWidth="2"
                 />
                 {pips.map(([row, col], index) => (
@@ -42,13 +42,13 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
     // Desktop drag handlers - these work perfectly and include visual feedback
     const handleDragStart = (e) => {
         console.log('🎯 Die handleDragStart called:', { die: die.value, draggable, placed: die.placed });
-        
+
         if (!draggable || die.placed) {
             console.log('❌ Die drag prevented:', { draggable, placed: die.placed });
             e.preventDefault();
             return;
         }
-        
+
         console.log('✅ Die drag starting, calling onDragStart prop');
         if (onDragStart) {
             onDragStart(e, die);  // This calls DiceRoll's handleDragStart which adds .dragging class and sets dataTransfer
@@ -69,41 +69,41 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
     // Enhanced touch handlers for mobile drag simulation
     const handleTouchStart = (e) => {
         if (!draggable || die.placed) return;
-        
+
         const touch = e.touches[0];
         setDragStartPos({ x: touch.clientX, y: touch.clientY });
         setIsDragging(false);
-        
+
         // Prevent default to avoid scrolling
         e.preventDefault();
     };
 
     const handleTouchMove = (e) => {
         if (!draggable || die.placed || !dragStartPos) return;
-        
+
         const touch = e.touches[0];
         const deltaX = Math.abs(touch.clientX - dragStartPos.x);
         const deltaY = Math.abs(touch.clientY - dragStartPos.y);
-        
+
         // Start dragging if moved more than 10px
         if (!isDragging && (deltaX > 10 || deltaY > 10)) {
             setIsDragging(true);
             console.log('📱 Mobile drag started');
-            
+
             // Select the die first (for click-to-place system)
             if (onClick) {
                 onClick(die);
             }
-            
+
             // Add visual feedback
             e.target.classList.add('dragging');
-            
+
             // Apply live transform to follow finger
             const offsetX = touch.clientX - dragStartPos.x;
             const offsetY = touch.clientY - dragStartPos.y;
             e.target.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.1) rotate(5deg)`;
             e.target.style.zIndex = '1000';
-            
+
             // Simulate drag start for desktop compatibility
             if (onDragStart) {
                 const syntheticEvent = {
@@ -116,42 +116,42 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
                 onDragStart(syntheticEvent, die);
             }
         }
-        
+
         if (isDragging) {
             // Update position to follow finger
             const offsetX = touch.clientX - dragStartPos.x;
             const offsetY = touch.clientY - dragStartPos.y;
             e.target.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.1) rotate(5deg)`;
-            
+
             // Find element under touch point
             const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-            
+
             // Clear previous drag-over states
             document.querySelectorAll('.drag-over').forEach(el => {
                 el.classList.remove('drag-over');
             });
-            
+
             // Find closest drop target
             let dropTarget = elementBelow;
-            while (dropTarget && !dropTarget.classList.contains('grid-slot') && 
+            while (dropTarget && !dropTarget.classList.contains('grid-slot') &&
                    !dropTarget.classList.contains('fire-drop-zone')) {
                 dropTarget = dropTarget.parentElement;
             }
-            
+
             if (dropTarget) {
                 dropTarget.classList.add('drag-over');
             }
         }
-        
+
         e.preventDefault();
     };
 
     const handleTouchEnd = (e) => {
         if (!draggable || die.placed) return;
-        
+
         if (isDragging) {
             console.log('📱 Mobile drag ended');
-            
+
             // Clean up visual transforms
             e.target.style.transform = '';
             e.target.style.zIndex = '';
@@ -161,17 +161,17 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
             document.querySelectorAll('.drag-over').forEach(el => {
                 el.classList.remove('drag-over');
             });
-            
+
             const touch = e.changedTouches[0];
             const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-            
+
             // Find drop target
             let dropTarget = elementBelow;
-            while (dropTarget && !dropTarget.classList.contains('grid-slot') && 
+            while (dropTarget && !dropTarget.classList.contains('grid-slot') &&
                    !dropTarget.classList.contains('fire-drop-zone')) {
                 dropTarget = dropTarget.parentElement;
             }
-            
+
             if (dropTarget) {
                 // For mobile drag, we'll use the existing selection system
                 if (dropTarget.classList.contains('grid-slot') || dropTarget.classList.contains('fire-drop-zone')) {
@@ -180,7 +180,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
                     dropTarget.click();
                 }
             }
-            
+
             // Simulate drag end
             if (onDragEnd) {
                 onDragEnd({ target: e.target });
@@ -190,7 +190,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
             const touch = e.changedTouches[0];
             const deltaX = Math.abs(touch.clientX - dragStartPos.x);
             const deltaY = Math.abs(touch.clientY - dragStartPos.y);
-            
+
             if (deltaX < 10 && deltaY < 10) {
                 // Small movement, treat as click
                 if (onClick) {
@@ -198,7 +198,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
                 }
             }
         }
-        
+
         setIsDragging(false);
         setDragStartPos(null);
         e.preventDefault();
@@ -235,4 +235,4 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
     );
 }
 
-export default Die; 
+export default Die;

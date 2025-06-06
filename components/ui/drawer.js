@@ -7,9 +7,9 @@ const Drawer = ({ open, onOpenChange, children }) => {
     <DrawerContext.Provider value={{ open, onOpenChange }}>
       {children}
       {open && (
-        <div 
-          className="fixed inset-0 z-40 bg-black/50" 
-          onClick={() => onOpenChange(false)} 
+        <div
+          className="fixed inset-0 z-40 bg-black/50"
+          onClick={() => onOpenChange(false)}
         />
       )}
     </DrawerContext.Provider>
@@ -18,9 +18,9 @@ const Drawer = ({ open, onOpenChange, children }) => {
 
 const DrawerContent = React.forwardRef(({ className, children, ...props }, ref) => {
   const { open } = React.useContext(DrawerContext);
-  
+
   if (!open) return null;
-  
+
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col rounded-t-[10px] border bg-background max-h-[90vh]">
       <div
@@ -43,12 +43,14 @@ const DrawerFooter = ({ className, ...props }) => (
   <div className={`mt-auto flex flex-col gap-2 p-4 ${className || ''}`} {...props} />
 );
 
-const DrawerTitle = React.forwardRef(({ className, ...props }, ref) => (
+const DrawerTitle = React.forwardRef(({ className, children, ...props }, ref) => (
   <h2
     ref={ref}
     className={`text-lg font-semibold leading-none tracking-tight ${className || ''}`}
     {...props}
-  />
+  >
+    {children || <span aria-hidden="true"></span>}
+  </h2>
 ));
 
 const DrawerDescription = React.forwardRef(({ className, ...props }, ref) => (
@@ -61,7 +63,7 @@ const DrawerDescription = React.forwardRef(({ className, ...props }, ref) => (
 
 const DrawerClose = React.forwardRef(({ className, children, ...props }, ref) => {
   const { onOpenChange } = React.useContext(DrawerContext);
-  
+
   return React.cloneElement(children, {
     ref,
     onClick: () => onOpenChange(false),
@@ -69,10 +71,10 @@ const DrawerClose = React.forwardRef(({ className, children, ...props }, ref) =>
   });
 });
 
-DrawerContent.displayName = "DrawerContent";
-DrawerTitle.displayName = "DrawerTitle";
-DrawerDescription.displayName = "DrawerDescription";
-DrawerClose.displayName = "DrawerClose";
+DrawerContent.displayName = 'DrawerContent';
+DrawerTitle.displayName = 'DrawerTitle';
+DrawerDescription.displayName = 'DrawerDescription';
+DrawerClose.displayName = 'DrawerClose';
 
 export {
   Drawer,
@@ -82,4 +84,4 @@ export {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-}; 
+};

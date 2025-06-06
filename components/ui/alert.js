@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Alert = React.forwardRef(({ className, variant = "default", ...props }, ref) => {
+const Alert = React.forwardRef(({ className, variant = 'default', ...props }, ref) => {
   const variantStyles = {
-    default: "bg-background text-foreground",
-    destructive: "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+    default: 'bg-background text-foreground',
+    destructive: 'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
   };
 
   return (
@@ -16,12 +16,14 @@ const Alert = React.forwardRef(({ className, variant = "default", ...props }, re
   );
 });
 
-const AlertTitle = React.forwardRef(({ className, ...props }, ref) => (
+const AlertTitle = React.forwardRef(({ className, children, ...props }, ref) => (
   <h5
     ref={ref}
     className={`mb-1 font-medium leading-none tracking-tight ${className || ''}`}
     {...props}
-  />
+  >
+    {children || <span aria-hidden="true"></span>}
+  </h5>
 ));
 
 const AlertDescription = React.forwardRef(({ className, ...props }, ref) => (
@@ -32,8 +34,8 @@ const AlertDescription = React.forwardRef(({ className, ...props }, ref) => (
   />
 ));
 
-Alert.displayName = "Alert";
-AlertTitle.displayName = "AlertTitle";
-AlertDescription.displayName = "AlertDescription";
+Alert.displayName = 'Alert';
+AlertTitle.displayName = 'AlertTitle';
+AlertDescription.displayName = 'AlertDescription';
 
-export { Alert, AlertTitle, AlertDescription }; 
+export { Alert, AlertTitle, AlertDescription };

@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { Button } from "./ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Card, CardContent, CardFooter } from "./ui/card";
-import { Separator } from "./ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { useState, useEffect } from 'react';
+import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Card, CardContent, CardFooter } from './ui/card';
+import { Separator } from './ui/separator';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import {
   Drawer,
   DrawerClose,
@@ -14,7 +14,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "./ui/drawer";
+} from './ui/drawer';
 import {
   Rocket,
   Info,
@@ -37,20 +37,21 @@ import {
   Dice5,
   Dice6,
   ChevronRight,
-} from "lucide-react";
-import { useToast } from "../hooks/use-toast";
+} from 'lucide-react';
+
+import { useToast } from '../hooks/use-toast';
 
 function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const [playerCount, setPlayerCount] = useState(8);
   const [players, setPlayers] = useState([
-    { id: 1, name: "Player 1", diceCount: 4 },
-    { id: 2, name: "Player 2", diceCount: 2 },
-    { id: 3, name: "Player 3", diceCount: 4 },
-    { id: 4, name: "Player 4", diceCount: 2 },
-    { id: 5, name: "Player 5", diceCount: 3 },
-    { id: 6, name: "Player 6", diceCount: 6 },
-    { id: 7, name: "Player 7", diceCount: 3 },
-    { id: 8, name: "Player 8", diceCount: 2 }
+    { id: 1, name: 'Player 1', diceCount: 4 },
+    { id: 2, name: 'Player 2', diceCount: 2 },
+    { id: 3, name: 'Player 3', diceCount: 4 },
+    { id: 4, name: 'Player 4', diceCount: 2 },
+    { id: 5, name: 'Player 5', diceCount: 3 },
+    { id: 6, name: 'Player 6', diceCount: 6 },
+    { id: 7, name: 'Player 7', diceCount: 3 },
+    { id: 8, name: 'Player 8', diceCount: 2 }
   ]);
   const [error, setError] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -105,12 +106,12 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
     if (!hasLoadedPreservedSetup && preservedPlayerSetup && preservedPlayerSetup.length > 0) {
       return;
     }
-    
+
     const newPlayersList = Array.from({ length: playerCount }, (_, i) => {
       if (players[i]) {
         return players[i];
       }
-      
+
       // Default dice counts: 4 players with 2 dice, 3 with 3 dice, 1 with 4 dice
       let defaultDiceCount = 2;
       if (i >= 4 && i <= 6) {
@@ -118,7 +119,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
       } else if (i === 7) {
         defaultDiceCount = 4;
       }
-      
+
       return {
         id: Date.now() + i,
         name: `Player ${i + 1}`,
@@ -131,10 +132,10 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const updatePlayer = (index, field, value) => {
     const newPlayers = players.map((player, i) => {
       if (i === index) {
-        if (field === "diceCount") {
+        if (field === 'diceCount') {
           // Allow empty string for backspacing, but convert to number for validation
-          if (value === "" || value === null || value === undefined) {
-            return { ...player, [field]: "" };
+          if (value === '' || value === null || value === undefined) {
+            return { ...player, [field]: '' };
           }
           const numValue = Number(value);
           if (isNaN(numValue)) {
@@ -157,15 +158,15 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
 
   const handleAttemptStartMission = () => {
     setError(null);
-    const hasValidPlayers = players.every((p) => p.name.trim() !== "" && p.diceCount >= 1 && p.diceCount <= 20 && p.diceCount !== "");
+    const hasValidPlayers = players.every((p) => p.name.trim() !== '' && p.diceCount >= 1 && p.diceCount <= 20 && p.diceCount !== '');
 
     if (!hasValidPlayers) {
-      const errorMessage = "Every player needs a name and 1-20 dice.";
+      const errorMessage = 'Every player needs a name and 1-20 dice.';
       setError(errorMessage);
       toast({
-        title: "Hold Up!",
+        title: 'Hold Up!',
         description: errorMessage,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -184,9 +185,9 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
     onStartGame(players);
     setIsDrawerOpen(false);
     toast({
-      title: "Engines Primed!",
+      title: 'Engines Primed!',
       description: `Liftoff sequence initiated for ${players.length} player(s).`,
-      variant: "default",
+      variant: 'default',
       duration: 4000,
     });
   };
@@ -207,7 +208,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
           <span className="text-lg font-bold">&lt;</span>
           <span className="sr-only">Back</span>
         </Button>
-        <h1 
+        <h1
           className="text-xl font-semibold text-slate-800 dark:text-slate-100"
           style={{
             fontFamily: '"Courier New", "SF Mono", "Monaco", "Menlo", monospace',
@@ -278,7 +279,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
                         id={`player-${index}-name`}
                         type="text"
                         value={player.name}
-                        onChange={(e) => updatePlayer(index, "name", e.target.value)}
+                        onChange={(e) => updatePlayer(index, 'name', e.target.value)}
                         placeholder={`Player ${index + 1}`}
                         className="text-sm h-9 dark:bg-slate-600 dark:border-slate-500"
                       />
@@ -296,7 +297,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
                         min="1"
                         max="20"
                         value={player.diceCount}
-                        onChange={(e) => updatePlayer(index, "diceCount", e.target.value)}
+                        onChange={(e) => updatePlayer(index, 'diceCount', e.target.value)}
                         className="text-sm h-9 dark:bg-slate-600 dark:border-slate-500"
                       />
                     </div>
@@ -318,8 +319,8 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
       </Card>
 
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <DrawerContent 
-          className="dark:bg-slate-800" 
+        <DrawerContent
+          className="dark:bg-slate-800"
           style={{ maxWidth: '500px', margin: '0 auto' }}
         >
           <DrawerHeader className="text-left pt-4 pb-2">
@@ -342,8 +343,8 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
             </div>
             <DrawerDescription className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">
               {showTldrRules
-                ? "The super-duper short version. No excuses now!"
-                : "Read this, or become space dust. Your choice."}
+                ? 'The super-duper short version. No excuses now!'
+                : 'Read this, or become space dust. Your choice.'}
             </DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">
@@ -402,49 +403,50 @@ export const renderDetailedRules = () => (
             Unleash the fury of ALL your dice! Let 'em fly!
           </p>
         </li>
-        <li className="pl-4 relative">
-          <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-sky-500 dark:text-sky-400" />
-          <strong className="text-sky-600 dark:text-sky-300">2. Construct-o-Rama (Must Place ≥1 Die):</strong>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            You <em className="font-semibold text-amber-600 dark:text-amber-500">MUST</em> place at least one die. No
-            hoarding, you dice miser! Each new piece must smooch an existing part of your glorious contraption (touching
-            sides, not just corners, you cheeky rascal).
-          </p>
-          <div className="mt-2 space-y-2 pl-3 border-l-2 border-slate-200 dark:border-slate-600 ml-1">
-            <div className="p-2 rounded-md bg-slate-100 dark:bg-slate-600/50">
-              <div className="flex items-center mb-1">
-                <span className="flex gap-0.5 mr-2">
-                  <Dice1 className="h-4 w-4 text-green-500" />
-                  <Dice2 className="h-4 w-4 text-green-500" />
-                  <Dice3 className="h-4 w-4 text-green-500" />
-                  <Dice4 className="h-4 w-4 text-green-500" />
-                  <Dice5 className="h-4 w-4 text-green-500" />
-                </span>
-                <strong className="text-green-600 dark:text-green-400 text-xs uppercase tracking-wider">
-                  The Main Squeeze (Body Dice 1-5)
-                </strong>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Build your rocket's magnificent body <strong className="text-green-500">DOWNWARDS</strong>, row by
-                glorious row (all 1s, then all 2s, etc.). Think of it as a reverse skyscraper of pure awesome. The
-                bigger the body, the farther you MIGHT go.
-              </p>
-            </div>
-            <div className="p-2 rounded-md bg-slate-100 dark:bg-slate-600/50">
-              <div className="flex items-center mb-1">
-                <Dice6 className="h-4 w-4 text-orange-500 mr-2" />
-                <strong className="text-orange-600 dark:text-orange-400 text-xs uppercase tracking-wider">
-                  Fiery Bottoms (Booster Dice - 6s)
-                </strong>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Slap these bad boys (dice showing a 6) onto the <strong className="text-orange-500">LOWEST</strong> row
-                of your rocket's body. This locks in your rocket's majestic height. Choose wisely, space cadet! Once a
-                booster is on, that body row is SET.
-              </p>
-            </div>
-          </div>
-        </li>
+<li className="pl-4 relative">
+  <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-sky-500 dark:text-sky-400" />
+  <strong className="text-sky-600 dark:text-sky-300">2. Construct-o-Rama (Must Place ≥1 Die):</strong>
+  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+    You <em className="font-semibold text-amber-600 dark:text-amber-500">MUST</em> place at least one die. No hoarding,
+    you dice miser! Each new piece must smooch an existing part of your glorious contraption (touching sides, not just
+    corners, you cheeky rascal).
+  </p>
+  <div className="mt-2 space-y-2 pl-3 border-l-2 border-slate-200 dark:border-slate-600 ml-1">
+    <div className="p-2 rounded-md bg-slate-100 dark:bg-slate-600/50">
+      <div className="flex items-center mb-1">
+        <span className="flex gap-0.5 mr-2">
+          <Dice1 className="h-4 w-4 text-green-500" />
+          <Dice2 className="h-4 w-4 text-green-500" />
+          <Dice3 className="h-4 w-4 text-green-500" />
+          <Dice4 className="h-4 w-4 text-green-500" />
+          <Dice5 className="h-4 w-4 text-green-500" />
+        </span>
+        <strong className="text-green-600 dark:text-green-400 text-xs uppercase tracking-wider">
+          The Main Squeeze (Body Dice 1-5)
+        </strong>
+      </div>
+      <p className="text-xs text-slate-500 dark:text-slate-400">
+        Build your rocket's magnificent body <strong className="text-green-500">DOWNWARDS</strong>, row by glorious row
+        (all 1s, then all 2s, etc.). Think of it as a reverse skyscraper of pure awesome. The bigger the body, the
+        farther you MIGHT go.
+      </p>
+    </div>
+    <div className="p-2 rounded-md bg-slate-100 dark:bg-slate-600/50">
+      <div className="flex items-center mb-1">
+        <Dice6 className="h-4 w-4 text-orange-500 mr-2" />
+        <strong className="text-orange-600 dark:text-orange-400 text-xs uppercase tracking-wider">
+          Fiery Bottoms (Booster Dice - 6s)
+        </strong>
+      </div>
+      <p className="text-xs text-slate-500 dark:text-slate-400">
+        Slap these bad boys (dice showing a 6) onto the <strong className="text-orange-500">LOWEST</strong> row of your
+        rocket's body. This locks in your rocket's majestic height. Choose wisely, space cadet! Once a booster is on,
+        that body row is SET.
+      </p>
+    </div>
+  </div>
+</li>
+
         <li className="pl-4 relative">
           <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-sky-500 dark:text-sky-400" />
           <strong className="text-sky-600 dark:text-sky-300">3. Uh Oh, Space Junk! (Can't Place?):</strong>
@@ -453,6 +455,7 @@ export const renderDetailedRules = () => (
             dreaded <strong className="text-red-600 dark:text-red-400">"Fire Pile."</strong> It's for the greater
             good... maybe.
           </p>
+
         </li>
       </ul>
     </div>
@@ -461,6 +464,7 @@ export const renderDetailedRules = () => (
       <h4 className="font-bold text-lg text-red-500 dark:text-red-400 mb-2 flex items-center">
         <Skull className="inline h-5 w-5 mr-2 flex-shrink-0" /> Impending Doom (Watch Out!):
       </h4>
+
       <div className="flex items-start text-slate-600 dark:text-slate-300">
         <Flame className="h-4 w-4 mr-2 mt-0.5 text-red-500 flex-shrink-0" />
         <p>
@@ -483,6 +487,7 @@ export const renderDetailedRules = () => (
           Once your rocket body is a masterpiece of engineering (or at least, looks vaguely rocket-shaped) AND you've
           attached <strong className="text-teal-600 dark:text-teal-300">one or more Boosters</strong>, it's showtime!
         </li>
+
         <li className="pl-4 relative">
           <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-teal-500 dark:text-teal-400" />
           Roll <em className="font-semibold">ONLY</em> your Booster dice. Nail a 6 on any of them?{' '}
@@ -553,8 +558,8 @@ export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent 
-        className="dark:bg-slate-800" 
+      <DrawerContent
+        className="dark:bg-slate-800"
         style={{ maxWidth: '500px', margin: '0 auto' }}
       >
         <DrawerHeader className="text-left pt-4 pb-2">
@@ -577,8 +582,8 @@ export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
           </div>
           <DrawerDescription className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">
             {showTldrRules
-              ? "The super-duper short version. No excuses now!"
-              : "Read this, or become space dust. Your choice."}
+              ? 'The super-duper short version. No excuses now!'
+              : 'Read this, or become space dust. Your choice.'}
           </DrawerDescription>
         </DrawerHeader>
         <div className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">

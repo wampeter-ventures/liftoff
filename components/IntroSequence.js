@@ -52,9 +52,9 @@ function IntroSequence({ onComplete, stars }) {
 
             {/* Rocket Image */}
             <div className={`intro-rocket ${phase >= 1 ? 'fade-in' : ''} ${phase >= 3 ? 'fade-to-background' : ''}`}>
-                <img 
-                    src="/rocket_big.png" 
-                    alt="Mission Rocket" 
+                <img
+                    src="/rocket_big.png"
+                    alt="Mission Rocket"
                     className="rocket-intro-image"
                 />
             </div>
@@ -68,4 +68,4 @@ function IntroSequence({ onComplete, stars }) {
     );
 }
 
-export default IntroSequence; 
+export default IntroSequence;

@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import GameLogic from '../lib/gameLogic';
-import Die from '../components/Die';
 import DiceRoll from '../components/DiceRoll';
 import RocketGrid from '../components/RocketGrid';
-import GameSetup from '../components/GameSetup';
+import GameSetup, { HelpDrawer } from '../components/GameSetup';
 import GameResults from '../components/GameResults';
 import IntroSequence from '../components/IntroSequence';
 import GameModal from '../components/GameModal';
-import { HelpDrawer } from '../components/GameSetup';
 import {
     Star,
     Flame,
@@ -48,7 +46,7 @@ import Head from "next/head";
 import LaunchResults from '../components/LaunchResults';
 
 export default function Home() {
-    const [gameState, setGameState] = useState("welcome");
+    const [gameState, setGameState] = useState('welcome');
     const [players, setPlayers] = useState([]);
     const [originalPlayerSetup, setOriginalPlayerSetup] = useState([]);
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -103,7 +101,7 @@ export default function Home() {
         Satellite,
     ];
     const [outOfDiceFail, setOutOfDiceFail] = useState(false);
-    
+
     // Modal state
     const [modal, setModal] = useState({
         isOpen: false,
@@ -183,7 +181,7 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        if (gameState === "playing" && players.length > 0) {
+        if (gameState === 'playing' && players.length > 0) {
             setCurrentDice([]);
             setPlacedDice([]);
             setGameHistory([]);
@@ -212,7 +210,7 @@ export default function Home() {
         setPlayers(playerData);
         setCurrentPlayerIndex(0);
         setOutOfDiceFail(false);
-        setGameState("intro");
+        setGameState('intro');
         rollDiceForCurrentPlayer(playerData);
     };
 
@@ -260,7 +258,7 @@ export default function Home() {
                 setTimeout(() => setShowBoosterAnim(false), 2500);
             }
         } else {
-            const row = parseInt(position.split("-")[0]);
+            const row = parseInt(position.split('-')[0]);
             setRocketHeight(Math.max(rocketHeight, row));
         }
 
@@ -272,7 +270,7 @@ export default function Home() {
         setGameHistory([
             ...gameHistory,
             {
-                action: "place",
+                action: 'place',
                 die,
                 position,
                 previousGrid: rocketGrid,
@@ -302,13 +300,13 @@ export default function Home() {
         setTimeout(() => setFireFlash(false), 900);
         if (newFirePile >= 5) {
             setOutOfDiceFail(false);
-            setGameState("results");
+            setGameState('results');
             return;
         }
         setGameHistory([
             ...gameHistory,
             {
-                action: "fire",
+                action: 'fire',
                 die,
                 previousFirePile: firePile,
             },
@@ -318,7 +316,7 @@ export default function Home() {
     const undoLastMove = () => {
         if (gameHistory.length === 0) return;
         const lastAction = gameHistory[gameHistory.length - 1];
-        if (lastAction.action === "place") {
+        if (lastAction.action === 'place') {
             setRocketGrid(lastAction.previousGrid);
             setRocketHeight(lastAction.previousHeight);
             setBoosterRowLocked(lastAction.previousBoosterLocked);
@@ -327,7 +325,7 @@ export default function Home() {
             );
             setCurrentDice(updatedDice);
             setPlacedDice(placedDice.filter((d) => d.id !== lastAction.die.id));
-        } else if (lastAction.action === "fire") {
+        } else if (lastAction.action === 'fire') {
             setFirePile(lastAction.previousFirePile);
             const updatedDice = currentDice.map((d) =>
                 d.id === lastAction.die.id ? { ...d, placed: false } : d,
@@ -359,7 +357,7 @@ export default function Home() {
         setPlayers(updatedPlayers);
         if (firePile >= 5) {
             setOutOfDiceFail(false);
-            setGameState("results");
+            setGameState('results');
             return;
         }
         // SINGLE PLAYER FIX: If only one player, just re-roll their dice for the next turn
@@ -404,10 +402,10 @@ export default function Home() {
         );
         if (victoryLevel > 0) {
             setOutOfDiceFail(false);
-            setGameState("results");
+            setGameState('results');
         } else {
             setOutOfDiceFail(true);
-            setGameState("results");
+            setGameState('results');
         }
     };
 
@@ -423,7 +421,7 @@ export default function Home() {
             ? Math.min(
                   ...Object.keys(rocketGrid)
                       .filter((k) => rocketGrid[k] && rocketGrid[k].value === 6)
-                      .map((k) => parseInt(k.split("-")[0])),
+                      .map((k) => parseInt(k.split('-')[0])),
               )
             : null;
         if (!boosterRow) return false;
@@ -479,7 +477,7 @@ export default function Home() {
                         { boosterRolls, success: true }
                     );
                     setTimeout(() => {
-                        setGameState("results");
+                        setGameState('results');
                     }, 4000);
                 } else {
                     const newGrid = { ...rocketGrid };
@@ -500,7 +498,7 @@ export default function Home() {
                     );
                     if (firePile + 1 >= 5) {
                         setTimeout(() => {
-                            setGameState("results");
+                            setGameState('results');
                         }, 3000);
                 }
                 }
@@ -528,10 +526,10 @@ export default function Home() {
         setPlacementEffect(null);
         setLaunchCountdown(0);
         setOutOfDiceFail(false);
-        
+
         // Close any open modals
         closeModal();
-        
+
         // Reset the rocket grid to empty
         const grid = {};
         for (let row = 1; row <= 6; row++) {
@@ -545,13 +543,13 @@ export default function Home() {
 
     const resetGame = () => {
         clearAllGameState();
-        setGameState("setup");
+        setGameState('setup');
     };
 
     const resetGamePreservingSetup = () => {
         // Clear game state but keep original player setup for replay
         clearAllGameState();
-        setGameState("setup");
+        setGameState('setup');
         // Note: originalPlayerSetup is preserved and will be used by GameSetup
     };
 
@@ -559,12 +557,12 @@ export default function Home() {
         clearAllGameState();
         // Clear the original setup when going back to welcome
         setOriginalPlayerSetup([]);
-        setGameState("welcome");
+        setGameState('welcome');
     };
 
     const selectDie = (die) => {
         if (die.placed) return;
-        
+
         // If clicking the same die, deselect it
         if (selectedDie && selectedDie.id === die.id) {
             setSelectedDie(null);
@@ -575,7 +573,7 @@ export default function Home() {
 
     const placeSelectedDie = (position) => {
         if (!selectedDie) return false;
-        
+
         const success = placeDie(selectedDie, position);
         if (success) {
             setSelectedDie(null); // Clear selection after successful placement
@@ -585,7 +583,7 @@ export default function Home() {
 
     const sendSelectedToFire = () => {
         if (!selectedDie) return false;
-        
+
         sendToFire(selectedDie);
         setSelectedDie(null); // Clear selection after sending to fire
         return true;
@@ -608,12 +606,12 @@ export default function Home() {
                     }}
                 >
                     {star.size === 'large' ? (
-                        <Star 
-                            size={10} 
+                        <Star
+                            size={10}
                             className="text-white fill-white"
                         />
                     ) : (
-                        <div 
+                        <div
                             className="bg-white rounded-full"
                             style={{
                                 width: '2px',
@@ -623,11 +621,11 @@ export default function Home() {
                     )}
                 </div>
             ))}
-            
+
             {/* Custom SVG Planets with rotation */}
             {/* Saturn */}
-            <div 
-                className="absolute top-1/4 left-1/6 animate-spin opacity-30" 
+            <div
+                className="absolute top-1/4 left-1/6 animate-spin opacity-30"
                 style={{ animationDuration: '20s' }}
             >
                 <svg width="40" height="40" viewBox="0 0 40 40" className="text-orange-300">
@@ -636,10 +634,10 @@ export default function Home() {
                     <ellipse cx="20" cy="20" rx="16" ry="3" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.6" />
                 </svg>
             </div>
-            
+
             {/* Earth */}
-            <div 
-                className="absolute top-3/4 right-1/4 animate-spin opacity-25" 
+            <div
+                className="absolute top-3/4 right-1/4 animate-spin opacity-25"
                 style={{ animationDuration: '25s' }}
             >
                 <svg width="32" height="32" viewBox="0 0 32 32" className="text-blue-400">
@@ -648,10 +646,10 @@ export default function Home() {
                     <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
                 </svg>
             </div>
-            
+
             {/* Mars */}
-            <div 
-                className="absolute top-1/2 right-1/6 animate-spin opacity-20" 
+            <div
+                className="absolute top-1/2 right-1/6 animate-spin opacity-20"
                 style={{ animationDuration: '30s' }}
             >
                 <svg width="28" height="28" viewBox="0 0 28 28" className="text-red-400">
@@ -661,10 +659,10 @@ export default function Home() {
                     <circle cx="12" cy="18" r="1" fill="rgba(139, 69, 19, 0.6)" />
                 </svg>
             </div>
-            
+
             {/* Jupiter */}
-            <div 
-                className="absolute top-1/6 right-1/3 animate-spin opacity-15" 
+            <div
+                className="absolute top-1/6 right-1/3 animate-spin opacity-15"
                 style={{ animationDuration: '35s' }}
             >
                 <svg width="45" height="45" viewBox="0 0 45 45" className="text-yellow-500">
@@ -675,10 +673,10 @@ export default function Home() {
                     <circle cx="18" cy="20" r="1.5" fill="rgba(139, 69, 19, 0.6)" />
                 </svg>
             </div>
-            
+
             {/* Moon */}
-            <div 
-                className="absolute top-2/3 left-1/3 animate-spin opacity-35" 
+            <div
+                className="absolute top-2/3 left-1/3 animate-spin opacity-35"
                 style={{ animationDuration: '15s' }}
             >
                 <svg width="24" height="24" viewBox="0 0 24 24" className="text-gray-300">
@@ -697,9 +695,9 @@ export default function Home() {
             <Head>
                 <title>Liftoff</title>
             </Head>
-            
+
             {/* Game Modal */}
-            <GameModal 
+            <GameModal
                 isOpen={modal.isOpen}
                 onClose={closeModal}
                 type={modal.type}
@@ -707,28 +705,28 @@ export default function Home() {
                 message={modal.message}
             >
                 {modal.data && modal.data.boosterRolls && (
-                    <LaunchResults 
+                    <LaunchResults
                         boosterRolls={modal.data.boosterRolls}
                         success={modal.data.success}
                     />
                 )}
             </GameModal>
-            
+
             {/* LAUNCH HELPER DIALOG */}
             {showLaunchHelper && (
                 <div
                     style={{
-                        background: "#fff9cd",
-                        border: "2px solid #f4d35e",
-                        padding: "16px 20px",
-                        borderRadius: "12px",
-                        position: "absolute",
-                        top: "32%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
+                        background: '#fff9cd',
+                        border: '2px solid #f4d35e',
+                        padding: '16px 20px',
+                        borderRadius: '12px',
+                        position: 'absolute',
+                        top: '32%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
                         zIndex: 99,
-                        textAlign: "center",
-                        fontWeight: "bold",
+                        textAlign: 'center',
+                        fontWeight: 'bold',
                         maxWidth: 320,
                     }}
                 >
@@ -745,103 +743,103 @@ export default function Home() {
                 </div>
             )}
 
-            {gameState === "welcome" && (
+            {gameState === 'welcome' && (
                 <div className="welcome-screen">
                     <StarryBackground />
-                    
+
                     {/* Content */}
                     <div className="relative z-10 flex flex-col items-center">
                         <div className="welcome-icon mb-8">
-                            <svg 
-                                width="120" 
-                                height="120" 
-                                viewBox="0 0 100 100" 
-                                fill="none" 
+                            <svg
+                                width="120"
+                                height="120"
+                                viewBox="0 0 100 100"
+                                fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="text-white drop-shadow-lg"
                             >
                                 {/* Rocket body */}
-                                <path 
-                                    d="M50 10 L62 25 L62 70 L55 80 L45 80 L38 70 L38 25 Z" 
-                                    stroke="currentColor" 
-                                    strokeWidth="2.5" 
+                                <path
+                                    d="M50 10 L62 25 L62 70 L55 80 L45 80 L38 70 L38 25 Z"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
                                     fill="none"
                                 />
                                 {/* Rocket tip */}
-                                <path 
-                                    d="M38 25 L50 10 L62 25" 
-                                    stroke="currentColor" 
-                                    strokeWidth="2.5" 
+                                <path
+                                    d="M38 25 L50 10 L62 25"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
                                     fill="none"
                                 />
                                 {/* Window */}
-                                <circle 
-                                    cx="50" 
-                                    cy="35" 
-                                    r="10" 
-                                    stroke="currentColor" 
-                                    strokeWidth="2.5" 
+                                <circle
+                                    cx="50"
+                                    cy="35"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
                                     fill="none"
                                 />
                                 {/* Window inner */}
-                                <circle 
-                                    cx="50" 
-                                    cy="35" 
-                                    r="6" 
-                                    stroke="currentColor" 
-                                    strokeWidth="1.5" 
+                                <circle
+                                    cx="50"
+                                    cy="35"
+                                    r="6"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
                                     fill="none"
                                     opacity="0.6"
                                 />
                                 {/* Body details */}
-                                <line 
-                                    x1="42" y1="50" 
-                                    x2="58" y2="50" 
-                                    stroke="currentColor" 
+                                <line
+                                    x1="42" y1="50"
+                                    x2="58" y2="50"
+                                    stroke="currentColor"
                                     strokeWidth="1.5"
                                     opacity="0.7"
                                 />
-                                <line 
-                                    x1="42" y1="60" 
-                                    x2="58" y2="60" 
-                                    stroke="currentColor" 
+                                <line
+                                    x1="42" y1="60"
+                                    x2="58" y2="60"
+                                    stroke="currentColor"
                                     strokeWidth="1.5"
                                     opacity="0.7"
                                 />
                                 {/* Fins */}
-                                <path 
-                                    d="M38 70 L28 85 L33 85 L38 75" 
-                                    stroke="currentColor" 
-                                    strokeWidth="2.5" 
+                                <path
+                                    d="M38 70 L28 85 L33 85 L38 75"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
                                     fill="none"
                                 />
-                                <path 
-                                    d="M62 70 L72 85 L67 85 L62 75" 
-                                    stroke="currentColor" 
-                                    strokeWidth="2.5" 
+                                <path
+                                    d="M62 70 L72 85 L67 85 L62 75"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
                                     fill="none"
                                 />
                                 {/* Flame */}
-                                <path 
-                                    d="M45 80 L47 92 L50 87 L53 92 L55 80" 
-                                    stroke="#FFA500" 
-                                    strokeWidth="2.5" 
+                                <path
+                                    d="M45 80 L47 92 L50 87 L53 92 L55 80"
+                                    stroke="#FFA500"
+                                    strokeWidth="2.5"
                                     fill="none"
                                     className="animate-pulse"
                                 />
-                                <path 
-                                    d="M47 85 L48 90 L50 88 L52 90 L53 85" 
-                                    stroke="#FF6B35" 
-                                    strokeWidth="2" 
+                                <path
+                                    d="M47 85 L48 90 L50 88 L52 90 L53 85"
+                                    stroke="#FF6B35"
+                                    strokeWidth="2"
                                     fill="none"
                                     className="animate-pulse"
                                     style={{ animationDelay: '0.3s' }}
                                 />
                             </svg>
                         </div>
-                        <h1 
-                            className="welcome-title mb-4" 
-                            style={{ 
+                        <h1
+                            className="welcome-title mb-4"
+                            style={{
                                 fontFamily: '"Courier New", "SF Mono", "Monaco", "Menlo", monospace',
                                 fontWeight: 'bold',
                                 letterSpacing: '0.02em',
@@ -855,7 +853,7 @@ export default function Home() {
                         <p className="welcome-subtitle mb-6">
                             Build. Boost. Blast or BOOM!
                         </p>
-                        <p 
+                        <p
                             className="welcome-subtitle mb-4 opacity-90"
                             style={{ fontSize: '14px' }}
                         >
@@ -863,33 +861,33 @@ export default function Home() {
                         </p>
                         <button
                             className="btn btn-primary btn-large mb-6 text-white border-none transition-all duration-300"
-                            style={{ 
-                                backgroundColor: '#f97316', 
-                                border: 'none' 
+                            style={{
+                                backgroundColor: '#f97316',
+                                border: 'none'
                             }}
                             onMouseEnter={(e) => e.target.style.backgroundColor = '#db7127'}
                             onMouseLeave={(e) => e.target.style.backgroundColor = '#f97316'}
-                            onClick={() => setGameState("setup")}
+                            onClick={() => setGameState('setup')}
                         >
                             Play
                         </button>
                         <div className="welcome-date">
-                            {new Date().toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
+                            {new Date().toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
                             })}
                         </div>
                     </div>
                 </div>
             )}
 
-            {gameState === "setup" && (
+            {gameState === 'setup' && (
                 <div className="fixed inset-0 bg-black">
                     <StarryBackground />
                     <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-                        <GameSetup 
-                            onStartGame={startGame} 
+                        <GameSetup
+                            onStartGame={startGame}
                             onBack={goToWelcome}
                             preservedPlayerSetup={originalPlayerSetup}
                         />
@@ -897,14 +895,14 @@ export default function Home() {
                 </div>
             )}
 
-            {gameState === "intro" && (
-                <IntroSequence 
-                    onComplete={() => setGameState("playing")}
+            {gameState === 'intro' && (
+                <IntroSequence
+                    onComplete={() => setGameState('playing')}
                     stars={stars}
                 />
             )}
 
-            {gameState === "playing" && (
+            {gameState === 'playing' && (
                 <>
                     {/* Gameplay Help Drawer */}
                     <HelpDrawer
@@ -917,8 +915,8 @@ export default function Home() {
                             {launchCountdown}
                         </div>
                     )}
-                    
-                    
+
+
                     <div className="game-container">
                         <div className="top-status">
                             <button
@@ -932,33 +930,33 @@ export default function Home() {
                                     {(() => {
                                         // Filter out eliminated players (0 dice)
                                         const activePlayers = players.filter(player => player.diceCount > 0);
-                                        const activeCurrentIndex = activePlayers.findIndex((_, index) => 
+                                        const activeCurrentIndex = activePlayers.findIndex((_, index) =>
                                             players.indexOf(activePlayers[index]) === currentPlayerIndex
                                         );
-                                        
+
                                         // Calculate which players to show (center around current player)
                                         const maxVisible = 5; // Maximum players to show at once
                                         let startIndex = Math.max(0, activeCurrentIndex - Math.floor(maxVisible / 2));
-                                        let endIndex = Math.min(activePlayers.length, startIndex + maxVisible);
-                                        
+                                        const endIndex = Math.min(activePlayers.length, startIndex + maxVisible);
+
                                         // Adjust if we're near the end
                                         if (endIndex - startIndex < maxVisible && activePlayers.length > maxVisible) {
                                             startIndex = Math.max(0, endIndex - maxVisible);
                                         }
-                                        
+
                                         const visiblePlayers = activePlayers.slice(startIndex, endIndex);
-                                        
+
                                         return visiblePlayers.map((player, visIndex) => {
                                             const originalIndex = players.indexOf(player);
                                             return (
                                                 <div
                                                     key={player.name || originalIndex}
                                                     className={`player-compact ${
-                                                        originalIndex === currentPlayerIndex ? "current" : ""
+                                                        originalIndex === currentPlayerIndex ? 'current' : ''
                                                     }`}
                                                 >
                                                     <div className="player-name-short">
-                                                        {player.name.startsWith("Player ")
+                                                        {player.name.startsWith('Player ')
                                                             ? `P${originalIndex + 1}`
                                                             : player.name.length <= 3
                                                               ? player.name
@@ -987,20 +985,20 @@ export default function Home() {
                                 className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''} ${fireFlash ? 'confirm-fire' : ''}`}
                                 onDragOver={(e) => {
                                     e.preventDefault();
-                                    e.dataTransfer.dropEffect = "move";
+                                    e.dataTransfer.dropEffect = 'move';
                                 }}
                                 onDrop={(e) => {
                                     e.preventDefault();
                                     try {
                                         const dieData = JSON.parse(
                                             e.dataTransfer.getData(
-                                                "text/plain",
+                                                'text/plain',
                                             ),
                                         );
                                         sendToFire(dieData);
                                     } catch (error) {
                                         console.error(
-                                            "Error dropping die to fire:",
+                                            'Error dropping die to fire:',
                                             error,
                                         );
                                     }
@@ -1075,7 +1073,7 @@ export default function Home() {
                                 </button>
                                 <button
                                     onClick={nextPlayer}
-                                    className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? "btn-next-disabled" : ""}`}
+                                    className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? 'btn-next-disabled' : ''}`}
                                 >
                                     Next Player →
                                 </button>
@@ -1085,7 +1083,7 @@ export default function Home() {
                 </>
             )}
 
-            {gameState === "results" && (
+            {gameState === 'results' && (
                 <GameResults
                     rocketGrid={rocketGrid}
                     firePile={firePile}
@@ -1096,4 +1094,4 @@ export default function Home() {
             )}
         </div>
     );
-} 
+}
