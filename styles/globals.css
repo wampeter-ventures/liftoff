@@ -244,6 +244,22 @@ body {
     font-size: 12px;
 }
 
+.players-compact-container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    max-width: 280px;
+}
+
+.players-compact {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
 .player-compact {
     display: flex;
     flex-direction: column;
