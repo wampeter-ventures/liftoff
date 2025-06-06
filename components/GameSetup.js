@@ -43,15 +43,47 @@ import { useToast } from '../hooks/use-toast';
 
 function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const [playerCount, setPlayerCount] = useState(8);
+  
+  // Temporary: Clear old cached player names to show new company names
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('playerSetup');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          // Check if it has old "Player X" format names
+          if (parsed.some(p => p.name && p.name.startsWith('Player '))) {
+            localStorage.removeItem('playerSetup');
+            console.log('Cleared old player setup to use new company names');
+          }
+        } catch (err) {
+          console.error('Error checking player setup', err);
+        }
+      }
+    }
+  }, []);
+  
+  // Fun space company names for default players
+  const spaceCompanyNames = [
+    'Fuel Department',
+    'Hull Inc',
+    'Wings and Things',
+    'Radar Solutions',
+    'Cargo Bay',
+    'Snacks Division',
+    'Boom Boom Boosters',
+    'Cosmic Parts'
+  ];
+  
   const [players, setPlayers] = useState([
-    { id: 1, name: 'Player 1', diceCount: 4 },
-    { id: 2, name: 'Player 2', diceCount: 2 },
-    { id: 3, name: 'Player 3', diceCount: 4 },
-    { id: 4, name: 'Player 4', diceCount: 2 },
-    { id: 5, name: 'Player 5', diceCount: 3 },
-    { id: 6, name: 'Player 6', diceCount: 6 },
-    { id: 7, name: 'Player 7', diceCount: 3 },
-    { id: 8, name: 'Player 8', diceCount: 2 }
+    { id: 1, name: 'Fuel Department', diceCount: 4 },
+    { id: 2, name: 'Hull Inc', diceCount: 2 },
+    { id: 3, name: 'Wings and Things', diceCount: 4 },
+    { id: 4, name: 'Radar Solutions', diceCount: 2 },
+    { id: 5, name: 'Cargo Bay', diceCount: 3 },
+    { id: 6, name: 'Snacks Division', diceCount: 6 },
+    { id: 7, name: 'Boom Boom Boosters', diceCount: 3 },
+    { id: 8, name: 'Cosmic Parts', diceCount: 2 }
   ]);
   const [error, setError] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -122,7 +154,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
 
       return {
         id: Date.now() + i,
-        name: `Player ${i + 1}`,
+        name: spaceCompanyNames[i % spaceCompanyNames.length],
         diceCount: defaultDiceCount,
       };
     });
@@ -247,7 +279,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
           )}
           <div>
             <Label htmlFor="player-count" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">
-              Number of Players (1-8):
+              Number of Construction Bays (1-8):
             </Label>
             <Select value={String(playerCount)} onValueChange={(value) => handlePlayerCountChange(Number(value))}>
               <SelectTrigger id="player-count" className="w-full text-sm">
@@ -263,43 +295,36 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
             </Select>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Configure Players</h3>
+            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Configure Bays</h3>
             <div className="space-y-2 max-h-[calc(100vh-400px)] min-h-[100px] overflow-y-auto pr-1 custom-scrollbar">
               {players.map((player, index) => (
                 <div key={player.id} className="p-3 border rounded-md bg-slate-50 dark:bg-slate-700/60">
                   <div className="flex space-x-3">
                     <div className="flex-grow">
-                      <Label
-                        htmlFor={`player-${index}-name`}
-                        className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-0.5 block"
-                      >
-                        Name:
-                      </Label>
                       <Input
                         id={`player-${index}-name`}
                         type="text"
                         value={player.name}
                         onChange={(e) => updatePlayer(index, 'name', e.target.value)}
-                        placeholder={`Player ${index + 1}`}
+                        placeholder={spaceCompanyNames[index % spaceCompanyNames.length]}
                         className="text-sm h-9 dark:bg-slate-600 dark:border-slate-500"
                       />
                     </div>
                     <div className="w-20 flex-shrink-0">
-                      <Label
-                        htmlFor={`player-${index}-dice`}
-                        className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-0.5 block"
-                      >
-                        Dice:
-                      </Label>
-                      <Input
-                        id={`player-${index}-dice`}
-                        type="number"
-                        min="1"
-                        max="20"
-                        value={player.diceCount}
-                        onChange={(e) => updatePlayer(index, 'diceCount', e.target.value)}
-                        className="text-sm h-9 dark:bg-slate-600 dark:border-slate-500"
-                      />
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-sm pointer-events-none">
+                          🎲
+                        </span>
+                        <Input
+                          id={`player-${index}-dice`}
+                          type="number"
+                          min="1"
+                          max="20"
+                          value={player.diceCount}
+                          onChange={(e) => updatePlayer(index, 'diceCount', e.target.value)}
+                          className="text-sm h-9 pl-8 dark:bg-slate-600 dark:border-slate-500"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
