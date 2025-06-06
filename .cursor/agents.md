@@ -179,3 +179,66 @@ Mars: Completed at least Rows 1 & 2 (3 body dice)
 Jupiter: Completed Rows 1–3 (6 body dice).
 Saturn: Completed Rows 1–4 (10 body dice).
 Neptune:Completed Rows 1–5 (15 body dice).
+
+## Codebase Overview
+
+### Folder Structure
+- `components/` – React components for game UI
+- `components/ui/` – Reusable UI primitives (button, card, drawer, etc.)
+- `hooks/` – Custom hooks like `use-toast`
+- `lib/` – Game logic module `gameLogic.js`
+- `pages/` – Next.js pages (`_app.js` and `index.js`)
+- `public/` – Static assets (icons, manifest)
+- `styles/` – Tailwind CSS setup
+
+```
+. (root)
+├─ components/
+│  ├─ DiceRoll.js
+│  ├─ Die.js
+│  ├─ GameModal.js
+│  ├─ GameResults.js
+│  ├─ GameSetup.js
+│  ├─ IntroSequence.js
+│  ├─ LaunchResults.js
+│  ├─ RocketGrid.js
+│  └─ ui/
+├─ hooks/
+│  └─ use-toast.js
+├─ lib/
+│  └─ gameLogic.js
+├─ pages/
+│  ├─ _app.js
+│  └─ index.js
+└─ styles/
+   └─ globals.css
+```
+
+### Main Game Flow
+- `pages/index.js` holds the main state machine (`welcome` → `setup` → `intro` → `playing` → `results`). It orchestrates player turns, dice rolls, rocket grid updates, and shows modals.
+- `components/GameSetup.js` collects player info and passes it to `index.js` to start the game.
+- `components/DiceRoll.js` displays each player's dice and handles drag‑and‑drop using `components/Die.js` for each die.
+- `components/RocketGrid.js` renders the rocket pyramid and accepts dice drops, validating moves with `GameLogic.isValidPlacement`.
+- `components/GameModal.js` and `LaunchResults.js` show dialogs for launches and results.
+- `components/GameResults.js` summarizes the outcome using `GameLogic.getCompletedRows` and `calculateVictoryLevel`.
+
+### Game Logic
+The `lib/gameLogic.js` module centralizes all placement rules:
+```javascript
+const GameLogic = {
+  isValidPlacement(position, dieValue, rocketGrid, rocketHeight, boosterRowLocked) { /* ... */ },
+  getValidPositions(dieValue, rocketGrid, rocketHeight, boosterRowLocked) { /* ... */ },
+  calculateVictoryLevel(rocketGrid, rocketHeight, boosterRowLocked) { /* ... */ },
+};
+export default GameLogic;
+```
+It ensures dice match their slot, checks adjacency, locks booster rows, and computes victory tiers.
+
+### Core Mechanics in Code
+* **Turn Flow & Fire Pile** – Managed in `pages/index.js`. Functions like `placeDie`, `sendToFire`, `nextPlayer`, and `attemptLaunch` handle rolling, placement enforcement, fire pile increments, and the launch sequence.
+* **Placement Rules** – `lib/gameLogic.js` enforces slot matching, adjacency, and booster-row locking through `isValidPlacement` and `getValidPositions`.
+* **Victory Calculation** – `GameLogic.calculateVictoryLevel` is called from `pages/index.js` in `checkVictoryConditions` to determine whether the rocket can launch and what tier is achieved.
+* **UI Feedback** – `components/RocketGrid.js` highlights valid positions and reacts to drag/drop events using `GameLogic` helpers; `components/DiceRoll.js` manages dice animations and selection.
+
+Together these files keep the game loop in sync with the official rules described above.
+
