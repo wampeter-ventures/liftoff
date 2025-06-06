@@ -8,7 +8,42 @@ import GameResults from '../components/GameResults';
 import IntroSequence from '../components/IntroSequence';
 import GameModal from '../components/GameModal';
 import { HelpDrawer } from '../components/GameSetup';
-import { Star, Flame, X, CheckCircle, AlertTriangle, Rocket, HelpCircle } from 'lucide-react';
+import {
+    Star,
+    Flame,
+    X,
+    CheckCircle,
+    AlertTriangle,
+    Rocket,
+    HelpCircle,
+    Atom,
+    Biohazard,
+    Shell,
+    Radiation,
+    Orbit,
+    Radar,
+    Radio,
+    Volleyball,
+    Snowflake,
+    Zap,
+    Bubbles,
+    Sparkles,
+    CircleGauge,
+    Cctv,
+    Backpack,
+    HeartPulse,
+    Candy,
+    Gem,
+    Lollipop,
+    BrainCog,
+    LoaderPinwheel,
+    AudioLines,
+    Rat,
+    Bug,
+    HardHat,
+    Telescope,
+    Satellite
+} from 'lucide-react';
 import Head from "next/head";
 import LaunchResults from '../components/LaunchResults';
 
@@ -34,6 +69,37 @@ export default function Home() {
     const [fireFlash, setFireFlash] = useState(false);
     const [highlightSlot, setHighlightSlot] = useState(null);
     const [showBoosterAnim, setShowBoosterAnim] = useState(false);
+    const [placementEffect, setPlacementEffect] = useState(null); // { pos, Icon }
+
+    const placementIcons = [
+        Atom,
+        Biohazard,
+        Shell,
+        Radiation,
+        Orbit,
+        Radar,
+        Radio,
+        Volleyball,
+        Snowflake,
+        Zap,
+        Bubbles,
+        Sparkles,
+        CircleGauge,
+        Cctv,
+        Backpack,
+        HeartPulse,
+        Candy,
+        Gem,
+        Lollipop,
+        BrainCog,
+        LoaderPinwheel,
+        AudioLines,
+        Rat,
+        Bug,
+        HardHat,
+        Telescope,
+        Satellite,
+    ];
     
     // Modal state
     const [modal, setModal] = useState({
@@ -211,7 +277,12 @@ export default function Home() {
             },
         ]);
         setHighlightSlot(position);
-        setTimeout(() => setHighlightSlot(null), 800);
+        const IconComp = placementIcons[Math.floor(Math.random() * placementIcons.length)];
+        setPlacementEffect({ pos: position, Icon: IconComp });
+        setTimeout(() => {
+            setHighlightSlot(null);
+            setPlacementEffect(null);
+        }, 800);
         return true;
     };
 
@@ -440,6 +511,7 @@ export default function Home() {
         setHighlightSlot(null);
         setFireFlash(false);
         setShowBoosterAnim(false);
+        setPlacementEffect(null);
         
         // Close any open modals
         closeModal();
@@ -954,6 +1026,7 @@ export default function Home() {
                                     onSetShowLaunchHelper={setShowLaunchHelper}
                                     highlightSlot={highlightSlot}
                                     showBoosterAnimation={showBoosterAnim}
+                                    placementEffect={placementEffect}
                                 />
                             </div>
 

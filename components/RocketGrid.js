@@ -15,7 +15,8 @@ function RocketGrid({
     onAttemptLaunch,
     onSetShowLaunchHelper,
     highlightSlot,
-    showBoosterAnimation
+    showBoosterAnimation,
+    placementEffect
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
     const [validPositions, setValidPositions] = useState(new Set());
@@ -233,6 +234,14 @@ function RocketGrid({
                 ) : (
                     <span className="required-number">{slotLabel}</span>
                 )}
+                {placementEffect && placementEffect.pos === pos && (() => {
+                    const IconComp = placementEffect.Icon;
+                    return (
+                        <span className="placement-icon">
+                            <IconComp size={24} />
+                        </span>
+                    );
+                })()}
             </div>
         );
     };
