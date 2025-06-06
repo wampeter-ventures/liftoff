@@ -467,7 +467,7 @@ body {
     padding: 4px 8px;
     position: relative;
     z-index: 10;
-    margin-top: 50px;
+    margin-top: 24px;
 }
 
 .dice-roll-container h3 {
@@ -616,7 +616,12 @@ body {
     display: flex;
     gap: 12px;
     justify-content: center;
-    margin-top: 16px;
+    margin-top: 8px;
+    position: sticky;
+    bottom: 0;
+    background-color: var(--color-background);
+    z-index: 20;
+    padding: 8px 0;
 }
 
 /* Buttons */
