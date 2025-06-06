@@ -22,6 +22,36 @@ function RocketGrid({
     const [showInitialGuide, setShowInitialGuide] = useState(true);
     const [showPictureMode, setShowPictureMode] = useState(false);
 
+    const getPlanetName = (height) => {
+        if (height >= 5) return 'Neptune';
+        if (height >= 4) return 'Saturn';
+        if (height >= 3) return 'Jupiter';
+        if (height >= 2) return 'Mars';
+        if (height >= 1) return 'Moon';
+        return 'Earth';
+    };
+
+    const rocketComplete = React.useMemo(() => {
+        if (!boosterRowLocked) return false;
+        const boosterRow = rocketHeight + 1;
+        for (let row = 1; row <= rocketHeight; row++) {
+            for (let col = 1; col <= row; col++) {
+                if (!grid[`${row}-${col}`]) return false;
+            }
+        }
+        for (let col = 1; col <= boosterRow; col++) {
+            const die = grid[`${boosterRow}-${col}`];
+            if (!die || die.value !== 6) return false;
+        }
+        return true;
+    }, [grid, boosterRowLocked, rocketHeight]);
+
+    const headerText = React.useMemo(() => {
+        if (!boosterRowLocked) return 'Rocket Assembly';
+        if (rocketComplete) return 'Ready to Attempt Launch';
+        return `Mission: ${getPlanetName(rocketHeight)}`;
+    }, [boosterRowLocked, rocketComplete, rocketHeight]);
+
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -208,7 +238,7 @@ function RocketGrid({
     return (
         <>
             <div className="rocket-header">
-                <h3 className="rocket-section-header">Rocket Assembly</h3>
+                <h3 className="rocket-section-header">{headerText}</h3>
                 <button
                     type="button"
                     className="picture-toggle"
