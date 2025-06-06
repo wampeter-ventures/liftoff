@@ -583,6 +583,7 @@ body {
     color: var(--color-dark-gray);
     margin-top: 8px;
     opacity: 0.8;
+    white-space: pre-line;
 }
 
 /* Fire Pile */
@@ -1481,7 +1482,7 @@ body {
 }
 
 .modal-footer {
-    padding: 16px 24px 24px 24px;
+    padding: 8px 24px 16px 24px;
     display: flex;
     justify-content: flex-end;
 }
@@ -1571,9 +1572,9 @@ body {
 .booster-dice-container {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 8px;
     margin: 16px 0;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .booster-die-wrapper {
@@ -1593,8 +1594,8 @@ body {
 }
 
 .booster-die {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     transition: all 0.3s ease;
 }
 
@@ -1678,4 +1679,37 @@ body {
     0% { transform: rotate(0deg) scale(1); }
     50% { transform: rotate(180deg) scale(1.2); }
     100% { transform: rotate(360deg) scale(1); }
+}
+/* Starry background for results screen */
+.results-background {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.results-background .star,
+.results-background .planet,
+.results-background .fun-icon {
+    position: absolute;
+    animation-name: diagonalDrift;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.results-background .star {
+    animation-name: starTwinkle, diagonalDrift;
+    animation-timing-function: ease-in-out, linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes starTwinkle {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 0.3; }
+}
+
+@keyframes diagonalDrift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(300px, -300px); }
 }
