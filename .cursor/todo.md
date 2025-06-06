@@ -1,13 +1,5 @@
 # Liftoff Game - Development Roadmap
 
-New things:
-
-- player setup: Remove "Number of Players" dropdown, and just have it be a list of Players, and a + button to add more rows and a delete button to delete a row
-
-
-- haptics for dice rolling and placing into body and into fire
-
-
 
 
 
@@ -40,34 +32,6 @@ New things:
 
 ---
 
-### #002 - Game State Persistence and Reset Issues
-
-**Status:** ✅ RESOLVED  
-**Description:** When players navigate back to setup or start a new game, clear the previous game data BUT retain the original/previous player count, player names and dice counts at the setup screen, so that they can replay the game with the same criteria.
-
-**Implementation Summary:**
-- Added `originalPlayerSetup` state to track initial player configuration
-- Modified `startGame()` to store original setup data
-- Created `resetGamePreservingSetup()` function for game resets that maintain player data
-- Updated `GameSetup` component to accept and use preserved player configuration
-- Modified back button and restart functions to use setup-preserving reset
-
-**Acceptance Criteria:**
-- [x] Game state reset when returning to setup screen
-- [x] All game state variables properly initialized to default values
-- [x] Rocket grid visually clears all dice positions
-- [x] Player configuration arrays reset to original choice (player count, player names and dice count)
-- [x] Fire pile counter returns to 0
-- [x] Current dice roll array emptied
-- [x] Turn tracking reset to player 1
-- [x] Booster lock state reset to false
-
-**Testing Notes:**
-- Setup screen now pre-populates with previous player configuration when returning from game
-- Going to welcome screen clears preserved setup (fresh start)
-- All game state properly resets while preserving original player setup
-
----
 
 
 
@@ -239,60 +203,6 @@ New things:
 
 ---
 
-### #017 - Advanced Dice Physics and Animation
-**Status:** Visual Polish  
-**Impact:** Current dice animation feels basic and non-tactile  
-**Description:** Enhanced dice rolling animation would significantly improve the tactile satisfaction of the core game mechanic.
-
-**Animation Enhancement Goals:**
-- 3D dice rolling with realistic physics
-- Individual dice personality (slight variations)
-- Satisfying collision and settling behavior
-- Smooth integration with existing game flow
-
-**Acceptance Criteria:**
-- [ ] 3D dice models with appropriate visual fidelity
-- [ ] Physics-based rolling animation with realistic behavior
-- [ ] Multiple dice rolling simultaneously without performance issues
-- [ ] Customizable dice themes/skins for personalization
-- [ ] Smooth transitions between rolled and placed states
-- [ ] Performance optimization for mobile devices
-- [ ] Fallback to 2D animation on low-performance devices
-
-**Technical Approach:**
-- Three.js or CSS 3D transforms for 3D dice
-- Physics engine integration (Cannon.js or similar)
-- Performance profiling and optimization
-- Progressive enhancement approach
-
----
-
-### #018 - Visual Rocket Assembly Mode
-**Status:** Thematic Enhancement  
-**Impact:** Abstract grid doesn't convey rocket-building theme  
-**Description:** Adding a visual mode where players see an actual rocket being assembled would significantly enhance thematic engagement and visual appeal.
-
-**Design Vision:**
-- Toggle between "grid mode" (current) and "picture mode" (new)
-- Actual rocket components placed as dice are added
-- Animation of rocket assembly progress
-- Maintaining gameplay clarity in visual mode
-
-**Acceptance Criteria:**
-- [ ] Toggle button to switch between grid and visual modes
-- [ ] Rocket component artwork for different sections
-- [ ] Smooth animation as components are placed
-- [ ] Visual representation of dice values through component types
-- [ ] Maintain all gameplay clarity and interaction in picture mode
-- [ ] Booster attachment visualization
-- [ ] Launch animation integration with visual rocket
-
-**Art Requirements:**
-- Modular rocket components (nose cone, body sections, boosters)
-- Consistent art style with current UI
-- Mobile-optimized visual complexity
-- Color coding to maintain dice value clarity
-
 ---
 
 ## 📊 Analytics and Social Features (P3-P4)
@@ -436,9 +346,3 @@ New things:
 - Pixel art best practices for mobile clarity
 
 ---
-
-
-
-Recent improvements, running log:
-
-- 

@@ -1,0 +1,52 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:jsx-a11y/recommended"
+  ],
+  "plugins": [
+    "jsx-a11y"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "rules": {
+    // React specific rules
+    "react/no-unescaped-entities": "warn",
+    "react/jsx-key": "error",
+    
+    // General JavaScript rules
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": "warn",
+    "no-debugger": "error",
+    "no-duplicate-imports": "error",
+    "no-empty": "warn",
+    "no-multiple-empty-lines": ["warn", { "max": 2 }],
+    "no-trailing-spaces": "warn",
+    "prefer-const": "warn",
+    "semi": ["warn", "always"],
+    "quotes": ["warn", "single", { "allowTemplateLiterals": true }],
+    
+    // Accessibility rules (relaxed for game development and build stability)
+    "jsx-a11y/alt-text": "warn",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "jsx-a11y/heading-has-content": "warn",
+    "jsx-a11y/label-has-associated-control": "warn"
+  }
+} 

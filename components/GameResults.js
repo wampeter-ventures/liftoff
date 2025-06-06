@@ -1,7 +1,7 @@
 import React from 'react';
 import ResultsBackground from './ResultsBackground';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "./ui/card";
-import { Button } from "./ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from './ui/card';
+import { Button } from './ui/button';
 import {
   Rocket,
   Moon,
@@ -12,7 +12,7 @@ import {
   Bomb,
   TrendingUp,
   AlertOctagon,
-} from "lucide-react";
+} from 'lucide-react';
 import GameLogic from '../lib/gameLogic';
 
 function GameResults({
@@ -26,7 +26,7 @@ function GameResults({
 
     const allCompletedRows = getCompletedRows(rocketGrid);
     const isExplosion = firePile >= 5;
-    
+
     // Filter to only count body rows (exclude booster rows that contain only 6s)
     const completedBodyRows = allCompletedRows.filter(rowNum => {
         // Check if this row contains any non-6 dice (making it a body row)
@@ -39,13 +39,13 @@ function GameResults({
         }
         return false; // This row only contains 6s (booster row)
     });
-    
+
     // Calculate victory level based on completed BODY rows only: 1=Moon, 2=Mars, 3=Jupiter, 4=Saturn, 5=Neptune
     const calculateVictoryLevel = () => {
         if (!boosterRowLocked) return 0; // need at least one booster
         const bodyRowCount = completedBodyRows.length;
         if (bodyRowCount >= 5) return 5; // Neptune
-        if (bodyRowCount >= 4) return 4; // Saturn  
+        if (bodyRowCount >= 4) return 4; // Saturn
         if (bodyRowCount >= 3) return 3; // Jupiter
         if (bodyRowCount >= 2) return 2; // Mars
         if (bodyRowCount >= 1) return 1; // Moon
@@ -57,80 +57,80 @@ function GameResults({
     const getDestinationDetails = () => {
         if (isExplosion) {
             return {
-                name: "TOTAL KABOOM!",
+                name: 'TOTAL KABOOM!',
                 icon: <Bomb className="h-16 w-16 sm:h-20 sm:w-20 text-red-500" />,
                 description:
-                    "Welp, your rocket is now a lovely collection of space confetti. Too many dice in the Fire Pile! Better luck next time, unless you enjoy expensive fireworks.",
-                bgColor: "bg-red-100 dark:bg-red-900/30",
-                textColor: "text-red-700 dark:text-red-300",
+                    'Welp, your rocket is now a lovely collection of space confetti. Too many dice in the Fire Pile! Better luck next time, unless you enjoy expensive fireworks.',
+                bgColor: 'bg-red-100 dark:bg-red-900/30',
+                textColor: 'text-red-700 dark:text-red-300',
             };
         }
 
         if (outOfDiceFail) {
             return {
-                name: "MISSION SCRUBBED!",
+                name: 'MISSION SCRUBBED!',
                 icon: <AlertOctagon className="h-16 w-16 sm:h-20 sm:w-20 text-yellow-500" />,
                 description:
-                    "The crew ran out of dice and your would-be rocket never came together. Time to regroup and try again!",
-                bgColor: "bg-yellow-100 dark:bg-yellow-900/30",
-                textColor: "text-yellow-700 dark:text-yellow-300",
+                    'The crew ran out of dice and your would-be rocket never came together. Time to regroup and try again!',
+                bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
+                textColor: 'text-yellow-700 dark:text-yellow-300',
             };
         }
 
         switch (victoryLevel) {
             case 1: // Moon (1 row)
                 return {
-                    name: "TOUCHDOWN ON THE MOON!",
+                    name: 'TOUCHDOWN ON THE MOON!',
                     icon: <Moon className="h-16 w-16 sm:h-20 sm:w-20 text-slate-500" />,
                     description:
-                        "One small step for your rocket, one giant leap for... well, you! You've made it to Earth's trusty satellite. Not bad for a rookie!",
-                    bgColor: "bg-slate-100 dark:bg-slate-700/30",
-                    textColor: "text-slate-700 dark:text-slate-300",
+                        'One small step for your rocket, one giant leap for... well, you! You\'ve made it to Earth\'s trusty satellite. Not bad for a rookie!',
+                    bgColor: 'bg-slate-100 dark:bg-slate-700/30',
+                    textColor: 'text-slate-700 dark:text-slate-300',
                 };
             case 2: // Mars (2 rows)
                 return {
-                    name: "MARTIAN GETAWAY!",
+                    name: 'MARTIAN GETAWAY!',
                     icon: <Orbit className="h-16 w-16 sm:h-20 sm:w-20 text-orange-500" />,
                     description:
-                        "You've painted the Red Planet... with your rocket's landing gear! A successful mission to Mars. Hope you packed snacks for the little green dudes!",
-                    bgColor: "bg-orange-100 dark:bg-orange-900/30",
-                    textColor: "text-orange-700 dark:text-orange-300",
+                        'You\'ve painted the Red Planet... with your rocket\'s landing gear! A successful mission to Mars. Hope you packed snacks for the little green dudes!',
+                    bgColor: 'bg-orange-100 dark:bg-orange-900/30',
+                    textColor: 'text-orange-700 dark:text-orange-300',
                 };
             case 3: // Jupiter (3 rows)
                 return {
-                    name: "JUPITER CONQUERED!",
+                    name: 'JUPITER CONQUERED!',
                     icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-purple-500" />,
                     description:
-                        "Whoa, Nelly! You've navigated the asteroid belt and said 'howdy' to the gas giant! That's some serious rocketry. You're practically a space legend!",
-                    bgColor: "bg-purple-100 dark:bg-purple-900/30",
-                    textColor: "text-purple-700 dark:text-purple-300",
+                        'Whoa, Nelly! You\'ve navigated the asteroid belt and said \'howdy\' to the gas giant! That\'s some serious rocketry. You\'re practically a space legend!',
+                    bgColor: 'bg-purple-100 dark:bg-purple-900/30',
+                    textColor: 'text-purple-700 dark:text-purple-300',
                 };
             case 4: // Saturn (4 rows)
                 return {
-                    name: "SATURN'S RINGSIDE SEATS!",
+                    name: 'SATURN\'S RINGSIDE SEATS!',
                     icon: <Disc3 className="h-16 w-16 sm:h-20 sm:w-20 text-amber-500" />,
                     description:
-                        "You put a ring on it! Or, well, you got close enough to admire Saturn's magnificent rings. Hope you took pictures, because that's a long trip back!",
-                    bgColor: "bg-amber-100 dark:bg-amber-900/30",
-                    textColor: "text-amber-700 dark:text-amber-300",
+                        'You put a ring on it! Or, well, you got close enough to admire Saturn\'s magnificent rings. Hope you took pictures, because that\'s a long trip back!',
+                    bgColor: 'bg-amber-100 dark:bg-amber-900/30',
+                    textColor: 'text-amber-700 dark:text-amber-300',
                 };
             case 5: // Neptune (5 rows)
                 return {
-                    name: "NEPTUNE'S DEEP BLUE YONDER!",
+                    name: 'NEPTUNE\'S DEEP BLUE YONDER!',
                     icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-blue-500" />,
                     description:
-                        "You've reached the windy, azure giant, Neptune! If you see any tridents, probably best to steer clear. What an epic journey!",
-                    bgColor: "bg-blue-100 dark:bg-blue-900/30",
-                    textColor: "text-blue-700 dark:text-blue-300",
+                        'You\'ve reached the windy, azure giant, Neptune! If you see any tridents, probably best to steer clear. What an epic journey!',
+                    bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+                    textColor: 'text-blue-700 dark:text-blue-300',
                 };
             default: // Victory Level 0 or unhandled
                 return {
-                    name: "GROUNDED!",
+                    name: 'GROUNDED!',
                     icon: <XCircle className="h-16 w-16 sm:h-20 sm:w-20 text-gray-400 dark:text-gray-500" />,
                     description:
-                        "Your rocket had the structural integrity of a wet paper bag. It didn't even bother to lift off. Back to the drawing board, chief!",
-                    bgColor: "bg-gray-100 dark:bg-gray-800/30",
-                    textColor: "text-gray-600 dark:text-gray-400",
+                        'Your rocket had the structural integrity of a wet paper bag. It didn\'t even bother to lift off. Back to the drawing board, chief!',
+                    bgColor: 'bg-gray-100 dark:bg-gray-800/30',
+                    textColor: 'text-gray-600 dark:text-gray-400',
                 };
         }
     };
@@ -165,16 +165,16 @@ function GameResults({
                             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-0.5">Completed Body Rows</p>
                         </div>
                         <div
-                            className={`p-2 sm:p-3 rounded-md ${isExplosion ? "bg-red-100 dark:bg-red-700/50" : "bg-slate-100 dark:bg-slate-700/50"}`}
+                            className={`p-2 sm:p-3 rounded-md ${isExplosion ? 'bg-red-100 dark:bg-red-700/50' : 'bg-slate-100 dark:bg-slate-700/50'}`}
                         >
                             <div
-                                className={`flex items-center justify-center ${isExplosion ? "text-red-500 dark:text-red-400" : "text-amber-600 dark:text-amber-400"}`}
+                                className={`flex items-center justify-center ${isExplosion ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}
                             >
                                 <AlertOctagon className="h-5 w-5 sm:h-6 sm:w-6 mr-1.5" />
                                 <span className="text-xl sm:text-2xl font-bold">{firePile}</span>
                             </div>
                             <p
-                                className={`text-xs sm:text-sm mt-0.5 ${isExplosion ? "text-red-600 dark:text-red-300" : "text-slate-600 dark:text-slate-300"}`}
+                                className={`text-xs sm:text-sm mt-0.5 ${isExplosion ? 'text-red-600 dark:text-red-300' : 'text-slate-600 dark:text-slate-300'}`}
                             >
                                 Dice in Fire!
                             </p>
@@ -196,4 +196,4 @@ function GameResults({
     );
 }
 
-export default GameResults; 
+export default GameResults;
