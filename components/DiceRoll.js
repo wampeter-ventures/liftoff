@@ -125,13 +125,13 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
                     });
                     
                     if (hasValidPlacements) {
-                        return "Click or drag dice: ⚙️ Rocket body  (1-5)  🔋 Boosters (6)";
+                        return "Click or drag dice:\n⚙️ Body part (1-5) 🔋 Boosters (6)";
                     } else if (!anyDicePlaced) {
                         // Only show fire message if this is a fresh roll with no eligible dice
                         return "No eligible body parts or boosters, send a die to the fire! 🔥 ";
                     } else {
                         // Some dice were already placed, show regular message
-                        return "Click or drag dice: ⚙️ Rocket body  (1-5)  🔋 Boosters (6)";
+                        return "Click or drag dice:\n⚙️ Body part (1-5) 🔋 Boosters (6)";
                     }
                 })()}
             </div>
