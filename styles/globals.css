@@ -1130,7 +1130,7 @@ body {
 }
 
 .confirm-fire {
-    animation: fireConfirm 0.6s ease;
+    animation: fireConfirm 0.9s ease;
 }
 
 @keyframes fireConfirm {
@@ -1140,7 +1140,7 @@ body {
 }
 
 .confirm-slot {
-    animation: slotConfirm 0.6s ease;
+    animation: slotConfirm 0.9s ease;
 }
 
 @keyframes slotConfirm {
@@ -1151,13 +1151,17 @@ body {
 
 .booster-celebration {
     position: absolute;
-    top: -20px;
+    top: -40px;
     left: 50%;
     transform: translateX(-50%);
     font-weight: bold;
     color: #ff9800;
-    animation: boosterPop 1s ease-in-out;
+    background: #ffffff;
+    padding: 4px 8px;
+    border-radius: 8px;
+    animation: boosterPop 2s ease-in-out;
     pointer-events: none;
+    z-index: 30;
 }
 
 .placement-icon {
@@ -1165,7 +1169,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: partSpin 0.8s ease-out forwards;
+    animation: partSpin 1.2s ease-out forwards;
     pointer-events: none;
     color: #ff9800;
 }

@@ -277,7 +277,9 @@ function RocketGrid({
                 </div>
 
                 {showBoosterAnimation && (
-                    <div className="booster-celebration">🚀 Booster Online!</div>
+                    <div className="booster-celebration">
+                        🚀 Booster Online! - {headerText}
+                    </div>
                 )}
                 
                 <div className="rocket-grid">

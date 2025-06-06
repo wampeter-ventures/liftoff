@@ -253,7 +253,7 @@ export default function Home() {
             setBoosterRowLocked(true);
             if (!wasBoosterLocked) {
                 setShowBoosterAnim(true);
-                setTimeout(() => setShowBoosterAnim(false), 1500);
+                setTimeout(() => setShowBoosterAnim(false), 2500);
             }
         } else {
             const row = parseInt(position.split("-")[0]);
@@ -282,7 +282,7 @@ export default function Home() {
         setTimeout(() => {
             setHighlightSlot(null);
             setPlacementEffect(null);
-        }, 800);
+        }, 1200);
         return true;
     };
 
@@ -295,7 +295,7 @@ export default function Home() {
         setFirePile(newFirePile);
         setFireDice((prevFireDice) => [...prevFireDice, die]);
         setFireFlash(true);
-        setTimeout(() => setFireFlash(false), 600);
+        setTimeout(() => setFireFlash(false), 900);
         if (newFirePile >= 5) {
             setGameState("results");
             return;
