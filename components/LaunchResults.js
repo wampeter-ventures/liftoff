@@ -7,49 +7,47 @@ function LaunchResults({ boosterRolls, success }) {
     const [showFinalRolls, setShowFinalRolls] = useState(false);
 
     useEffect(() => {
-        // Start with random rolls
-        setAnimatedRolls(boosterRolls.map(() => Math.floor(Math.random() * 6) + 1));
+        const intervals = [];
+        const timeouts = [];
+        setAnimatedRolls(Array(boosterRolls.length).fill(null));
         setIsRolling(true);
         setShowFinalRolls(false);
 
-        // Dramatic rolling animation sequence
-        const intervals = [];
-        
-        // Phase 1: Super fast rolling (80ms)
-        const hyperRoll = setInterval(() => {
-            setAnimatedRolls(boosterRolls.map(() => Math.floor(Math.random() * 6) + 1));
-        }, 80);
-        intervals.push(hyperRoll);
+        boosterRolls.forEach((finalRoll, idx) => {
+            const startDelay = idx * 700;
+            const startTimeout = setTimeout(() => {
+                const rollInterval = setInterval(() => {
+                    setAnimatedRolls((prev) => {
+                        const arr = [...prev];
+                        arr[idx] = Math.floor(Math.random() * 6) + 1;
+                        return arr;
+                    });
+                }, 100);
+                intervals.push(rollInterval);
 
-        setTimeout(() => {
-            clearInterval(hyperRoll);
-            
-            // Phase 2: Fast rolling (150ms)
-            const fastRoll = setInterval(() => {
-                setAnimatedRolls(boosterRolls.map(() => Math.floor(Math.random() * 6) + 1));
-            }, 150);
-            intervals.push(fastRoll);
+                const settleTimeout = setTimeout(() => {
+                    clearInterval(rollInterval);
+                    setAnimatedRolls((prev) => {
+                        const arr = [...prev];
+                        arr[idx] = finalRoll;
+                        return arr;
+                    });
+                }, 600);
+                timeouts.push(settleTimeout);
+            }, startDelay);
+            timeouts.push(startTimeout);
+        });
 
-            setTimeout(() => {
-                clearInterval(fastRoll);
-                
-                // Phase 3: Slower dramatic settle (300ms)
-                const slowRoll = setInterval(() => {
-                    setAnimatedRolls(boosterRolls.map(() => Math.floor(Math.random() * 6) + 1));
-                }, 300);
-                intervals.push(slowRoll);
+        const finishTimeout = setTimeout(() => {
+            setIsRolling(false);
+            setShowFinalRolls(true);
+        }, boosterRolls.length * 700 + 700);
+        timeouts.push(finishTimeout);
 
-                setTimeout(() => {
-                    clearInterval(slowRoll);
-                    // Final reveal
-                    setIsRolling(false);
-                    setAnimatedRolls(boosterRolls);
-                    setShowFinalRolls(true);
-                }, 1200);
-            }, 1000);
-        }, 800);
-
-        return () => intervals.forEach(clearInterval);
+        return () => {
+            intervals.forEach(clearInterval);
+            timeouts.forEach(clearTimeout);
+        };
     }, [boosterRolls]);
 
     return (

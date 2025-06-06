@@ -7,7 +7,6 @@ import {
   Orbit,
   Globe as Planet,
   Disc3,
-  CircleDot,
   XCircle,
   Bomb,
   CheckCircle2,
@@ -17,6 +16,8 @@ import {
 } from "lucide-react";
 import GameLogic from '../lib/gameLogic';
 
+import { useEffect } from 'react';
+
 function GameResults({
     rocketGrid,
     firePile,
@@ -25,6 +26,11 @@ function GameResults({
     onRestart,
 }) {
     const { calculateVictoryLevel, getCompletedRows } = GameLogic;
+
+    useEffect(() => {
+        document.body.classList.add('results-page');
+        return () => document.body.classList.remove('results-page');
+    }, []);
 
     const victoryLevel = calculateVictoryLevel(
         rocketGrid,
@@ -83,16 +89,7 @@ function GameResults({
                     bgColor: "bg-amber-100 dark:bg-amber-900/30",
                     textColor: "text-amber-700 dark:text-amber-300",
                 };
-            case 5: // Uranus
-                return {
-                    name: "URANUS: THE FINAL FRONTIER (Almost)!",
-                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-cyan-500" />,
-                    description:
-                        "It's cold, it's gassy, it's Uranus! You've ventured into the icy outer reaches. Don't forget your thermal underwear!",
-                    bgColor: "bg-cyan-100 dark:bg-cyan-900/30",
-                    textColor: "text-cyan-700 dark:text-cyan-300",
-                };
-            case 6: // Neptune
+            case 5: // Neptune
                 return {
                     name: "NEPTUNE'S DEEP BLUE YONDER!",
                     icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-indigo-500" />,
@@ -100,15 +97,6 @@ function GameResults({
                         "You've reached the windy, azure giant, Neptune! If you see any tridents, probably best to steer clear. What an epic journey!",
                     bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
                     textColor: "text-indigo-700 dark:text-indigo-300",
-                };
-            case 7: // Pluto
-                return {
-                    name: "PLUTO: EDGE OF THE SOLAR SYSTEM (ish)!",
-                    icon: <CircleDot className="h-16 w-16 sm:h-20 sm:w-20 text-gray-400" />,
-                    description:
-                        "To Pluto and beyond (not really beyond, Pluto's pretty far)! You've reached the beloved dwarf planet. Send a postcard from the Kuiper Belt!",
-                    bgColor: "bg-gray-200 dark:bg-gray-700/50",
-                    textColor: "text-gray-700 dark:text-gray-300",
                 };
             default: // Victory Level 0 or unhandled
                 return {

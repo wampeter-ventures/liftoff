@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Input } from "./ui/input";
@@ -33,10 +33,12 @@ import { useToast } from "../hooks/use-toast";
 function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const [playerCount, setPlayerCount] = useState(1);
   const [players, setPlayers] = useState([{ id: Date.now(), name: "Player 1", diceCount: 6 }]);
+  const [commonDiceCount, setCommonDiceCount] = useState(6);
   const [error, setError] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showTldrRules, setShowTldrRules] = useState(false);
   const [hasLoadedPreservedSetup, setHasLoadedPreservedSetup] = useState(false);
+  const rulesContentRef = useRef(null);
   const { toast } = useToast();
 
   // Initialize with preserved setup if available
@@ -44,11 +46,38 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
     if (preservedPlayerSetup && preservedPlayerSetup.length > 0 && !hasLoadedPreservedSetup) {
       console.log('Loading preserved player setup:', preservedPlayerSetup);
       setPlayerCount(preservedPlayerSetup.length);
-      setPlayers(preservedPlayerSetup.map(player => ({
-        ...player,
-        id: player.id || Date.now() + Math.random() // Ensure unique IDs
-      })));
+      setPlayers(
+        preservedPlayerSetup.map(player => ({
+          ...player,
+          id: player.id || Date.now() + Math.random(),
+          diceCount: Number(player.diceCount)
+        }))
+      );
+      if (preservedPlayerSetup[0]) {
+        setCommonDiceCount(preservedPlayerSetup[0].diceCount);
+      }
       setHasLoadedPreservedSetup(true);
+    } else if (!hasLoadedPreservedSetup) {
+      const stored = localStorage.getItem('liftoff-player-setup');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setPlayerCount(parsed.length);
+            setPlayers(
+              parsed.map(p => ({
+                ...p,
+                id: p.id || Date.now() + Math.random(),
+                diceCount: Number(p.diceCount)
+              }))
+            );
+            setCommonDiceCount(parsed[0].diceCount || 6);
+            setHasLoadedPreservedSetup(true);
+          }
+        } catch (e) {
+          console.error('Failed to parse stored player setup', e);
+        }
+      }
     }
   }, [preservedPlayerSetup, hasLoadedPreservedSetup]);
 
@@ -63,21 +92,38 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
         players[i] || {
           id: Date.now() + i,
           name: `Player ${i + 1}`,
-          diceCount: 6,
+          diceCount: commonDiceCount,
         }
       );
     });
     setPlayers(newPlayersList);
   }, [playerCount, hasLoadedPreservedSetup, preservedPlayerSetup]);
 
+  useEffect(() => {
+    if (players && players.length > 0) {
+      localStorage.setItem('liftoff-player-setup', JSON.stringify(players));
+    }
+  }, [players]);
+
   const updatePlayer = (index, field, value) => {
     const newPlayers = players.map((player, i) => {
       if (i === index) {
-        const processedValue = field === "diceCount" ? Math.max(1, Math.min(20, Number(value))) : value;
+        const processedValue = field === "diceCount" ? value : value;
         return { ...player, [field]: processedValue };
       }
       return player;
     });
+    setPlayers(newPlayers);
+  };
+
+  const clampDiceCount = (index) => {
+    const raw = players[index].diceCount;
+    let num = parseInt(raw, 10);
+    if (isNaN(num)) num = 1;
+    num = Math.max(1, Math.min(20, num));
+    const newPlayers = players.map((p, i) =>
+      i === index ? { ...p, diceCount: num } : p
+    );
     setPlayers(newPlayers);
   };
 
@@ -89,7 +135,10 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
 
   const handleAttemptStartMission = () => {
     setError(null);
-    const hasValidPlayers = players.every((p) => p.name.trim() !== "" && p.diceCount >= 1 && p.diceCount <= 20);
+    const hasValidPlayers = players.every((p) => {
+      const val = Number(p.diceCount);
+      return p.name.trim() !== "" && val >= 1 && val <= 20;
+    });
 
     if (!hasValidPlayers) {
       const errorMessage = "Every player needs a name and 1-20 dice.";
@@ -106,7 +155,8 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   };
 
   const handleConfirmAndStartGame = () => {
-    onStartGame(players);
+    const processed = players.map(p => ({ ...p, diceCount: Number(p.diceCount) }));
+    onStartGame(processed);
     setIsDrawerOpen(false);
     toast({
       title: "Engines Primed!",
@@ -119,6 +169,15 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const handleOpenRulesDrawer = () => {
     setShowTldrRules(false);
     setIsDrawerOpen(true);
+  };
+
+  const toggleTldr = () => {
+    setShowTldrRules((prev) => !prev);
+    setTimeout(() => {
+      if (rulesContentRef.current) {
+        rulesContentRef.current.scrollTop = 0;
+      }
+    }, 0);
   };
 
   // Use the exported functions to avoid duplication
@@ -184,10 +243,34 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Configure Players</h3>
+          </Select>
+        </div>
+        <div className="mt-4">
+          <Label htmlFor="dice-all" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+            Dice per Player (1-20):
+          </Label>
+          <Input
+            id="dice-all"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={commonDiceCount}
+            onChange={(e) => {
+              setCommonDiceCount(e.target.value);
+              setPlayers(players.map(p => ({ ...p, diceCount: e.target.value })));
+            }}
+            onBlur={() => {
+              let num = parseInt(commonDiceCount, 10);
+              if (isNaN(num)) num = 1;
+              num = Math.max(1, Math.min(20, num));
+              setCommonDiceCount(num);
+              setPlayers(players.map(p => ({ ...p, diceCount: num })));
+            }}
+            className="text-base h-9 dark:bg-slate-600 dark:border-slate-500"
+          />
+        </div>
+        <div>
+          <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Configure Players</h3>
             <div className="space-y-2 max-h-[calc(100vh-400px)] min-h-[100px] overflow-y-auto pr-1 custom-scrollbar">
               {players.map((player, index) => (
                 <div key={player.id} className="p-3 border rounded-md bg-slate-50 dark:bg-slate-700/60">
@@ -217,12 +300,13 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
                       </Label>
                       <Input
                         id={`player-${index}-dice`}
-                        type="number"
-                        min="1"
-                        max="20"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={player.diceCount}
                         onChange={(e) => updatePlayer(index, "diceCount", e.target.value)}
-                        className="text-sm h-9 dark:bg-slate-600 dark:border-slate-500"
+                        onBlur={() => clampDiceCount(index)}
+                        className="text-base h-9 dark:bg-slate-600 dark:border-slate-500"
                       />
                     </div>
                   </div>
@@ -250,7 +334,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
                 <Info className="mr-2 h-5 w-5 sm:h-6 sm:w-6 text-amber-500" />
                 Top Secret Intel!
               </DrawerTitle>
-              <Button variant="outline" size="sm" onClick={() => setShowTldrRules(!showTldrRules)} className="text-xs">
+              <Button variant="outline" size="sm" onClick={toggleTldr} className="text-xs">
                 {showTldrRules ? (
                   <>
                     <BookOpenText className="mr-1.5 h-3.5 w-3.5" /> Show Full Rules
@@ -268,7 +352,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
                 : "Read this, or become space dust. Your choice."}
             </DrawerDescription>
           </DrawerHeader>
-          <div className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">
+          <div ref={rulesContentRef} className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">
             {showTldrRules ? renderTldrRulesLocal() : renderDetailedRulesLocal()}
           </div>
           <DrawerFooter className="pt-3 pb-4 border-t dark:border-slate-700 flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2">
@@ -429,6 +513,16 @@ export const renderTldrRules = () => (
 // Reusable HelpDrawer component for use during gameplay
 export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
   const [showTldrRules, setShowTldrRules] = useState(false);
+  const contentRef = useRef(null);
+
+  const toggleTldrRules = () => {
+    setShowTldrRules((prev) => !prev);
+    setTimeout(() => {
+      if (contentRef.current) {
+        contentRef.current.scrollTop = 0;
+      }
+    }, 0);
+  };
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
@@ -439,7 +533,7 @@ export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
               <Info className="mr-2 h-5 w-5 sm:h-6 sm:w-6 text-amber-500" />
               How to Play
             </DrawerTitle>
-            <Button variant="outline" size="sm" onClick={() => setShowTldrRules(!showTldrRules)} className="text-xs">
+            <Button variant="outline" size="sm" onClick={toggleTldrRules} className="text-xs">
               {showTldrRules ? (
                 <>
                   <BookOpenText className="mr-1.5 h-3.5 w-3.5" /> Show Full Rules
@@ -457,7 +551,7 @@ export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
               : "Read this, or become space dust. Your choice."}
           </DrawerDescription>
         </DrawerHeader>
-        <div className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">
+        <div ref={contentRef} className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">
           {showTldrRules ? renderTldrRules() : renderDetailedRules()}
         </div>
         <DrawerFooter className="pt-3 pb-4 border-t dark:border-slate-700">

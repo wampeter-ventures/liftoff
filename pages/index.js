@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import GameLogic from '../lib/gameLogic';
 import Die from '../components/Die';
 import DiceRoll from '../components/DiceRoll';
@@ -29,6 +29,8 @@ export default function Home() {
     const [selectedDie, setSelectedDie] = useState(null);
     const [stars, setStars] = useState([]);
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
+    const [missionPhase, setMissionPhase] = useState(0);
+    const playersCompactRef = useRef(null);
     
     // Modal state
     const [modal, setModal] = useState({
@@ -83,6 +85,16 @@ export default function Home() {
         setStars(generatedStars);
     }, []);
 
+    // Update mission phase based on victory tiers
+    useEffect(() => {
+        const phase = GameLogic.calculateVictoryLevel(
+            rocketGrid,
+            rocketHeight,
+            boosterRowLocked,
+        );
+        setMissionPhase(phase);
+    }, [rocketGrid, boosterRowLocked, rocketHeight]);
+
     useEffect(() => {
         if (gameState === "playing" && players.length > 0) {
             setCurrentDice([]);
@@ -93,6 +105,15 @@ export default function Home() {
             }, 50);
         }
     }, [currentPlayerIndex, gameState]);
+
+    useEffect(() => {
+        if (playersCompactRef.current) {
+            const currentEl = playersCompactRef.current.children[currentPlayerIndex];
+            if (currentEl && currentEl.scrollIntoView) {
+                currentEl.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+            }
+        }
+    }, [currentPlayerIndex]);
 
     const startGame = (playerData) => {
         // Store original player setup for future resets
@@ -446,7 +467,7 @@ export default function Home() {
     };
 
     // Starry Background Component
-    const StarryBackground = () => (
+    const StarryBackground = ({ phase }) => (
         <div className="absolute inset-0 overflow-hidden">
             {/* Small varied stars */}
             {stars.map((star) => (
@@ -531,8 +552,8 @@ export default function Home() {
             </div>
             
             {/* Moon */}
-            <div 
-                className="absolute top-2/3 left-1/3 animate-spin opacity-35" 
+            <div
+                className="absolute top-2/3 left-1/3 animate-spin opacity-35"
                 style={{ animationDuration: '15s' }}
             >
                 <svg width="24" height="24" viewBox="0 0 24 24" className="text-gray-300">
@@ -543,6 +564,16 @@ export default function Home() {
                     <circle cx="14" cy="16" r="1.2" fill="rgba(156, 163, 175, 0.6)" />
                 </svg>
             </div>
+
+            {phase >= 1 && (
+                <div className="mission-planet">
+                    {phase === 1 && <div className="mission-moon" />}
+                    {phase === 2 && <div className="mission-mars" />}
+                    {phase === 3 && <div className="mission-jupiter" />}
+                    {phase === 4 && <div className="mission-saturn" />}
+                    {phase === 5 && <div className="mission-neptune" />}
+                </div>
+            )}
         </div>
     );
 
@@ -601,7 +632,7 @@ export default function Home() {
 
             {gameState === "welcome" && (
                 <div className="welcome-screen">
-                    <StarryBackground />
+                    <StarryBackground phase={missionPhase} />
                     
                     {/* Content */}
                     <div className="relative z-10 flex flex-col items-center">
@@ -740,7 +771,7 @@ export default function Home() {
 
             {gameState === "setup" && (
                 <div className="fixed inset-0 bg-black">
-                    <StarryBackground />
+                    <StarryBackground phase={missionPhase} />
                     <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
                         <GameSetup 
                             onStartGame={startGame} 
@@ -783,7 +814,7 @@ export default function Home() {
                             >
                                 ←
                             </button>
-                            <div className="players-compact">
+                            <div className="players-compact" ref={playersCompactRef}>
                                 {players.map((player, index) => (
                                     <div
                                         key={player.name || index}
@@ -866,6 +897,7 @@ export default function Home() {
                                     onDropDie={placeDie}
                                     rocketHeight={rocketHeight}
                                     boosterRowLocked={boosterRowLocked}
+                                    missionPhase={missionPhase}
                                     currentDice={currentDice}
                                     selectedDie={selectedDie}
                                     onPlaceSelectedDie={placeSelectedDie}

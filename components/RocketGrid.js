@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Die from './Die';
 import GameLogic from '../lib/gameLogic';
+import { Eye, EyeOff } from 'lucide-react';
+
+const phaseLabels = ['Moon', 'Mars', 'Jupiter', 'Saturn', 'Neptune'];
 
 function RocketGrid({
     grid,
     onDropDie,
     rocketHeight,
     boosterRowLocked,
+    missionPhase,
     currentDice,
     selectedDie,
     onPlaceSelectedDie,
@@ -19,6 +23,9 @@ function RocketGrid({
     const [selectedDieValidPositions, setSelectedDieValidPositions] = useState(new Set());
     const [hasAnyPlacedDice, setHasAnyPlacedDice] = useState(false);
     const [showInitialGuide, setShowInitialGuide] = useState(true);
+    const [showPicture, setShowPicture] = useState(false);
+    const [maxRows, setMaxRows] = useState(6);
+    const [rowsToRemove, setRowsToRemove] = useState([]);
 
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
@@ -62,6 +69,26 @@ function RocketGrid({
         return () => clearTimeout(timer);
     }, [currentDice, grid, rocketHeight, boosterRowLocked, selectedDie, showInitialGuide]);
 
+    // Animate removal of rows when boosters lock
+    useEffect(() => {
+        if (!boosterRowLocked) return;
+        const boosterRow = Math.min(
+            ...Object.keys(grid)
+                .filter((k) => grid[k] && grid[k].value === 6)
+                .map((k) => parseInt(k.split("-")[0]))
+        );
+        if (maxRows > boosterRow) {
+            const rows = [];
+            for (let r = boosterRow + 1; r <= maxRows; r++) rows.push(r);
+            setRowsToRemove(rows);
+            const timer = setTimeout(() => {
+                setMaxRows(boosterRow);
+                setRowsToRemove([]);
+            }, 600);
+            return () => clearTimeout(timer);
+        }
+    }, [boosterRowLocked, grid]);
+
     // Compute eligibility *for display* for every slot on the grid
     const eligibleLabels = React.useMemo(() => {
         const labels = {};
@@ -84,7 +111,7 @@ function RocketGrid({
                     labels[pos] = [];
                     continue;
                 }
-                let eligible = [];
+                const eligibleSet = new Set();
                 if (
                     GameLogic.isValidPlacement(
                         pos,
@@ -94,7 +121,7 @@ function RocketGrid({
                         boosterRowLocked,
                     )
                 ) {
-                    eligible.push(col);
+                    eligibleSet.add(col);
                 }
                 if (
                     GameLogic.isValidPlacement(
@@ -105,9 +132,9 @@ function RocketGrid({
                         boosterRowLocked,
                     )
                 ) {
-                    eligible.push(6);
+                    eligibleSet.add(6);
                 }
-                labels[pos] = eligible;
+                labels[pos] = Array.from(eligibleSet);
             }
         }
         return labels;
@@ -201,21 +228,38 @@ function RocketGrid({
     // Render
     return (
         <>
-            <h3 className="rocket-section-header">Rocket Assembly</h3>
+            <h3 className="rocket-section-header flex items-center justify-center">
+                {missionPhase > 0
+                    ? `Mission: ${phaseLabels[missionPhase - 1]}`
+                    : 'Rocket Assembly'}
+                <button
+                    className="ml-2 picture-toggle"
+                    type="button"
+                    onClick={() => setShowPicture(!showPicture)}
+                >
+                    {showPicture ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+            </h3>
             <div className="rocket-grid-container">
                 {/* Rocket Guide Overlay */}
-                <div 
-                    className={`rocket-guide-overlay ${hasAnyPlacedDice ? 'fade-to-hidden' : 'show-background'}`}
+                <div
+                    className={`rocket-guide-overlay ${
+                        showPicture
+                            ? 'show-guide'
+                            : !hasAnyPlacedDice && showInitialGuide
+                            ? 'show-background'
+                            : 'fade-to-hidden'
+                    }`}
                 >
-                    <img 
-                        src="/rocket_big.png" 
-                        alt="Rocket building guide" 
+                    <img
+                        src="/rocket_big.png"
+                        alt="Rocket building guide"
                         className="rocket-guide-image"
                     />
                 </div>
-                
+
                 <div className="rocket-grid">
-                    {[1, 2, 3, 4, 5, 6]
+                    {Array.from({ length: maxRows }, (_, i) => i + 1)
                         .filter((row) => {
                             // Only hide rows if there is actually a 6 (booster) placed
                             const boosters = Object.keys(grid)
@@ -227,7 +271,10 @@ function RocketGrid({
                         })
 
                         .map((row) => (
-                            <div key={row} className={`rocket-row row-${row}`}>
+                            <div
+                                key={row}
+                                className={`rocket-row row-${row} ${rowsToRemove.includes(row) ? 'cross-out' : ''}`}
+                            >
                                 <div className="row-slots">
                                     {Array.from({ length: row }, (_, i) => {
                                         const pos = `${row}-${i + 1}`;
