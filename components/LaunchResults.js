@@ -7,49 +7,46 @@ function LaunchResults({ boosterRolls, success }) {
     const [showFinalRolls, setShowFinalRolls] = useState(false);
 
     useEffect(() => {
-        // Start with random rolls
-        setAnimatedRolls(boosterRolls.map(() => Math.floor(Math.random() * 6) + 1));
         setIsRolling(true);
         setShowFinalRolls(false);
+        setAnimatedRolls([]);
 
-        // Dramatic rolling animation sequence
         const intervals = [];
-        
-        // Phase 1: Super fast rolling (80ms)
-        const hyperRoll = setInterval(() => {
-            setAnimatedRolls(boosterRolls.map(() => Math.floor(Math.random() * 6) + 1));
-        }, 80);
-        intervals.push(hyperRoll);
+        const timeouts = [];
 
-        setTimeout(() => {
-            clearInterval(hyperRoll);
-            
-            // Phase 2: Fast rolling (150ms)
-            const fastRoll = setInterval(() => {
-                setAnimatedRolls(boosterRolls.map(() => Math.floor(Math.random() * 6) + 1));
-            }, 150);
-            intervals.push(fastRoll);
+        const rollDie = (index) => {
+            if (index >= boosterRolls.length) {
+                setIsRolling(false);
+                setShowFinalRolls(true);
+                return;
+            }
 
-            setTimeout(() => {
-                clearInterval(fastRoll);
-                
-                // Phase 3: Slower dramatic settle (300ms)
-                const slowRoll = setInterval(() => {
-                    setAnimatedRolls(boosterRolls.map(() => Math.floor(Math.random() * 6) + 1));
-                }, 300);
-                intervals.push(slowRoll);
+            // Add placeholder for this die
+            setAnimatedRolls((prev) => [...prev, Math.floor(Math.random() * 6) + 1]);
 
-                setTimeout(() => {
-                    clearInterval(slowRoll);
-                    // Final reveal
-                    setIsRolling(false);
-                    setAnimatedRolls(boosterRolls);
-                    setShowFinalRolls(true);
-                }, 1200);
+            const interval = setInterval(() => {
+                setAnimatedRolls((prev) =>
+                    prev.map((v, i) => (i === index ? Math.floor(Math.random() * 6) + 1 : v))
+                );
+            }, 100);
+            intervals.push(interval);
+
+            const timeout = setTimeout(() => {
+                clearInterval(interval);
+                setAnimatedRolls((prev) =>
+                    prev.map((v, i) => (i === index ? boosterRolls[index] : v))
+                );
+                rollDie(index + 1);
             }, 1000);
-        }, 800);
+            timeouts.push(timeout);
+        };
 
-        return () => intervals.forEach(clearInterval);
+        rollDie(0);
+
+        return () => {
+            intervals.forEach(clearInterval);
+            timeouts.forEach(clearTimeout);
+        };
     }, [boosterRolls]);
 
     return (
