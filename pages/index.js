@@ -61,6 +61,8 @@ export default function Home() {
     const [boosterRowLocked, setBoosterRowLocked] = useState(false);
     const [fireDice, setFireDice] = useState([]);
     const [showLaunchHelper, setShowLaunchHelper] = useState(false);
+    const [preparingLaunch, setPreparingLaunch] = useState(false);
+    const [launchCountdown, setLaunchCountdown] = useState(0);
     const [selectedDie, setSelectedDie] = useState(null);
     const [stars, setStars] = useState([]);
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
@@ -100,6 +102,7 @@ export default function Home() {
         Telescope,
         Satellite,
     ];
+    const [outOfDiceFail, setOutOfDiceFail] = useState(false);
     
     // Modal state
     const [modal, setModal] = useState({
@@ -208,6 +211,7 @@ export default function Home() {
 
         setPlayers(playerData);
         setCurrentPlayerIndex(0);
+        setOutOfDiceFail(false);
         setGameState("intro");
         rollDiceForCurrentPlayer(playerData);
     };
@@ -297,6 +301,7 @@ export default function Home() {
         setFireFlash(true);
         setTimeout(() => setFireFlash(false), 900);
         if (newFirePile >= 5) {
+            setOutOfDiceFail(false);
             setGameState("results");
             return;
         }
@@ -353,6 +358,7 @@ export default function Home() {
         });
         setPlayers(updatedPlayers);
         if (firePile >= 5) {
+            setOutOfDiceFail(false);
             setGameState("results");
             return;
         }
@@ -397,14 +403,11 @@ export default function Home() {
             boosterRowLocked,
         );
         if (victoryLevel > 0) {
+            setOutOfDiceFail(false);
             setGameState("results");
         } else {
-            setCurrentDice([]);
-            setPlacedDice([]);
-            setGameHistory([]);
-            setTimeout(() => {
-                rollDiceForCurrentPlayer();
-            }, 100);
+            setOutOfDiceFail(true);
+            setGameState("results");
         }
     };
 
@@ -443,7 +446,6 @@ export default function Home() {
             );
             return;
         }
-        
         const boosters = Object.entries(rocketGrid).filter(
             ([, d]) => d && d.value === 6,
         );
@@ -459,39 +461,51 @@ export default function Home() {
             () => Math.floor(Math.random() * 6) + 1,
         );
         const hasSuccessfulBooster = boosterRolls.some((roll) => roll === 6);
-        if (hasSuccessfulBooster) {
-            showModal(
-                'launch',
-                '🎲 CMON SIXES...',
-                'The fate of your rocket hangs in the balance...',
-                { boosterRolls, success: true }
-            );
-            setTimeout(() => {
-                setGameState("results");
-            }, 4000);
-        } else {
-            const newGrid = { ...rocketGrid };
-            boosters.forEach(([pos], i) => {
-                if (i === 0) {
-                    setFireDice((fireDice) => [...fireDice, rocketGrid[pos]]);
-                    setFirePile((pile) => pile + 1);
+        setPreparingLaunch(true);
+        let count = 5;
+        setLaunchCountdown(count);
+        const countdown = setInterval(() => {
+            count -= 1;
+            setLaunchCountdown(count);
+            if (count === 0) {
+                clearInterval(countdown);
+                setPreparingLaunch(false);
+                setLaunchCountdown(0);
+                if (hasSuccessfulBooster) {
+                    showModal(
+                        'launch',
+                        '🎲 CMON SIXES...',
+                        'The fate of your rocket hangs in the balance...',
+                        { boosterRolls, success: true }
+                    );
+                    setTimeout(() => {
+                        setGameState("results");
+                    }, 4000);
+                } else {
+                    const newGrid = { ...rocketGrid };
+                    boosters.forEach(([pos], i) => {
+                        if (i === 0) {
+                            setFireDice((fireDice) => [...fireDice, rocketGrid[pos]]);
+                            setFirePile((pile) => pile + 1);
+                        }
+                        newGrid[pos] = null;
+                    });
+                    setRocketGrid(newGrid);
+                    setBoosterRowLocked(false);
+                    showModal(
+                        'launch',
+                        '🎲 CMON SIXES...',
+                        'The fate of your rocket hangs in the balance...',
+                        { boosterRolls, success: false }
+                    );
+                    if (firePile + 1 >= 5) {
+                        setTimeout(() => {
+                            setGameState("results");
+                        }, 3000);
                 }
-                newGrid[pos] = null;
-            });
-            setRocketGrid(newGrid);
-            setBoosterRowLocked(false);
-            showModal(
-                'launch',
-                '🎲 CMON SIXES...',
-                'The fate of your rocket hangs in the balance...',
-                { boosterRolls, success: false }
-            );
-            if (firePile + 1 >= 5) {
-                setTimeout(() => {
-                    setGameState("results");
-                }, 3000);
+                }
             }
-        }
+        }, 1000);
     };
 
     const clearAllGameState = () => {
@@ -512,6 +526,8 @@ export default function Home() {
         setFireFlash(false);
         setShowBoosterAnim(false);
         setPlacementEffect(null);
+        setLaunchCountdown(0);
+        setOutOfDiceFail(false);
         
         // Close any open modals
         closeModal();
@@ -891,10 +907,16 @@ export default function Home() {
             {gameState === "playing" && (
                 <>
                     {/* Gameplay Help Drawer */}
-                    <HelpDrawer 
-                        isOpen={showGameplayHelp} 
-                        onOpenChange={setShowGameplayHelp} 
+                    <HelpDrawer
+                        isOpen={showGameplayHelp}
+                        onOpenChange={setShowGameplayHelp}
                     />
+
+                    {launchCountdown > 0 && (
+                        <div className="launch-countdown-overlay">
+                            {launchCountdown}
+                        </div>
+                    )}
                     
                     
                     <div className="game-container">
@@ -1027,6 +1049,7 @@ export default function Home() {
                                     highlightSlot={highlightSlot}
                                     showBoosterAnimation={showBoosterAnim}
                                     placementEffect={placementEffect}
+                                    preparingLaunch={preparingLaunch}
                                 />
                             </div>
 
@@ -1035,8 +1058,7 @@ export default function Home() {
                                 selectedDie={selectedDie}
                                 onSelectDie={selectDie}
                                 onDragStart={(e, die) => {
-                                    // This enables drag functionality
-                                    console.log('🌟 Main page onDragStart called:', { die: die.value });
+                                    // Enable drag functionality
                                 }}
                                 rocketGrid={rocketGrid}
                                 rocketHeight={rocketHeight}
@@ -1068,6 +1090,7 @@ export default function Home() {
                     rocketGrid={rocketGrid}
                     firePile={firePile}
                     boosterRowLocked={boosterRowLocked}
+                    outOfDiceFail={outOfDiceFail}
                     onRestart={resetGamePreservingSetup}
                 />
             )}
