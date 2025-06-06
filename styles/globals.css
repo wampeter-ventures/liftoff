@@ -336,6 +336,21 @@ body {
     text-align: center;
 }
 
+.rocket-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.picture-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--color-dark-gray);
+}
+
 .rocket-grid-container {
     position: relative;
     display: flex;
@@ -351,7 +366,7 @@ body {
     transform: translateX(-50%);
     z-index: 1;
     pointer-events: none;
-    transition: opacity 5s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
 }
 
 .rocket-guide-overlay.show-guide {
@@ -368,6 +383,10 @@ body {
 
 .rocket-guide-overlay.fade-to-hidden {
     opacity: 0.05;
+}
+
+.rocket-guide-overlay.on-top {
+    z-index: 20;
 }
 
 .rocket-guide-image {
@@ -467,7 +486,7 @@ body {
     padding: 4px 8px;
     position: relative;
     z-index: 10;
-    margin-top: 50px;
+    margin-top: 24px;
 }
 
 .dice-roll-container h3 {
@@ -616,7 +635,12 @@ body {
     display: flex;
     gap: 12px;
     justify-content: center;
-    margin-top: 16px;
+    margin-top: 8px;
+    position: sticky;
+    bottom: 0;
+    background-color: var(--color-background);
+    z-index: 20;
+    padding: 8px 0;
 }
 
 /* Buttons */
@@ -663,6 +687,24 @@ body {
     color: #8B4513;
     cursor: not-allowed;
     opacity: 0.8;
+}
+
+.btn-next-disabled {
+    background-color: #d0e8ff;
+    color: #4a5568;
+    cursor: not-allowed;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.3) 0,
+        rgba(255, 255, 255, 0.3) 10px,
+        rgba(255, 255, 255, 0.5) 10px,
+        rgba(255, 255, 255, 0.5) 20px
+    );
+}
+
+.btn-next-disabled:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-disabled:hover {

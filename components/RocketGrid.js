@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import Die from './Die';
 import GameLogic from '../lib/gameLogic';
 
@@ -19,6 +20,7 @@ function RocketGrid({
     const [selectedDieValidPositions, setSelectedDieValidPositions] = useState(new Set());
     const [hasAnyPlacedDice, setHasAnyPlacedDice] = useState(false);
     const [showInitialGuide, setShowInitialGuide] = useState(true);
+    const [showPictureMode, setShowPictureMode] = useState(false);
 
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
@@ -84,7 +86,7 @@ function RocketGrid({
                     labels[pos] = [];
                     continue;
                 }
-                let eligible = [];
+                const eligible = new Set();
                 if (
                     GameLogic.isValidPlacement(
                         pos,
@@ -94,7 +96,7 @@ function RocketGrid({
                         boosterRowLocked,
                     )
                 ) {
-                    eligible.push(col);
+                    eligible.add(col);
                 }
                 if (
                     GameLogic.isValidPlacement(
@@ -105,9 +107,9 @@ function RocketGrid({
                         boosterRowLocked,
                     )
                 ) {
-                    eligible.push(6);
+                    eligible.add(6);
                 }
-                labels[pos] = eligible;
+                labels[pos] = Array.from(eligible);
             }
         }
         return labels;
@@ -123,6 +125,10 @@ function RocketGrid({
     const clearDrag = () => {
         console.log('🧹 RocketGrid clearDrag called');
         setDragOverPosition(null);
+    };
+
+    const togglePictureMode = () => {
+        setShowPictureMode((prev) => !prev);
     };
 
     const handleDrop = (e, pos) => {
@@ -201,11 +207,25 @@ function RocketGrid({
     // Render
     return (
         <>
-            <h3 className="rocket-section-header">Rocket Assembly</h3>
+            <div className="rocket-header">
+                <h3 className="rocket-section-header">Rocket Assembly</h3>
+                <button
+                    type="button"
+                    className="picture-toggle"
+                    onClick={togglePictureMode}
+                    aria-label="Toggle rocket view"
+                >
+                    {showPictureMode ? (
+                        <EyeOff size={20} />
+                    ) : (
+                        <Eye size={20} />
+                    )}
+                </button>
+            </div>
             <div className="rocket-grid-container">
                 {/* Rocket Guide Overlay */}
-                <div 
-                    className={`rocket-guide-overlay ${hasAnyPlacedDice ? 'fade-to-hidden' : 'show-background'}`}
+                <div
+                    className={`rocket-guide-overlay ${showPictureMode ? 'on-top show-guide' : 'fade-to-background'}`}
                 >
                     <img 
                         src="/rocket_big.png" 

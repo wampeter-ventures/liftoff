@@ -59,6 +59,22 @@ export default function Home() {
         });
     };
 
+    // Load any saved player setup from localStorage on mount
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const stored = localStorage.getItem('playerSetup');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    setOriginalPlayerSetup(parsed);
+                }
+            } catch (err) {
+                console.error('Failed to parse saved player setup', err);
+            }
+        }
+    }, []);
+
     useEffect(() => {
         const grid = {};
         for (let row = 1; row <= 6; row++) {
@@ -100,7 +116,16 @@ export default function Home() {
             ...player,
             diceCount: player.diceCount // Preserve original dice count
         })));
-        
+
+        // Persist setup so it survives page refreshes
+        if (typeof window !== 'undefined') {
+            try {
+                localStorage.setItem('playerSetup', JSON.stringify(playerData));
+            } catch (err) {
+                console.error('Failed to save player setup', err);
+            }
+        }
+
         setPlayers(playerData);
         setCurrentPlayerIndex(0);
         setGameState("intro");
@@ -766,14 +791,6 @@ export default function Home() {
                         onOpenChange={setShowGameplayHelp} 
                     />
                     
-                    {/* Persistent Help Button */}
-                    <button
-                        onClick={() => setShowGameplayHelp(true)}
-                        className="fixed top-4 right-4 z-50 bg-slate-600 hover:bg-slate-700 text-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-105"
-                        style={{ fontSize: '16px' }}
-                    >
-                        <HelpCircle size={18} />
-                    </button>
                     
                     <div className="game-container">
                         <div className="top-status">
@@ -781,7 +798,7 @@ export default function Home() {
                                 className="nav-back-inline"
                                 onClick={resetGamePreservingSetup}
                             >
-                                ←
+                                &lt;
                             </button>
                             <div className="players-compact-container">
                                 <div className="players-compact">
@@ -829,6 +846,13 @@ export default function Home() {
                                     })()}
                                 </div>
                             </div>
+                            <button
+                                className="nav-back-inline"
+                                onClick={() => setShowGameplayHelp(true)}
+                                style={{ marginLeft: 'auto' }}
+                            >
+                                <HelpCircle size={18} />
+                            </button>
                         </div>
 
                         <div className="fire-status">
@@ -921,7 +945,7 @@ export default function Home() {
                                 </button>
                                 <button
                                     onClick={nextPlayer}
-                                    className="btn btn-primary"
+                                    className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? "btn-next-disabled" : ""}`}
                                 >
                                     Next Player →
                                 </button>
