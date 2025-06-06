@@ -362,7 +362,7 @@ export default GameSetup;
 
 // Exported help content functions for reuse
 export const renderDetailedRules = () => (
-  <div className="space-y-3.5 text-sm text-slate-700 dark:text-slate-300 px-1">
+  <div className="space-y-4 text-sm text-slate-700 dark:text-slate-300 px-1">
     <div>
       <h4 className="font-bold text-lg text-amber-600 dark:text-amber-400 mb-1.5 flex items-center">
         <Sparkles className="inline h-5 w-5 mr-2" /> Your Glorious Goal:
@@ -377,16 +377,22 @@ export const renderDetailedRules = () => (
       <h4 className="font-bold text-lg text-sky-600 dark:text-sky-400 mb-1.5 flex items-center">
         <span className="inline h-5 w-5 mr-2 bg-slate-700 text-white rounded text-xs flex items-center justify-center">6</span> Your Daring Maneuvers (On Your Turn):
       </h4>
-      <ul className="list-none pl-1 space-y-2.5">
-        <li>
-          <strong className="text-sky-700 dark:text-sky-300">1. Shake, Rattle & Roll (Dice):</strong> Unleash the fury
-          of ALL your dice! Let 'em fly!
+      <ul className="list-none pl-1 space-y-3">
+        <li className="space-y-1">
+          <p className="font-semibold text-sky-700 dark:text-sky-300">
+            1. Shake, Rattle &amp; Roll (Dice):
+          </p>
+          <p>Unleash the fury of ALL your dice! Let &apos;em fly!</p>
         </li>
-        <li>
-          <strong className="text-sky-700 dark:text-sky-300">2. Construct-o-Rama (Must Place ≥1 Die):</strong> You {" "}
-          <em className="font-semibold">MUST</em> place at least one die. No hoarding, you dice miser! Each new piece
-          must smooch an existing part of your glorious contraption (touching sides, not just corners, you cheeky
-          rascal).
+        <li className="space-y-1">
+          <p className="font-semibold text-sky-700 dark:text-sky-300">
+            2. Construct-o-Rama (Must Place ≥1 Die):
+          </p>
+          <p>
+            <em className="font-semibold">MUST</em> place at least one die. No hoarding, you dice miser! Each new
+            piece must smooch an existing part of your glorious contraption (touching sides, not just corners, you
+            cheeky rascal).
+          </p>
           <ul className="list-none pl-4 mt-1.5 space-y-1.5 text-xs">
             <li>
               <span className="inline-flex gap-1 mr-2">
@@ -408,10 +414,15 @@ export const renderDetailedRules = () => (
             </li>
           </ul>
         </li>
-        <li>
-          <strong className="text-sky-700 dark:text-sky-300">3. Uh Oh, Space Junk! (Can't Place?):</strong> If you
-          can't legally place any dice (sad trombone!), you must sacrifice one poor, innocent die to the dreaded{" "}
-          <strong className="text-red-600 dark:text-red-400">"Fire Pile."</strong> It's for the greater good... maybe.
+        <li className="space-y-1">
+          <p className="font-semibold text-sky-700 dark:text-sky-300">
+            3. Uh Oh, Space Junk! (Can&apos;t Place?)
+          </p>
+          <p>
+            If you can&apos;t legally place any dice (sad trombone!), you must sacrifice one poor, innocent die to the
+            dreaded <strong className="text-red-600 dark:text-red-400">"Fire Pile."</strong> It&apos;s for the greater good...
+            maybe.
+          </p>
         </li>
       </ul>
     </div>
@@ -454,11 +465,11 @@ export const renderDetailedRules = () => (
 );
 
 export const renderTldrRules = () => (
-  <div className="space-y-2.5 text-sm text-slate-700 dark:text-slate-300 px-1">
+  <div className="space-y-3 text-sm text-slate-700 dark:text-slate-300 px-1">
     <p className="text-center font-semibold text-amber-600 dark:text-amber-400 text-base">
       <Zap className="inline h-5 w-5 mr-1.5" /> LIFTOFF! TL;DR <Zap className="inline h-5 w-5 ml-1.5" />
     </p>
-    <div className="p-3 bg-slate-100 dark:bg-slate-700/50 rounded-md space-y-1.5">
+    <div className="p-4 bg-slate-100 dark:bg-slate-700/50 rounded-md space-y-2">
       <p>
         <strong>🚀 Goal:</strong> Launch FAR! Don't EXPLODE!
       </p>
