@@ -1,4 +1,5 @@
 import React from 'react';
+import ResultsBackground from './ResultsBackground';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
 import {
@@ -126,7 +127,9 @@ function GameResults({
 
 
     return (
-        <div className="game-results mt-4 px-4">
+        <div className="game-results mt-4 px-4 relative">
+            <ResultsBackground />
+            <div className="relative z-10">
             <Card
                 className={`w-full max-w-md shadow-xl dark:bg-slate-800 mx-auto overflow-hidden border-transparent`}
             >
@@ -176,6 +179,7 @@ function GameResults({
                     </Button>
                 </CardFooter>
             </Card>
+            </div>
         </div>
     );
 }
