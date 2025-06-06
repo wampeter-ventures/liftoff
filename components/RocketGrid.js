@@ -14,6 +14,9 @@ function RocketGrid({
     onCanLaunch,
     onAttemptLaunch,
     onSetShowLaunchHelper,
+    highlightSlot,
+    showBoosterAnimation,
+    placementEffect,
     preparingLaunch
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
@@ -198,6 +201,7 @@ function RocketGrid({
         if (canDrop) cls += " valid-drop";
         if (canPlaceSelected) cls += " valid-for-selected";
         if (isOver) cls += " drag-over";
+        if (highlightSlot === pos) cls += " confirm-slot";
 
         // Show "1/6", "2/6" for eligible, blank slots before any boosters are placed
         // After a booster is placed, only show 6s and empty booster slots in that row
@@ -236,6 +240,14 @@ function RocketGrid({
                 ) : (
                     <span className="required-number">{slotLabel}</span>
                 )}
+                {placementEffect && placementEffect.pos === pos && (() => {
+                    const IconComp = placementEffect.Icon;
+                    return (
+                        <span className="placement-icon">
+                            <IconComp size={24} />
+                        </span>
+                    );
+                })()}
             </div>
         );
     };
@@ -263,12 +275,18 @@ function RocketGrid({
                 <div
                     className={`rocket-guide-overlay ${showPictureMode ? 'on-top show-guide' : 'fade-to-background'}`}
                 >
-                    <img 
-                        src="/rocket_big.png" 
-                        alt="Rocket building guide" 
+                    <img
+                        src="/rocket_big.png"
+                        alt="Rocket building guide"
                         className="rocket-guide-image"
                     />
                 </div>
+
+                {showBoosterAnimation && (
+                    <div className="booster-celebration">
+                        🚀 Booster Online! - {headerText}
+                    </div>
+                )}
                 
                 <div className={`rocket-grid ${preparingLaunch ? 'pre-launch' : ''}`}> 
                     {[1, 2, 3, 4, 5, 6]
