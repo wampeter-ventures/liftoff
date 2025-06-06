@@ -583,6 +583,7 @@ body {
     color: var(--color-dark-gray);
     margin-top: 8px;
     opacity: 0.8;
+    white-space: pre-line;
 }
 
 /* Fire Pile */
