@@ -31,8 +31,17 @@ import {
 import { useToast } from "../hooks/use-toast";
 
 function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
-  const [playerCount, setPlayerCount] = useState(1);
-  const [players, setPlayers] = useState([{ id: Date.now(), name: "Player 1", diceCount: 6 }]);
+  const [playerCount, setPlayerCount] = useState(8);
+  const [players, setPlayers] = useState([
+    { id: 1, name: "Player 1", diceCount: 4 },
+    { id: 2, name: "Player 2", diceCount: 2 },
+    { id: 3, name: "Player 3", diceCount: 4 },
+    { id: 4, name: "Player 4", diceCount: 2 },
+    { id: 5, name: "Player 5", diceCount: 3 },
+    { id: 6, name: "Player 6", diceCount: 6 },
+    { id: 7, name: "Player 7", diceCount: 3 },
+    { id: 8, name: "Player 8", diceCount: 2 }
+  ]);
   const [error, setError] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showTldrRules, setShowTldrRules] = useState(false);
@@ -59,13 +68,23 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
     }
     
     const newPlayersList = Array.from({ length: playerCount }, (_, i) => {
-      return (
-        players[i] || {
-          id: Date.now() + i,
-          name: `Player ${i + 1}`,
-          diceCount: 6,
-        }
-      );
+      if (players[i]) {
+        return players[i];
+      }
+      
+      // Default dice counts: 4 players with 2 dice, 3 with 3 dice, 1 with 4 dice
+      let defaultDiceCount = 2;
+      if (i >= 4 && i <= 6) {
+        defaultDiceCount = 3;
+      } else if (i === 7) {
+        defaultDiceCount = 4;
+      }
+      
+      return {
+        id: Date.now() + i,
+        name: `Player ${i + 1}`,
+        diceCount: defaultDiceCount,
+      };
     });
     setPlayers(newPlayersList);
   }, [playerCount, hasLoadedPreservedSetup, preservedPlayerSetup]);
@@ -73,8 +92,20 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const updatePlayer = (index, field, value) => {
     const newPlayers = players.map((player, i) => {
       if (i === index) {
-        const processedValue = field === "diceCount" ? Math.max(1, Math.min(20, Number(value))) : value;
-        return { ...player, [field]: processedValue };
+        if (field === "diceCount") {
+          // Allow empty string for backspacing, but convert to number for validation
+          if (value === "" || value === null || value === undefined) {
+            return { ...player, [field]: "" };
+          }
+          const numValue = Number(value);
+          if (isNaN(numValue)) {
+            return player; // Don't update if not a valid number
+          }
+          const processedValue = Math.max(1, Math.min(20, numValue));
+          return { ...player, [field]: processedValue };
+        } else {
+          return { ...player, [field]: value };
+        }
       }
       return player;
     });
@@ -89,7 +120,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
 
   const handleAttemptStartMission = () => {
     setError(null);
-    const hasValidPlayers = players.every((p) => p.name.trim() !== "" && p.diceCount >= 1 && p.diceCount <= 20);
+    const hasValidPlayers = players.every((p) => p.name.trim() !== "" && p.diceCount >= 1 && p.diceCount <= 20 && p.diceCount !== "");
 
     if (!hasValidPlayers) {
       const errorMessage = "Every player needs a name and 1-20 dice.";
@@ -243,7 +274,10 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
       </Card>
 
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <DrawerContent className="dark:bg-slate-800 constrain-drawer-width">
+        <DrawerContent 
+          className="dark:bg-slate-800" 
+          style={{ maxWidth: '500px', margin: '0 auto' }}
+        >
           <DrawerHeader className="text-left pt-4 pb-2">
             <div className="flex justify-between items-center">
               <DrawerTitle className="text-xl sm:text-2xl flex items-center font-semibold text-slate-800 dark:text-slate-100">
@@ -432,7 +466,10 @@ export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent className="dark:bg-slate-800 constrain-drawer-width">
+      <DrawerContent 
+        className="dark:bg-slate-800" 
+        style={{ maxWidth: '500px', margin: '0 auto' }}
+      >
         <DrawerHeader className="text-left pt-4 pb-2">
           <div className="flex justify-between items-center">
             <DrawerTitle className="text-xl sm:text-2xl flex items-center font-semibold text-slate-800 dark:text-slate-100">
