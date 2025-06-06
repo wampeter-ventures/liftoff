@@ -8,6 +8,6 @@ const Label = React.forwardRef(({ className, ...props }, ref) => (
   />
 ));
 
-Label.displayName = "Label";
+Label.displayName = 'Label';
 
-export { Label }; 
+export { Label };

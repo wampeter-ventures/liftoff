@@ -17,11 +17,11 @@ const Select = ({ children, value, onValueChange, ...props }) => {
   };
 
   return (
-    <SelectContext.Provider value={{ 
-      isOpen, 
-      setIsOpen, 
-      selectedValue, 
-      onValueChange: handleValueChange 
+    <SelectContext.Provider value={{
+      isOpen,
+      setIsOpen,
+      selectedValue,
+      onValueChange: handleValueChange
     }}>
       <div className="relative" {...props}>
         {children}
@@ -32,7 +32,7 @@ const Select = ({ children, value, onValueChange, ...props }) => {
 
 const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) => {
   const { isOpen, setIsOpen } = React.useContext(SelectContext);
-  
+
   return (
     <button
       ref={ref}
@@ -50,7 +50,7 @@ const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) 
 
 const SelectValue = ({ placeholder, className, ...props }) => {
   const { selectedValue } = React.useContext(SelectContext);
-  
+
   return (
     <span className={className} {...props}>
       {selectedValue || placeholder}
@@ -60,9 +60,9 @@ const SelectValue = ({ placeholder, className, ...props }) => {
 
 const SelectContent = ({ className, children, ...props }) => {
   const { isOpen } = React.useContext(SelectContext);
-  
+
   if (!isOpen) return null;
-  
+
   return (
     <div
       className={`absolute top-full z-50 w-full rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 ${className || ''}`}
@@ -75,7 +75,7 @@ const SelectContent = ({ className, children, ...props }) => {
 
 const SelectItem = React.forwardRef(({ className, children, value, ...props }, ref) => {
   const { onValueChange } = React.useContext(SelectContext);
-  
+
   return (
     <div
       ref={ref}
@@ -88,8 +88,8 @@ const SelectItem = React.forwardRef(({ className, children, value, ...props }, r
   );
 });
 
-SelectTrigger.displayName = "SelectTrigger";
-SelectItem.displayName = "SelectItem";
+SelectTrigger.displayName = 'SelectTrigger';
+SelectItem.displayName = 'SelectItem';
 
 export {
   Select,
@@ -97,4 +97,4 @@ export {
   SelectItem,
   SelectTrigger,
   SelectValue,
-}; 
+};

@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { Button } from "./ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Card, CardContent, CardFooter } from "./ui/card";
-import { Separator } from "./ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { useState, useEffect } from 'react';
+import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Card, CardContent, CardFooter } from './ui/card';
+import { Separator } from './ui/separator';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import {
   Drawer,
   DrawerClose,
@@ -14,7 +14,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "./ui/drawer";
+} from './ui/drawer';
 import {
   Rocket,
   Info,
@@ -26,20 +26,20 @@ import {
   Settings as SettingsIcon,
   BookOpenText,
   Zap,
-} from "lucide-react";
-import { useToast } from "../hooks/use-toast";
+} from 'lucide-react';
+import { useToast } from '../hooks/use-toast';
 
 function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const [playerCount, setPlayerCount] = useState(8);
   const [players, setPlayers] = useState([
-    { id: 1, name: "Player 1", diceCount: 4 },
-    { id: 2, name: "Player 2", diceCount: 2 },
-    { id: 3, name: "Player 3", diceCount: 4 },
-    { id: 4, name: "Player 4", diceCount: 2 },
-    { id: 5, name: "Player 5", diceCount: 3 },
-    { id: 6, name: "Player 6", diceCount: 6 },
-    { id: 7, name: "Player 7", diceCount: 3 },
-    { id: 8, name: "Player 8", diceCount: 2 }
+    { id: 1, name: 'Player 1', diceCount: 4 },
+    { id: 2, name: 'Player 2', diceCount: 2 },
+    { id: 3, name: 'Player 3', diceCount: 4 },
+    { id: 4, name: 'Player 4', diceCount: 2 },
+    { id: 5, name: 'Player 5', diceCount: 3 },
+    { id: 6, name: 'Player 6', diceCount: 6 },
+    { id: 7, name: 'Player 7', diceCount: 3 },
+    { id: 8, name: 'Player 8', diceCount: 2 }
   ]);
   const [error, setError] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -94,12 +94,12 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
     if (!hasLoadedPreservedSetup && preservedPlayerSetup && preservedPlayerSetup.length > 0) {
       return;
     }
-    
+
     const newPlayersList = Array.from({ length: playerCount }, (_, i) => {
       if (players[i]) {
         return players[i];
       }
-      
+
       // Default dice counts: 4 players with 2 dice, 3 with 3 dice, 1 with 4 dice
       let defaultDiceCount = 2;
       if (i >= 4 && i <= 6) {
@@ -107,7 +107,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
       } else if (i === 7) {
         defaultDiceCount = 4;
       }
-      
+
       return {
         id: Date.now() + i,
         name: `Player ${i + 1}`,
@@ -120,10 +120,10 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const updatePlayer = (index, field, value) => {
     const newPlayers = players.map((player, i) => {
       if (i === index) {
-        if (field === "diceCount") {
+        if (field === 'diceCount') {
           // Allow empty string for backspacing, but convert to number for validation
-          if (value === "" || value === null || value === undefined) {
-            return { ...player, [field]: "" };
+          if (value === '' || value === null || value === undefined) {
+            return { ...player, [field]: '' };
           }
           const numValue = Number(value);
           if (isNaN(numValue)) {
@@ -146,15 +146,15 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
 
   const handleAttemptStartMission = () => {
     setError(null);
-    const hasValidPlayers = players.every((p) => p.name.trim() !== "" && p.diceCount >= 1 && p.diceCount <= 20 && p.diceCount !== "");
+    const hasValidPlayers = players.every((p) => p.name.trim() !== '' && p.diceCount >= 1 && p.diceCount <= 20 && p.diceCount !== '');
 
     if (!hasValidPlayers) {
-      const errorMessage = "Every player needs a name and 1-20 dice.";
+      const errorMessage = 'Every player needs a name and 1-20 dice.';
       setError(errorMessage);
       toast({
-        title: "Hold Up!",
+        title: 'Hold Up!',
         description: errorMessage,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -173,9 +173,9 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
     onStartGame(players);
     setIsDrawerOpen(false);
     toast({
-      title: "Engines Primed!",
+      title: 'Engines Primed!',
       description: `Liftoff sequence initiated for ${players.length} player(s).`,
-      variant: "default",
+      variant: 'default',
       duration: 4000,
     });
   };
@@ -196,7 +196,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
           <span className="text-lg font-bold">&lt;</span>
           <span className="sr-only">Back</span>
         </Button>
-        <h1 
+        <h1
           className="text-xl font-semibold text-slate-800 dark:text-slate-100"
           style={{
             fontFamily: '"Courier New", "SF Mono", "Monaco", "Menlo", monospace',
@@ -267,7 +267,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
                         id={`player-${index}-name`}
                         type="text"
                         value={player.name}
-                        onChange={(e) => updatePlayer(index, "name", e.target.value)}
+                        onChange={(e) => updatePlayer(index, 'name', e.target.value)}
                         placeholder={`Player ${index + 1}`}
                         className="text-sm h-9 dark:bg-slate-600 dark:border-slate-500"
                       />
@@ -285,7 +285,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
                         min="1"
                         max="20"
                         value={player.diceCount}
-                        onChange={(e) => updatePlayer(index, "diceCount", e.target.value)}
+                        onChange={(e) => updatePlayer(index, 'diceCount', e.target.value)}
                         className="text-sm h-9 dark:bg-slate-600 dark:border-slate-500"
                       />
                     </div>
@@ -307,8 +307,8 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
       </Card>
 
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <DrawerContent 
-          className="dark:bg-slate-800" 
+        <DrawerContent
+          className="dark:bg-slate-800"
           style={{ maxWidth: '500px', margin: '0 auto' }}
         >
           <DrawerHeader className="text-left pt-4 pb-2">
@@ -331,8 +331,8 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
             </div>
             <DrawerDescription className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">
               {showTldrRules
-                ? "The super-duper short version. No excuses now!"
-                : "Read this, or become space dust. Your choice."}
+                ? 'The super-duper short version. No excuses now!'
+                : 'Read this, or become space dust. Your choice.'}
             </DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">
@@ -383,7 +383,7 @@ export const renderDetailedRules = () => (
           of ALL your dice! Let 'em fly!
         </li>
         <li>
-          <strong className="text-sky-700 dark:text-sky-300">2. Construct-o-Rama (Must Place ≥1 Die):</strong> You {" "}
+          <strong className="text-sky-700 dark:text-sky-300">2. Construct-o-Rama (Must Place ≥1 Die):</strong> You {' '}
           <em className="font-semibold">MUST</em> place at least one die. No hoarding, you dice miser! Each new piece
           must smooch an existing part of your glorious contraption (touching sides, not just corners, you cheeky
           rascal).
@@ -394,14 +394,14 @@ export const renderDetailedRules = () => (
                   <span key={n} className="inline h-3 w-3 bg-green-500 text-white rounded text-xs flex items-center justify-center">{n}</span>
                 ))}
               </span>
-              <strong>The Main Squeeze (Body Dice 1-5):</strong> Build your rocket's magnificent body{" "}
+              <strong>The Main Squeeze (Body Dice 1-5):</strong> Build your rocket's magnificent body{' '}
               <strong className="text-green-600 dark:text-green-400">DOWNWARDS</strong>, row by glorious row (all 1s,
               then all 2s, etc.). Think of it as a reverse skyscraper of pure awesome. The bigger the body, the
               farther you MIGHT go.
             </li>
             <li>
               <span className="inline h-3 w-3 bg-orange-500 text-white rounded text-xs flex items-center justify-center mr-2">6</span>
-              <strong>Fiery Bottoms (Booster Dice - 6s):</strong> Slap these bad boys (dice showing a 6) onto the{" "}
+              <strong>Fiery Bottoms (Booster Dice - 6s):</strong> Slap these bad boys (dice showing a 6) onto the{' '}
               <strong className="text-orange-600 dark:text-orange-400">LOWEST</strong> row of your rocket's body. This
               locks in your rocket's majestic height. Choose wisely, space cadet! Once a booster is on, that body row
               is SET.
@@ -410,7 +410,7 @@ export const renderDetailedRules = () => (
         </li>
         <li>
           <strong className="text-sky-700 dark:text-sky-300">3. Uh Oh, Space Junk! (Can't Place?):</strong> If you
-          can't legally place any dice (sad trombone!), you must sacrifice one poor, innocent die to the dreaded{" "}
+          can't legally place any dice (sad trombone!), you must sacrifice one poor, innocent die to the dreaded{' '}
           <strong className="text-red-600 dark:text-red-400">"Fire Pile."</strong> It's for the greater good... maybe.
         </li>
       </ul>
@@ -423,7 +423,7 @@ export const renderDetailedRules = () => (
       <div className="flex items-baseline">
         <Flame className="inline h-4 w-4 mr-1.5 text-red-500 flex-shrink-0" />
         <p className="text-sm">
-          <strong>KABOOM! (The Fire Pile):</strong> If the Fire Pile accumulates{" "}
+          <strong>KABOOM! (The Fire Pile):</strong> If the Fire Pile accumulates{' '}
           <span className="font-bold text-xl text-red-700 dark:text-red-500 mx-1">5</span>
           dice, your beautiful creation spectacularly disintegrates into a million tiny, very sad pieces. Game over,
           buttercup. Try not to cry (too much).
@@ -441,7 +441,7 @@ export const renderDetailedRules = () => (
           attached <strong className="text-teal-700 dark:text-teal-300">one or more Boosters</strong>, it's showtime!
         </li>
         <li>
-          Roll <em className="font-semibold">ONLY</em> your Booster dice. Nail a 6 on any of them?{" "}
+          Roll <em className="font-semibold">ONLY</em> your Booster dice. Nail a 6 on any of them?{' '}
           <strong className="text-xl text-teal-500">WHOOSH!</strong> You've achieved LIFTOFF! You're a star! (The
           other players are probably just space dust now, metaphorically speaking).
         </li>
@@ -499,8 +499,8 @@ export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent 
-        className="dark:bg-slate-800" 
+      <DrawerContent
+        className="dark:bg-slate-800"
         style={{ maxWidth: '500px', margin: '0 auto' }}
       >
         <DrawerHeader className="text-left pt-4 pb-2">
@@ -523,8 +523,8 @@ export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
           </div>
           <DrawerDescription className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">
             {showTldrRules
-              ? "The super-duper short version. No excuses now!"
-              : "Read this, or become space dust. Your choice."}
+              ? 'The super-duper short version. No excuses now!'
+              : 'Read this, or become space dust. Your choice.'}
           </DrawerDescription>
         </DrawerHeader>
         <div className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">

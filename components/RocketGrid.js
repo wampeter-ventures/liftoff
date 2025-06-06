@@ -54,7 +54,7 @@ function RocketGrid({
     }, [boosterRowLocked, rocketComplete, rocketHeight]);
     const boostersPlaced = Object.keys(grid)
         .filter((k) => grid[k] && grid[k].value === 6)
-        .map((k) => parseInt(k.split("-")[0]));
+        .map((k) => parseInt(k.split('-')[0]));
     const boosterRow = boostersPlaced.length ? Math.min(...boostersPlaced) : null;
 
 
@@ -72,7 +72,7 @@ function RocketGrid({
                 ).forEach((pos) => positions.add(pos));
             });
             setValidPositions(positions);
-            
+
             // Also compute valid positions for the selected die specifically
             if (selectedDie && !selectedDie.placed) {
                 const selectedPositions = new Set();
@@ -91,7 +91,7 @@ function RocketGrid({
             const placedDice = Object.keys(grid).filter((k) => grid[k] && grid[k].placed);
             const hasDice = placedDice.length > 0;
             setHasAnyPlacedDice(hasDice);
-            
+
             // After first die is placed, hide the initial guide
             if (hasDice && showInitialGuide) {
                 setShowInitialGuide(false);
@@ -109,7 +109,7 @@ function RocketGrid({
             Object.keys(grid)
                 .map((k) => {
                     const v = grid[k];
-                    if (v && v.value === 6) return parseInt(k.split("-")[0]);
+                    if (v && v.value === 6) return parseInt(k.split('-')[0]);
                     return null;
                 })
                 .find((row) => row !== null);
@@ -155,7 +155,7 @@ function RocketGrid({
         console.log('🎯 RocketGrid handleDragOver:', { pos, canDrop: validPositions.has(pos) });
         e.preventDefault();
         setDragOverPosition(pos);
-        e.dataTransfer.dropEffect = validPositions.has(pos) ? "move" : "none";
+        e.dataTransfer.dropEffect = validPositions.has(pos) ? 'move' : 'none';
     };
 
     const clearDrag = () => {
@@ -172,12 +172,12 @@ function RocketGrid({
         e.preventDefault();
         clearDrag();
         try {
-            const die = JSON.parse(e.dataTransfer.getData("text/plain"));
+            const die = JSON.parse(e.dataTransfer.getData('text/plain'));
             console.log('✅ RocketGrid parsed die data:', die);
             console.log('📞 RocketGrid calling onDropDie:', { die, pos });
             onDropDie(die, pos);
         } catch (err) {
-            console.error("❌ RocketGrid bad drop payload:", err);
+            console.error('❌ RocketGrid bad drop payload:', err);
         }
     };
 
@@ -193,19 +193,19 @@ function RocketGrid({
         const canPlaceSelected = selectedDieValidPositions.has(pos);
         const isOver = dragOverPosition === pos;
 
-        let cls = "grid-slot";
-        if (die) cls += " occupied";
-        if (canDrop) cls += " valid-drop";
-        if (canPlaceSelected) cls += " valid-for-selected";
-        if (isOver) cls += " drag-over";
+        let cls = 'grid-slot';
+        if (die) cls += ' occupied';
+        if (canDrop) cls += ' valid-drop';
+        if (canPlaceSelected) cls += ' valid-for-selected';
+        if (isOver) cls += ' drag-over';
 
         // Show "1/6", "2/6" for eligible, blank slots before any boosters are placed
         // After a booster is placed, only show 6s and empty booster slots in that row
-        let slotLabel = "";
+        let slotLabel = '';
         if (!die) {
             const eligible = eligibleLabels[pos];
             if (eligible && eligible.length > 1) {
-                slotLabel = eligible.join("/");
+                slotLabel = eligible.join('/');
             } else if (eligible && eligible.length === 1) {
                 slotLabel = eligible[0];
             } else if (
@@ -263,14 +263,14 @@ function RocketGrid({
                 <div
                     className={`rocket-guide-overlay ${showPictureMode ? 'on-top show-guide' : 'fade-to-background'}`}
                 >
-                    <img 
-                        src="/rocket_big.png" 
-                        alt="Rocket building guide" 
+                    <img
+                        src="/rocket_big.png"
+                        alt="Rocket building guide"
                         className="rocket-guide-image"
                     />
                 </div>
-                
-                <div className={`rocket-grid ${preparingLaunch ? 'pre-launch' : ''}`}> 
+
+                <div className={`rocket-grid ${preparingLaunch ? 'pre-launch' : ''}`}>
                     {[1, 2, 3, 4, 5, 6]
                         .filter((row) => {
                             if (!boosterRow) return true;
@@ -278,7 +278,7 @@ function RocketGrid({
                         })
 
                         .map((row) => (
-                            <div key={row} className={`rocket-row row-${row} ${boosterRow === row ? 'booster-row' : ''}`}> 
+                            <div key={row} className={`rocket-row row-${row} ${boosterRow === row ? 'booster-row' : ''}`}>
                                 <div className="row-slots">
                                     {Array.from({ length: row }, (_, i) => {
                                         const pos = `${row}-${i + 1}`;
@@ -292,7 +292,7 @@ function RocketGrid({
                 {boosterRowLocked && (
                     <div className="launch-section">
                         <button
-                            className={`btn btn-launch ${!onCanLaunch() ? "btn-disabled" : "btn-primary"}`}
+                            className={`btn btn-launch ${!onCanLaunch() ? 'btn-disabled' : 'btn-primary'}`}
                             onClick={() => {
                                 if (onCanLaunch()) {
                                     onAttemptLaunch();
@@ -310,4 +310,4 @@ function RocketGrid({
     );
 }
 
-export default RocketGrid; 
+export default RocketGrid;

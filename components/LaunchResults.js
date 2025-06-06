@@ -53,14 +53,14 @@ function LaunchResults({ boosterRolls, success }) {
         <div className="launch-results">
             <div className="booster-rolls-header">
                 <h4 className="booster-rolls-title">
-                    {isRolling ? "🎲 ROLLING FOR GLORY... 🎲" : success ? "✨ VICTORIOUS ROLLS! ✨" : "💀 DOOM ROLLS 💀"}
+                    {isRolling ? '🎲 ROLLING FOR GLORY... 🎲' : success ? '✨ VICTORIOUS ROLLS! ✨' : '💀 DOOM ROLLS 💀'}
                 </h4>
                 <p className="booster-rolls-subtitle">
-                    {isRolling 
-                        ? "The fate of your rocket hangs in the balance..." 
-                        : success 
-                        ? "AT LEAST ONE GLORIOUS SIX HAS BLESSED YOUR VESSEL!" 
-                        : "Alas! No sixes were rolled. Your rocket is but a fancy lawn ornament."
+                    {isRolling
+                        ? 'The fate of your rocket hangs in the balance...'
+                        : success
+                        ? 'AT LEAST ONE GLORIOUS SIX HAS BLESSED YOUR VESSEL!'
+                        : 'Alas! No sixes were rolled. Your rocket is but a fancy lawn ornament.'
                     }
                 </p>
             </div>
@@ -73,16 +73,16 @@ function LaunchResults({ boosterRolls, success }) {
                         playerName: 'Booster',
                         placed: false
                     };
-                    
+
                     const isSix = roll === 6;
                     const shouldGlow = showFinalRolls && isSix;
-                    
+
                     return (
-                        <div 
+                        <div
                             key={index}
                             className={`booster-die-wrapper ${isRolling ? 'rolling' : ''} ${shouldGlow ? 'glorious-six' : ''}`}
                         >
-                            <Die 
+                            <Die
                                 die={dieData}
                                 className={`booster-die ${shouldGlow ? 'golden-die' : ''}`}
                             />
@@ -97,9 +97,9 @@ function LaunchResults({ boosterRolls, success }) {
             {showFinalRolls && (
                 <div className="launch-verdict">
                     <p className="verdict-text">
-                        {success 
-                            ? "🎉 Your rocket EXPLODES into the cosmos with magnificent fury! 🎉" 
-                            : "😭 Your rocket sulks on the launchpad, dreaming of flight but achieving only disappointment. 😭"
+                        {success
+                            ? '🎉 Your rocket EXPLODES into the cosmos with magnificent fury! 🎉'
+                            : '😭 Your rocket sulks on the launchpad, dreaming of flight but achieving only disappointment. 😭'
                         }
                     </p>
                     {!success && (
@@ -113,4 +113,4 @@ function LaunchResults({ boosterRolls, success }) {
     );
 }
 
-export default LaunchResults; 
+export default LaunchResults;
