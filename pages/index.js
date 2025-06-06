@@ -61,6 +61,7 @@ export default function Home() {
     const [stars, setStars] = useState([]);
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
     const [welcomeAnim, setWelcomeAnim] = useState(false);
+    const [isHydrated, setIsHydrated] = useState(false);
 
     // Confirmation animation state
     const [fireFlash, setFireFlash] = useState(false);
@@ -189,6 +190,12 @@ export default function Home() {
     }, [currentPlayerIndex, gameState]);
 
     useEffect(() => {
+        setIsHydrated(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isHydrated) return;
+        
         if (welcomeAnim) {
             const timer = setTimeout(() => {
                 setGameState('setup');
@@ -196,7 +203,7 @@ export default function Home() {
             
             return () => clearTimeout(timer);
         }
-    }, [welcomeAnim]);
+    }, [welcomeAnim, isHydrated]);
 
     const startGame = (playerData) => {
         // Store original player setup for future resets
@@ -562,8 +569,9 @@ export default function Home() {
     };
 
     const goToWelcome = () => {
+        console.log('goToWelcome called!');
+        console.trace(); // This will show you exactly what called this function
         clearAllGameState();
-        // Clear the original setup when going back to welcome
         setOriginalPlayerSetup([]);
         setWelcomeAnim(false);
         setGameState('welcome');
