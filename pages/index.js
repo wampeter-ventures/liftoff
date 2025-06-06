@@ -6,8 +6,44 @@ import GameSetup, { HelpDrawer } from '../components/GameSetup';
 import GameResults from '../components/GameResults';
 import IntroSequence from '../components/IntroSequence';
 import GameModal from '../components/GameModal';
-import { Star, Flame, HelpCircle } from 'lucide-react';
-import Head from 'next/head';
+import { HelpDrawer } from '../components/GameSetup';
+import {
+    Star,
+    Flame,
+    X,
+    CheckCircle,
+    AlertTriangle,
+    Rocket,
+    HelpCircle,
+    Atom,
+    Biohazard,
+    Shell,
+    Radiation,
+    Orbit,
+    Radar,
+    Radio,
+    Volleyball,
+    Snowflake,
+    Zap,
+    Bubbles,
+    Sparkles,
+    CircleGauge,
+    Cctv,
+    Backpack,
+    HeartPulse,
+    Candy,
+    Gem,
+    Lollipop,
+    BrainCog,
+    LoaderPinwheel,
+    AudioLines,
+    Rat,
+    Bug,
+    HardHat,
+    Telescope,
+    Satellite
+} from 'lucide-react';
+import Head from "next/head";
 import LaunchResults from '../components/LaunchResults';
 
 export default function Home() {
@@ -29,6 +65,42 @@ export default function Home() {
     const [selectedDie, setSelectedDie] = useState(null);
     const [stars, setStars] = useState([]);
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
+
+    // Confirmation animation state
+    const [fireFlash, setFireFlash] = useState(false);
+    const [highlightSlot, setHighlightSlot] = useState(null);
+    const [showBoosterAnim, setShowBoosterAnim] = useState(false);
+    const [placementEffect, setPlacementEffect] = useState(null); // { pos, Icon }
+
+    const placementIcons = [
+        Atom,
+        Biohazard,
+        Shell,
+        Radiation,
+        Orbit,
+        Radar,
+        Radio,
+        Volleyball,
+        Snowflake,
+        Zap,
+        Bubbles,
+        Sparkles,
+        CircleGauge,
+        Cctv,
+        Backpack,
+        HeartPulse,
+        Candy,
+        Gem,
+        Lollipop,
+        BrainCog,
+        LoaderPinwheel,
+        AudioLines,
+        Rat,
+        Bug,
+        HardHat,
+        Telescope,
+        Satellite,
+    ];
     const [outOfDiceFail, setOutOfDiceFail] = useState(false);
 
     // Modal state
@@ -174,12 +246,18 @@ export default function Home() {
         );
         if (!isValid) return false;
 
+        const wasBoosterLocked = boosterRowLocked;
+
         const newGrid = { ...rocketGrid };
         newGrid[position] = { ...die, placed: true };
         setRocketGrid(newGrid);
 
         if (die.value === 6) {
             setBoosterRowLocked(true);
+            if (!wasBoosterLocked) {
+                setShowBoosterAnim(true);
+                setTimeout(() => setShowBoosterAnim(false), 2500);
+            }
         } else {
             const row = parseInt(position.split('-')[0]);
             setRocketHeight(Math.max(rocketHeight, row));
@@ -201,6 +279,13 @@ export default function Home() {
                 previousBoosterLocked: boosterRowLocked,
             },
         ]);
+        setHighlightSlot(position);
+        const IconComp = placementIcons[Math.floor(Math.random() * placementIcons.length)];
+        setPlacementEffect({ pos: position, Icon: IconComp });
+        setTimeout(() => {
+            setHighlightSlot(null);
+            setPlacementEffect(null);
+        }, 1200);
         return true;
     };
 
@@ -212,6 +297,8 @@ export default function Home() {
         const newFirePile = firePile + 1;
         setFirePile(newFirePile);
         setFireDice((prevFireDice) => [...prevFireDice, die]);
+        setFireFlash(true);
+        setTimeout(() => setFireFlash(false), 900);
         if (newFirePile >= 5) {
             setOutOfDiceFail(false);
             setGameState('results');
@@ -434,6 +521,10 @@ export default function Home() {
         setFireDice([]);
         setSelectedDie(null);
         setShowLaunchHelper(false);
+        setHighlightSlot(null);
+        setFireFlash(false);
+        setShowBoosterAnim(false);
+        setPlacementEffect(null);
         setLaunchCountdown(0);
         setOutOfDiceFail(false);
 
@@ -892,7 +983,7 @@ export default function Home() {
 
                         <div className="fire-status">
                             <div
-                                className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''}`}
+                                className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''} ${fireFlash ? 'confirm-fire' : ''}`}
                                 onDragOver={(e) => {
                                     e.preventDefault();
                                     e.dataTransfer.dropEffect = 'move';
@@ -954,6 +1045,9 @@ export default function Home() {
                                     onCanLaunch={canLaunch}
                                     onAttemptLaunch={attemptLaunch}
                                     onSetShowLaunchHelper={setShowLaunchHelper}
+                                    highlightSlot={highlightSlot}
+                                    showBoosterAnimation={showBoosterAnim}
+                                    placementEffect={placementEffect}
                                     preparingLaunch={preparingLaunch}
                                 />
                             </div>

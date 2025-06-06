@@ -67,9 +67,12 @@ function GameModal({ isOpen, onClose, type = 'info', title, message, children, s
         }
     };
 
+    const overlayClass = type === 'launch' ? 'modal-overlay launch-overlay' : 'modal-overlay';
+
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div
+
+        <div className={overlayClass} onClick={onClose}>
+            <div 
                 className={`modal-content ${getModalClass()}`}
                 onClick={(e) => e.stopPropagation()}
             >

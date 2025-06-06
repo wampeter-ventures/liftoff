@@ -14,6 +14,9 @@ function RocketGrid({
     onCanLaunch,
     onAttemptLaunch,
     onSetShowLaunchHelper,
+    highlightSlot,
+    showBoosterAnimation,
+    placementEffect,
     preparingLaunch
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
@@ -192,12 +195,12 @@ function RocketGrid({
         const canDrop = validPositions.has(pos);
         const canPlaceSelected = selectedDieValidPositions.has(pos);
         const isOver = dragOverPosition === pos;
-
-        let cls = 'grid-slot';
-        if (die) cls += ' occupied';
-        if (canDrop) cls += ' valid-drop';
-        if (canPlaceSelected) cls += ' valid-for-selected';
-        if (isOver) cls += ' drag-over';
+        let cls = "grid-slot";
+        if (die) cls += " occupied";
+        if (canDrop) cls += " valid-drop";
+        if (canPlaceSelected) cls += " valid-for-selected";
+        if (isOver) cls += " drag-over";
+        if (highlightSlot === pos) cls += " confirm-slot";
 
         // Show "1/6", "2/6" for eligible, blank slots before any boosters are placed
         // After a booster is placed, only show 6s and empty booster slots in that row
@@ -236,6 +239,14 @@ function RocketGrid({
                 ) : (
                     <span className="required-number">{slotLabel}</span>
                 )}
+                {placementEffect && placementEffect.pos === pos && (() => {
+                    const IconComp = placementEffect.Icon;
+                    return (
+                        <span className="placement-icon">
+                            <IconComp size={24} />
+                        </span>
+                    );
+                })()}
             </div>
         );
     };
@@ -270,7 +281,14 @@ function RocketGrid({
                     />
                 </div>
 
-                <div className={`rocket-grid ${preparingLaunch ? 'pre-launch' : ''}`}>
+
+                {showBoosterAnimation && (
+                    <div className="booster-celebration">
+                        🚀 Booster Online! - {headerText}
+                    </div>
+                )}
+                
+                <div className={`rocket-grid ${preparingLaunch ? 'pre-launch' : ''}`}> 
                     {[1, 2, 3, 4, 5, 6]
                         .filter((row) => {
                             if (!boosterRow) return true;

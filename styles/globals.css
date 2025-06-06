@@ -1152,6 +1152,63 @@ body {
     border-color: var(--color-fire-red);
 }
 
+.confirm-fire {
+    animation: fireConfirm 0.9s ease;
+}
+
+@keyframes fireConfirm {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1) rotate(-5deg); }
+    100% { transform: scale(1); }
+}
+
+.confirm-slot {
+    animation: slotConfirm 0.9s ease;
+}
+
+@keyframes slotConfirm {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.booster-celebration {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    color: #ff9800;
+    background: #ffffff;
+    padding: 4px 8px;
+    border-radius: 8px;
+    animation: boosterPop 2s ease-in-out;
+    pointer-events: none;
+    z-index: 30;
+}
+
+.placement-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: partSpin 1.2s ease-out forwards;
+    pointer-events: none;
+    color: #ff9800;
+}
+
+@keyframes partSpin {
+    0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 1; }
+    70% { transform: translate(-50%, -50%) scale(1.2) rotate(180deg); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.2) rotate(360deg); opacity: 0; }
+}
+
+@keyframes boosterPop {
+    0% { transform: translateX(-50%) scale(0); opacity: 0; }
+    60% { transform: translateX(-50%) scale(1.2); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1); opacity: 0; }
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .app {
@@ -1438,6 +1495,22 @@ body {
     justify-content: center;
     z-index: 1000;
     animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Gradual darkening + blur for launch countdown */
+.launch-overlay {
+    animation: overlayBlurDarken 4s forwards;
+}
+
+@keyframes overlayBlurDarken {
+    from {
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+    }
+    to {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+    }
 }
 
 .modal-content {
