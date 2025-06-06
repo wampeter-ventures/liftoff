@@ -9,10 +9,6 @@ import GameModal from '../components/GameModal';
 import {
     Star,
     Flame,
-    X,
-    CheckCircle,
-    AlertTriangle,
-    Rocket,
     HelpCircle,
     Atom,
     Biohazard,
@@ -42,7 +38,7 @@ import {
     Telescope,
     Satellite
 } from 'lucide-react';
-import Head from "next/head";
+import Head from 'next/head';
 import LaunchResults from '../components/LaunchResults';
 
 export default function Home() {
