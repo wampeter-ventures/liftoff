@@ -90,8 +90,8 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   }, [preservedPlayerSetup, hasLoadedPreservedSetup]);
 
   useEffect(() => {
-    // Don't auto-generate if we have preserved setup or if we just loaded it
-    if (hasLoadedPreservedSetup || (preservedPlayerSetup && preservedPlayerSetup.length > 0)) {
+    // Skip auto-generation on initial mount if a preserved setup exists
+    if (!hasLoadedPreservedSetup && preservedPlayerSetup && preservedPlayerSetup.length > 0) {
       return;
     }
     
@@ -142,8 +142,6 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
 
   const handlePlayerCountChange = (newCount) => {
     setPlayerCount(newCount);
-    // If manually changing player count, reset the preserved setup flag
-    setHasLoadedPreservedSetup(false);
   };
 
   const handleAttemptStartMission = () => {
