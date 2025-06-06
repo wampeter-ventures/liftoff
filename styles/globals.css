@@ -1129,6 +1129,43 @@ body {
     border-color: var(--color-fire-red);
 }
 
+.confirm-fire {
+    animation: fireConfirm 0.6s ease;
+}
+
+@keyframes fireConfirm {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1) rotate(-5deg); }
+    100% { transform: scale(1); }
+}
+
+.confirm-slot {
+    animation: slotConfirm 0.6s ease;
+}
+
+@keyframes slotConfirm {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.booster-celebration {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    color: #ff9800;
+    animation: boosterPop 1s ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes boosterPop {
+    0% { transform: translateX(-50%) scale(0); opacity: 0; }
+    60% { transform: translateX(-50%) scale(1.2); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1); opacity: 0; }
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .app {

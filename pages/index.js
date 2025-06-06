@@ -29,6 +29,11 @@ export default function Home() {
     const [selectedDie, setSelectedDie] = useState(null);
     const [stars, setStars] = useState([]);
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
+
+    // Confirmation animation state
+    const [fireFlash, setFireFlash] = useState(false);
+    const [highlightSlot, setHighlightSlot] = useState(null);
+    const [showBoosterAnim, setShowBoosterAnim] = useState(false);
     
     // Modal state
     const [modal, setModal] = useState({
@@ -172,12 +177,18 @@ export default function Home() {
         );
         if (!isValid) return false;
 
+        const wasBoosterLocked = boosterRowLocked;
+
         const newGrid = { ...rocketGrid };
         newGrid[position] = { ...die, placed: true };
         setRocketGrid(newGrid);
 
         if (die.value === 6) {
             setBoosterRowLocked(true);
+            if (!wasBoosterLocked) {
+                setShowBoosterAnim(true);
+                setTimeout(() => setShowBoosterAnim(false), 1500);
+            }
         } else {
             const row = parseInt(position.split("-")[0]);
             setRocketHeight(Math.max(rocketHeight, row));
@@ -199,6 +210,8 @@ export default function Home() {
                 previousBoosterLocked: boosterRowLocked,
             },
         ]);
+        setHighlightSlot(position);
+        setTimeout(() => setHighlightSlot(null), 800);
         return true;
     };
 
@@ -210,6 +223,8 @@ export default function Home() {
         const newFirePile = firePile + 1;
         setFirePile(newFirePile);
         setFireDice((prevFireDice) => [...prevFireDice, die]);
+        setFireFlash(true);
+        setTimeout(() => setFireFlash(false), 600);
         if (newFirePile >= 5) {
             setGameState("results");
             return;
@@ -422,6 +437,9 @@ export default function Home() {
         setFireDice([]);
         setSelectedDie(null);
         setShowLaunchHelper(false);
+        setHighlightSlot(null);
+        setFireFlash(false);
+        setShowBoosterAnim(false);
         
         // Close any open modals
         closeModal();
@@ -872,7 +890,7 @@ export default function Home() {
 
                         <div className="fire-status">
                             <div
-                                className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''}`}
+                                className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''} ${fireFlash ? 'confirm-fire' : ''}`}
                                 onDragOver={(e) => {
                                     e.preventDefault();
                                     e.dataTransfer.dropEffect = "move";
@@ -934,6 +952,8 @@ export default function Home() {
                                     onCanLaunch={canLaunch}
                                     onAttemptLaunch={attemptLaunch}
                                     onSetShowLaunchHelper={setShowLaunchHelper}
+                                    highlightSlot={highlightSlot}
+                                    showBoosterAnimation={showBoosterAnim}
                                 />
                             </div>
 
