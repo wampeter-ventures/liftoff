@@ -742,9 +742,9 @@ export default function Home() {
                         </p>
                         <button
                             className="btn btn-primary btn-large mb-6 text-white border-none transition-all duration-300"
-                            style={{ 
-                                backgroundColor: '#f97316', 
-                                border: 'none' 
+                            style={{
+                                backgroundColor: '#f97316',
+                                border: 'none'
                             }}
                             onMouseEnter={(e) => e.target.style.backgroundColor = '#db7127'}
                             onMouseLeave={(e) => e.target.style.backgroundColor = '#f97316'}
@@ -752,6 +752,15 @@ export default function Home() {
                         >
                             Play
                         </button>
+                        <a
+                            href="/daily"
+                            className="btn btn-secondary btn-large mb-6 text-white border-none transition-all duration-300"
+                            style={{ backgroundColor: '#3b82f6', border: 'none' }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                        >
+                            Daily Puzzle
+                        </a>
                         <div className="welcome-date">
                             {new Date().toLocaleDateString("en-US", {
                                 year: "numeric",
