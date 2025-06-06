@@ -935,7 +935,6 @@ export default function Home() {
                 <GameResults
                     rocketGrid={rocketGrid}
                     firePile={firePile}
-                    rocketHeight={rocketHeight}
                     boosterRowLocked={boosterRowLocked}
                     onRestart={resetGamePreservingSetup}
                 />
