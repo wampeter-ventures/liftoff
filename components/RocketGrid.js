@@ -261,6 +261,11 @@ function RocketGrid({
                     className="picture-toggle"
                     onClick={togglePictureMode}
                     aria-label="Toggle rocket view"
+                    style={{
+                        color: '#6b7280', // gray color
+                        paddingLeft: '8px',
+                        paddingBottom: '4px'
+                    }}
                 >
                     {showPictureMode ? (
                         <EyeOff size={20} />
@@ -278,13 +283,17 @@ function RocketGrid({
                         src="/rocket_big.png"
                         alt="Rocket building guide"
                         className="rocket-guide-image"
+                        style={{
+                            transform: 'scale(1.2)',
+                            transformOrigin: 'top center'
+                        }}
                     />
                 </div>
 
 
                 {showBoosterAnimation && (
                     <div className="booster-celebration">
-                        🚀 Booster Online! - {headerText}
+                        🔋 Boosters Online!
                     </div>
                 )}
                 
@@ -307,7 +316,7 @@ function RocketGrid({
                         ))}
                 </div>
 
-                {boosterRowLocked && (
+                {boosterRowLocked && !preparingLaunch && (
                     <div className="launch-section">
                         <button
                             className={`btn btn-launch ${!onCanLaunch() ? 'btn-disabled' : 'btn-primary'}`}
