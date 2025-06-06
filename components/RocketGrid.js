@@ -12,13 +12,19 @@ function RocketGrid({
     onPlaceSelectedDie,
     onCanLaunch,
     onAttemptLaunch,
-    onSetShowLaunchHelper
+    onSetShowLaunchHelper,
+    preparingLaunch
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
     const [validPositions, setValidPositions] = useState(new Set());
     const [selectedDieValidPositions, setSelectedDieValidPositions] = useState(new Set());
     const [hasAnyPlacedDice, setHasAnyPlacedDice] = useState(false);
     const [showInitialGuide, setShowInitialGuide] = useState(true);
+
+    const boostersPlaced = Object.keys(grid)
+        .filter((k) => grid[k] && grid[k].value === 6)
+        .map((k) => parseInt(k.split("-")[0]));
+    const boosterRow = boostersPlaced.length ? Math.min(...boostersPlaced) : null;
 
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
@@ -66,7 +72,7 @@ function RocketGrid({
     const eligibleLabels = React.useMemo(() => {
         const labels = {};
         // Only show booster row if a 6 has been placed
-        const boosterRow =
+        const boosterRowForLabels =
             boosterRowLocked &&
             Object.keys(grid)
                 .map((k) => {
@@ -80,7 +86,7 @@ function RocketGrid({
             for (let col = 1; col <= row; col++) {
                 const pos = `${row}-${col}`;
                 // If boosters are locked, only display labels for the booster row
-                if (boosterRowLocked && row !== boosterRow) {
+                if (boosterRowLocked && row !== boosterRowForLabels) {
                     labels[pos] = [];
                     continue;
                 }
@@ -214,20 +220,15 @@ function RocketGrid({
                     />
                 </div>
                 
-                <div className="rocket-grid">
+                <div className={`rocket-grid ${preparingLaunch ? 'pre-launch' : ''}`}> 
                     {[1, 2, 3, 4, 5, 6]
                         .filter((row) => {
-                            // Only hide rows if there is actually a 6 (booster) placed
-                            const boosters = Object.keys(grid)
-                                .filter((k) => grid[k] && grid[k].value === 6)
-                                .map((k) => parseInt(k.split("-")[0]));
-                            if (!boosters.length) return true;
-                            const boosterRow = Math.min(...boosters);
+                            if (!boosterRow) return true;
                             return row <= boosterRow;
                         })
 
                         .map((row) => (
-                            <div key={row} className={`rocket-row row-${row}`}>
+                            <div key={row} className={`rocket-row row-${row} ${boosterRow === row ? 'booster-row' : ''}`}> 
                                 <div className="row-slots">
                                     {Array.from({ length: row }, (_, i) => {
                                         const pos = `${row}-${i + 1}`;
