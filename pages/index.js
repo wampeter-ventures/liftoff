@@ -29,6 +29,7 @@ export default function Home() {
     const [selectedDie, setSelectedDie] = useState(null);
     const [stars, setStars] = useState([]);
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
+    const [undoCounter, setUndoCounter] = useState(0);
     
     // Modal state
     const [modal, setModal] = useState({
@@ -236,6 +237,7 @@ export default function Home() {
             setFireDice(fireDice.filter((d) => d.id !== lastAction.die.id));
         }
         setGameHistory(gameHistory.slice(0, -1));
+        setUndoCounter((c) => c + 1);
     };
 
     const nextPlayer = () => {
@@ -919,6 +921,7 @@ export default function Home() {
                                     onCanLaunch={canLaunch}
                                     onAttemptLaunch={attemptLaunch}
                                     onSetShowLaunchHelper={setShowLaunchHelper}
+                                    undoCounter={undoCounter}
                                 />
                             </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Die from './Die';
 import GameLogic from '../lib/gameLogic';
@@ -13,7 +13,8 @@ function RocketGrid({
     onPlaceSelectedDie,
     onCanLaunch,
     onAttemptLaunch,
-    onSetShowLaunchHelper
+    onSetShowLaunchHelper,
+    undoCounter
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
     const [validPositions, setValidPositions] = useState(new Set());
@@ -21,6 +22,9 @@ function RocketGrid({
     const [hasAnyPlacedDice, setHasAnyPlacedDice] = useState(false);
     const [showInitialGuide, setShowInitialGuide] = useState(true);
     const [showPictureMode, setShowPictureMode] = useState(false);
+    const [rowsToRemove, setRowsToRemove] = useState([]);
+    const [rowsHidden, setRowsHidden] = useState([]);
+    const prevBoosterLocked = React.useRef(boosterRowLocked);
 
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
@@ -63,6 +67,38 @@ function RocketGrid({
         }, 100);
         return () => clearTimeout(timer);
     }, [currentDice, grid, rocketHeight, boosterRowLocked, selectedDie, showInitialGuide]);
+
+    // Handle removal animation when boosters lock the rocket height
+    useLayoutEffect(() => {
+        if (boosterRowLocked && !prevBoosterLocked.current) {
+            // Calculate rows that will no longer be used
+            if (rocketHeight < 5) {
+                const toRemove = [];
+                for (let r = rocketHeight + 2; r <= 6; r++) {
+                    toRemove.push(r);
+                }
+                if (toRemove.length) {
+                    setRowsToRemove(toRemove);
+                    const timer = setTimeout(() => {
+                        setRowsHidden(toRemove);
+                        setRowsToRemove([]);
+                    }, 800);
+                    return () => clearTimeout(timer);
+                }
+            }
+        } else if (!boosterRowLocked && prevBoosterLocked.current) {
+            // Reveal all rows when returning from failed launch
+            setRowsHidden([]);
+            setRowsToRemove([]);
+        }
+        prevBoosterLocked.current = boosterRowLocked;
+    }, [boosterRowLocked, rocketHeight]);
+
+    // Ensure rows reappear after an undo action
+    useEffect(() => {
+        setRowsHidden([]);
+        setRowsToRemove([]);
+    }, [undoCounter]);
 
     // Compute eligibility *for display* for every slot on the grid
     const eligibleLabels = React.useMemo(() => {
@@ -205,6 +241,8 @@ function RocketGrid({
     };
 
     // Render
+    const justLocked = boosterRowLocked && !prevBoosterLocked.current;
+
     return (
         <>
             <div className="rocket-header">
@@ -236,18 +274,21 @@ function RocketGrid({
                 
                 <div className="rocket-grid">
                     {[1, 2, 3, 4, 5, 6]
+                        .filter((row) => !rowsHidden.includes(row))
                         .filter((row) => {
-                            // Only hide rows if there is actually a 6 (booster) placed
                             const boosters = Object.keys(grid)
                                 .filter((k) => grid[k] && grid[k].value === 6)
                                 .map((k) => parseInt(k.split("-")[0]));
                             if (!boosters.length) return true;
                             const boosterRow = Math.min(...boosters);
+                            if (justLocked || rowsToRemove.includes(row)) return true;
                             return row <= boosterRow;
                         })
-
                         .map((row) => (
-                            <div key={row} className={`rocket-row row-${row}`}>
+                            <div
+                                key={row}
+                                className={`rocket-row row-${row} ${rowsToRemove.includes(row) ? 'row-remove' : ''}`}
+                            >
                                 <div className="row-slots">
                                     {Array.from({ length: row }, (_, i) => {
                                         const pos = `${row}-${i + 1}`;
