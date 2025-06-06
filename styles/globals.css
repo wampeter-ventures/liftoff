@@ -1862,7 +1862,7 @@ body {
 }
 
 .rocket-exit {
-    animation: shakeThenUp 3.5s forwards;
+    animation: shakeThenUp 3s forwards;
 }
 
 @keyframes starsFall {
