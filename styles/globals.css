@@ -1439,7 +1439,7 @@ body {
 }
 
 .modal-footer {
-    padding: 16px 24px 24px 24px;
+    padding: 8px 24px 16px 24px;
     display: flex;
     justify-content: flex-end;
 }
@@ -1529,9 +1529,9 @@ body {
 .booster-dice-container {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 8px;
     margin: 16px 0;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .booster-die-wrapper {
@@ -1551,8 +1551,8 @@ body {
 }
 
 .booster-die {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     transition: all 0.3s ease;
 }
 
