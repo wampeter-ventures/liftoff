@@ -336,6 +336,21 @@ body {
     text-align: center;
 }
 
+.rocket-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.picture-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--color-dark-gray);
+}
+
 .rocket-grid-container {
     position: relative;
     display: flex;
@@ -351,7 +366,7 @@ body {
     transform: translateX(-50%);
     z-index: 1;
     pointer-events: none;
-    transition: opacity 5s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
 }
 
 .rocket-guide-overlay.show-guide {
@@ -368,6 +383,10 @@ body {
 
 .rocket-guide-overlay.fade-to-hidden {
     opacity: 0.05;
+}
+
+.rocket-guide-overlay.on-top {
+    z-index: 20;
 }
 
 .rocket-guide-image {
