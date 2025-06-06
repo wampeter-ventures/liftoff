@@ -1440,6 +1440,22 @@ body {
     animation: modalFadeIn 0.3s ease-out;
 }
 
+/* Gradual darkening + blur for launch countdown */
+.launch-overlay {
+    animation: overlayBlurDarken 4s forwards;
+}
+
+@keyframes overlayBlurDarken {
+    from {
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+    }
+    to {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+    }
+}
+
 .modal-content {
     background: #FFFFFF;
     border-radius: 12px;
