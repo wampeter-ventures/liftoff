@@ -26,6 +26,17 @@ import {
   Settings as SettingsIcon,
   BookOpenText,
   Zap,
+  Target,
+  ListChecks,
+  Skull,
+  PartyPopper,
+  Dice1,
+  Dice2,
+  Dice3,
+  Dice4,
+  Dice5,
+  Dice6,
+  ChevronRight,
 } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 
@@ -362,90 +373,124 @@ export default GameSetup;
 
 // Exported help content functions for reuse
 export const renderDetailedRules = () => (
-  <div className="space-y-3.5 text-sm text-slate-700 dark:text-slate-300 px-1">
-    <div>
-      <h4 className="font-bold text-lg text-amber-600 dark:text-amber-400 mb-1.5 flex items-center">
-        <Sparkles className="inline h-5 w-5 mr-2" /> Your Glorious Goal:
+  <div className="space-y-4 text-sm text-slate-700 dark:text-slate-200">
+    <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-700/30">
+      <h4 className="font-bold text-lg text-amber-500 dark:text-amber-400 mb-2 flex items-center">
+        <Target className="inline h-5 w-5 mr-2 flex-shrink-0" /> Your Glorious Goal:
       </h4>
-      <p>
-        Launch your magnificent (and hopefully not-too-explodey) rocket as far into the cold, uncaring void of space
-        as possible. Bigger rocket = bigger bragging rights (and more space snacks). Don't explode. Seriously.
+      <p className="text-slate-600 dark:text-slate-300">
+        Launch your magnificent (and hopefully not-too-explodey) rocket as far into the cold, uncaring void of space as
+        possible.
+      </p>
+      <p className="text-slate-600 dark:text-slate-300 mt-1">
+        Bigger rocket = bigger bragging rights (and more space snacks).
+      </p>
+      <p className="text-slate-600 dark:text-slate-300 mt-1">
+        <strong className="text-red-500">Don't explode.</strong> Seriously.
       </p>
     </div>
-    <Separator />
-    <div>
-      <h4 className="font-bold text-lg text-sky-600 dark:text-sky-400 mb-1.5 flex items-center">
-        <span className="inline h-5 w-5 mr-2 bg-slate-700 text-white rounded text-xs flex items-center justify-center">6</span> Your Daring Maneuvers (On Your Turn):
+
+    <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-700/30">
+      <h4 className="font-bold text-lg text-sky-500 dark:text-sky-400 mb-2 flex items-center">
+        <ListChecks className="inline h-5 w-5 mr-2 flex-shrink-0" /> Your Daring Maneuvers (On Your Turn):
       </h4>
-      <ul className="list-none pl-1 space-y-2.5">
-        <li>
-          <strong className="text-sky-700 dark:text-sky-300">1. Shake, Rattle & Roll (Dice):</strong> Unleash the fury
-          of ALL your dice! Let 'em fly!
+      <ul className="space-y-3">
+        <li className="pl-4 relative">
+          <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-sky-500 dark:text-sky-400" />
+          <strong className="text-sky-600 dark:text-sky-300">1. Shake, Rattle & Roll (Dice):</strong>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Unleash the fury of ALL your dice! Let 'em fly!
+          </p>
         </li>
-        <li>
-          <strong className="text-sky-700 dark:text-sky-300">2. Construct-o-Rama (Must Place ≥1 Die):</strong> You {" "}
-          <em className="font-semibold">MUST</em> place at least one die. No hoarding, you dice miser! Each new piece
-          must smooch an existing part of your glorious contraption (touching sides, not just corners, you cheeky
-          rascal).
-          <ul className="list-none pl-4 mt-1.5 space-y-1.5 text-xs">
-            <li>
-              <span className="inline-flex gap-1 mr-2">
-                {[1,2,3,4,5].map(n => (
-                  <span key={n} className="inline h-3 w-3 bg-green-500 text-white rounded text-xs flex items-center justify-center">{n}</span>
-                ))}
-              </span>
-              <strong>The Main Squeeze (Body Dice 1-5):</strong> Build your rocket's magnificent body{" "}
-              <strong className="text-green-600 dark:text-green-400">DOWNWARDS</strong>, row by glorious row (all 1s,
-              then all 2s, etc.). Think of it as a reverse skyscraper of pure awesome. The bigger the body, the
-              farther you MIGHT go.
-            </li>
-            <li>
-              <span className="inline h-3 w-3 bg-orange-500 text-white rounded text-xs flex items-center justify-center mr-2">6</span>
-              <strong>Fiery Bottoms (Booster Dice - 6s):</strong> Slap these bad boys (dice showing a 6) onto the{" "}
-              <strong className="text-orange-600 dark:text-orange-400">LOWEST</strong> row of your rocket's body. This
-              locks in your rocket's majestic height. Choose wisely, space cadet! Once a booster is on, that body row
-              is SET.
-            </li>
-          </ul>
+        <li className="pl-4 relative">
+          <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-sky-500 dark:text-sky-400" />
+          <strong className="text-sky-600 dark:text-sky-300">2. Construct-o-Rama (Must Place ≥1 Die):</strong>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            You <em className="font-semibold text-amber-600 dark:text-amber-500">MUST</em> place at least one die. No
+            hoarding, you dice miser! Each new piece must smooch an existing part of your glorious contraption (touching
+            sides, not just corners, you cheeky rascal).
+          </p>
+          <div className="mt-2 space-y-2 pl-3 border-l-2 border-slate-200 dark:border-slate-600 ml-1">
+            <div className="p-2 rounded-md bg-slate-100 dark:bg-slate-600/50">
+              <div className="flex items-center mb-1">
+                <span className="flex gap-0.5 mr-2">
+                  <Dice1 className="h-4 w-4 text-green-500" />
+                  <Dice2 className="h-4 w-4 text-green-500" />
+                  <Dice3 className="h-4 w-4 text-green-500" />
+                  <Dice4 className="h-4 w-4 text-green-500" />
+                  <Dice5 className="h-4 w-4 text-green-500" />
+                </span>
+                <strong className="text-green-600 dark:text-green-400 text-xs uppercase tracking-wider">
+                  The Main Squeeze (Body Dice 1-5)
+                </strong>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Build your rocket's magnificent body <strong className="text-green-500">DOWNWARDS</strong>, row by
+                glorious row (all 1s, then all 2s, etc.). Think of it as a reverse skyscraper of pure awesome. The
+                bigger the body, the farther you MIGHT go.
+              </p>
+            </div>
+            <div className="p-2 rounded-md bg-slate-100 dark:bg-slate-600/50">
+              <div className="flex items-center mb-1">
+                <Dice6 className="h-4 w-4 text-orange-500 mr-2" />
+                <strong className="text-orange-600 dark:text-orange-400 text-xs uppercase tracking-wider">
+                  Fiery Bottoms (Booster Dice - 6s)
+                </strong>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Slap these bad boys (dice showing a 6) onto the <strong className="text-orange-500">LOWEST</strong> row
+                of your rocket's body. This locks in your rocket's majestic height. Choose wisely, space cadet! Once a
+                booster is on, that body row is SET.
+              </p>
+            </div>
+          </div>
         </li>
-        <li>
-          <strong className="text-sky-700 dark:text-sky-300">3. Uh Oh, Space Junk! (Can't Place?):</strong> If you
-          can't legally place any dice (sad trombone!), you must sacrifice one poor, innocent die to the dreaded{" "}
-          <strong className="text-red-600 dark:text-red-400">"Fire Pile."</strong> It's for the greater good... maybe.
+        <li className="pl-4 relative">
+          <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-sky-500 dark:text-sky-400" />
+          <strong className="text-sky-600 dark:text-sky-300">3. Uh Oh, Space Junk! (Can't Place?):</strong>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            If you can't legally place any dice (sad trombone!), you must sacrifice one poor, innocent die to the
+            dreaded <strong className="text-red-600 dark:text-red-400">"Fire Pile."</strong> It's for the greater
+            good... maybe.
+          </p>
         </li>
       </ul>
     </div>
-    <Separator />
-    <div>
-      <h4 className="font-bold text-lg text-red-600 dark:text-red-400 mb-1.5 flex items-center">
-        <Bomb className="inline h-5 w-5 mr-2" /> Impending Doom (Watch Out!):
+
+    <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50">
+      <h4 className="font-bold text-lg text-red-500 dark:text-red-400 mb-2 flex items-center">
+        <Skull className="inline h-5 w-5 mr-2 flex-shrink-0" /> Impending Doom (Watch Out!):
       </h4>
-      <div className="flex items-baseline">
-        <Flame className="inline h-4 w-4 mr-1.5 text-red-500 flex-shrink-0" />
-        <p className="text-sm">
-          <strong>KABOOM! (The Fire Pile):</strong> If the Fire Pile accumulates{" "}
-          <span className="font-bold text-xl text-red-700 dark:text-red-500 mx-1">5</span>
+      <div className="flex items-start text-slate-600 dark:text-slate-300">
+        <Flame className="h-4 w-4 mr-2 mt-0.5 text-red-500 flex-shrink-0" />
+        <p>
+          <strong>KABOOM! (The Fire Pile):</strong> If the Fire Pile accumulates{' '}
+          <span className="font-bold text-xl text-red-600 dark:text-red-500 mx-0.5">5</span>
           dice, your beautiful creation spectacularly disintegrates into a million tiny, very sad pieces. Game over,
           buttercup. Try not to cry (too much).
         </p>
       </div>
     </div>
-    <Separator />
-    <div>
-      <h4 className="font-bold text-lg text-teal-600 dark:text-teal-400 mb-1.5 flex items-center">
-        <Rocket className="inline h-5 w-5 mr-2" /> To Infinity... And Hopefully Not Beyond (Liftoff!):
+
+    <div className="p-3 rounded-lg bg-teal-50 dark:bg-teal-900/30">
+      <h4 className="font-bold text-lg text-teal-500 dark:text-teal-400 mb-2 flex items-center">
+        <PartyPopper className="inline h-5 w-5 mr-2 flex-shrink-0" /> To Infinity... And Hopefully Not Beyond
+        (Liftoff!):
       </h4>
-      <ul className="list-none pl-1 space-y-1.5">
-        <li>
+      <ul className="space-y-1.5 text-slate-600 dark:text-slate-300">
+        <li className="pl-4 relative">
+          <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-teal-500 dark:text-teal-400" />
           Once your rocket body is a masterpiece of engineering (or at least, looks vaguely rocket-shaped) AND you've
-          attached <strong className="text-teal-700 dark:text-teal-300">one or more Boosters</strong>, it's showtime!
+          attached <strong className="text-teal-600 dark:text-teal-300">one or more Boosters</strong>, it's showtime!
         </li>
-        <li>
-          Roll <em className="font-semibold">ONLY</em> your Booster dice. Nail a 6 on any of them?{" "}
-          <strong className="text-xl text-teal-500">WHOOSH!</strong> You've achieved LIFTOFF! You're a star! (The
-          other players are probably just space dust now, metaphorically speaking).
+        <li className="pl-4 relative">
+          <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-teal-500 dark:text-teal-400" />
+          Roll <em className="font-semibold">ONLY</em> your Booster dice. Nail a 6 on any of them?{' '}
+          <strong className="text-xl text-teal-500">WHOOSH!</strong> You've achieved LIFTOFF! You're a star! (The other
+          players are probably just space dust now, metaphorically speaking).
         </li>
-        <li>
+        <li className="pl-4 relative">
+          <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-teal-500 dark:text-teal-400" />
           The more impressive your rocket (especially that body!), the farther you'll travel. Aim for the stars!
         </li>
       </ul>
@@ -454,40 +499,49 @@ export const renderDetailedRules = () => (
 );
 
 export const renderTldrRules = () => (
-  <div className="space-y-2.5 text-sm text-slate-700 dark:text-slate-300 px-1">
-    <p className="text-center font-semibold text-amber-600 dark:text-amber-400 text-base">
-      <Zap className="inline h-5 w-5 mr-1.5" /> LIFTOFF! TL;DR <Zap className="inline h-5 w-5 ml-1.5" />
+  <div className="space-y-3 text-sm text-slate-700 dark:text-slate-200">
+    <p className="text-center font-bold text-lg text-amber-500 dark:text-amber-400 flex items-center justify-center">
+      <Zap className="inline h-5 w-5 mr-2" /> LIFTOFF! TL;DR <Zap className="inline h-5 w-5 ml-2" />
     </p>
-    <div className="p-3 bg-slate-100 dark:bg-slate-700/50 rounded-md space-y-1.5">
-      <p>
-        <strong>🚀 Goal:</strong> Launch FAR! Don't EXPLODE!
+    <div className="p-3 bg-slate-100 dark:bg-slate-700/50 rounded-lg space-y-2 text-xs sm:text-sm">
+      <p className="flex items-center">
+        <Target className="h-4 w-4 mr-2 text-amber-500 flex-shrink-0" />
+        <strong>Goal:</strong> Launch FAR! Don't EXPLODE!
       </p>
-      <p>
-        <strong>🎲 Turn:</strong>
+
+      <div className="space-y-1">
+        <p className="flex items-center">
+          <ListChecks className="h-4 w-4 mr-2 text-sky-500 flex-shrink-0" />
+          <strong>Turn:</strong>
+        </p>
+        <ol className="list-decimal list-outside pl-8 space-y-1 text-slate-600 dark:text-slate-300">
+          <li>ROLL all your dice.</li>
+          <li>
+            BUILD ROCKET (Place ≥1 die, must touch existing parts):
+            <ul className="list-disc list-outside pl-5 mt-1 space-y-0.5 text-slate-500 dark:text-slate-400">
+              <li>
+                <strong>Body (1-5):</strong> Build <span className="text-green-500 font-semibold">DOWN</span>. Bigger =
+                Better.
+              </li>
+              <li>
+                <strong>Boosters (6):</strong> Attach to <span className="text-orange-500 font-semibold">LOWEST</span>{' '}
+                body row. Locks height.
+              </li>
+            </ul>
+          </li>
+          <li>
+            CAN'T PLACE? 1 die to <strong className="text-red-500">Fire Pile</strong>.
+          </li>
+        </ol>
+      </div>
+
+      <p className="flex items-center">
+        <Skull className="h-4 w-4 mr-2 text-red-500 flex-shrink-0" />{' '}
+        <strong className="text-red-500">Danger!</strong> 5 in Fire Pile = KABOOM! (You lose!)
       </p>
-      <ol className="list-decimal list-inside pl-2 space-y-1 text-xs">
-        <li>ROLL all your dice.</li>
-        <li>
-          BUILD ROCKET (Place ≥1 die, must touch existing parts):
-          <ul className="list-disc list-outside pl-5 mt-0.5">
-            <li>
-              <strong>Body (1-5):</strong> Build DOWN. Bigger = Better.
-            </li>
-            <li>
-              <strong>Boosters (6):</strong> Attach to LOWEST body row. Locks height.
-            </li>
-          </ul>
-        </li>
-        <li>
-          CAN'T PLACE? 1 die to <strong className="text-red-500">Fire Pile</strong>.
-        </li>
-      </ol>
-      <p>
-        <strong className="text-red-600 dark:text-red-500">🔥 Danger!</strong> 5 in Fire Pile = KABOOM! (You lose!)
-      </p>
-      <p>
-        <strong className="text-green-600 dark:text-green-400">🛰️ Liftoff!</strong> Complete body + ≥1 Booster. Roll
-        Boosters for a 6 = YOU WIN!
+      <p className="flex items-center">
+        <PartyPopper className="h-4 w-4 mr-2 text-teal-500 flex-shrink-0" />{' '}
+        <strong className="text-teal-500">Liftoff!</strong> Complete body + ≥1 Booster. Roll Boosters for a 6 = YOU WIN!
       </p>
     </div>
   </div>
