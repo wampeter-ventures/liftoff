@@ -75,7 +75,11 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
         setDragStartPos({ x: touch.clientX, y: touch.clientY });
         setIsDragging(false);
         dragRef.current = e.currentTarget;
-        
+
+        // Listen on document so move events fire even after pointer-events disabled
+        document.addEventListener('touchmove', handleTouchMove);
+        document.addEventListener('touchend', handleTouchEnd);
+
         // Prevent default to avoid scrolling
         e.preventDefault();
     };
@@ -212,6 +216,8 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
         setIsDragging(false);
         setDragStartPos(null);
         dragRef.current = null;
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleTouchEnd);
         e.preventDefault();
     };
 

@@ -3,7 +3,6 @@ import Die from './Die';
 import GameLogic from '../lib/gameLogic';
 
 function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, rocketHeight, boosterRowLocked }) {
-    const [draggedDie, setDraggedDie] = useState(null);
     const [isRolling, setIsRolling] = useState(false);
     const [rollingDice, setRollingDice] = useState([]);
 
@@ -16,7 +15,6 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
         }
         
         console.log('✅ DiceRoll setting up drag data and visual feedback');
-        setDraggedDie(die);
         e.dataTransfer.setData('text/plain', JSON.stringify(die));
         e.dataTransfer.effectAllowed = 'move';
         
@@ -36,8 +34,7 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
     const handleDragEnd = (e) => {
         console.log('🏁 DiceRoll handleDragEnd called');
         e.target.classList.remove('dragging');
-        setDraggedDie(null);
-        console.log('✅ Removed .dragging class and cleared draggedDie');
+        console.log('✅ Removed .dragging class');
     };
 
     const handleDieClick = (die) => {
