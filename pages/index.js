@@ -188,6 +188,16 @@ export default function Home() {
         }
     }, [currentPlayerIndex, gameState]);
 
+    useEffect(() => {
+        if (welcomeAnim) {
+            const timer = setTimeout(() => {
+                setGameState('setup');
+            }, 2100);
+            
+            return () => clearTimeout(timer);
+        }
+    }, [welcomeAnim]);
+
     const startGame = (playerData) => {
         // Store original player setup for future resets
         setOriginalPlayerSetup(playerData.map(player => ({
@@ -866,7 +876,6 @@ export default function Home() {
                             onMouseLeave={(e) => e.target.style.backgroundColor = '#f97316'}
                             onClick={() => {
                                 setWelcomeAnim(true);
-                                setTimeout(() => setGameState('setup'), 3500);
                             }}
                         >
                             Play
