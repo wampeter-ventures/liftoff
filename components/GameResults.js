@@ -19,6 +19,7 @@ function GameResults({
     rocketGrid,
     firePile,
     boosterRowLocked,
+    outOfDiceFail = false,
     onRestart,
 }) {
     const { getCompletedRows } = GameLogic;
@@ -62,6 +63,17 @@ function GameResults({
                     "Welp, your rocket is now a lovely collection of space confetti. Too many dice in the Fire Pile! Better luck next time, unless you enjoy expensive fireworks.",
                 bgColor: "bg-red-100 dark:bg-red-900/30",
                 textColor: "text-red-700 dark:text-red-300",
+            };
+        }
+
+        if (outOfDiceFail) {
+            return {
+                name: "MISSION SCRUBBED!",
+                icon: <AlertOctagon className="h-16 w-16 sm:h-20 sm:w-20 text-yellow-500" />,
+                description:
+                    "The crew ran out of dice and your would-be rocket never came together. Time to regroup and try again!",
+                bgColor: "bg-yellow-100 dark:bg-yellow-900/30",
+                textColor: "text-yellow-700 dark:text-yellow-300",
             };
         }
 

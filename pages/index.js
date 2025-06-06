@@ -29,6 +29,7 @@ export default function Home() {
     const [selectedDie, setSelectedDie] = useState(null);
     const [stars, setStars] = useState([]);
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
+    const [outOfDiceFail, setOutOfDiceFail] = useState(false);
     
     // Modal state
     const [modal, setModal] = useState({
@@ -137,6 +138,7 @@ export default function Home() {
 
         setPlayers(playerData);
         setCurrentPlayerIndex(0);
+        setOutOfDiceFail(false);
         setGameState("intro");
         rollDiceForCurrentPlayer(playerData);
     };
@@ -211,6 +213,7 @@ export default function Home() {
         setFirePile(newFirePile);
         setFireDice((prevFireDice) => [...prevFireDice, die]);
         if (newFirePile >= 5) {
+            setOutOfDiceFail(false);
             setGameState("results");
             return;
         }
@@ -267,6 +270,7 @@ export default function Home() {
         });
         setPlayers(updatedPlayers);
         if (firePile >= 5) {
+            setOutOfDiceFail(false);
             setGameState("results");
             return;
         }
@@ -311,14 +315,11 @@ export default function Home() {
             boosterRowLocked,
         );
         if (victoryLevel > 0) {
+            setOutOfDiceFail(false);
             setGameState("results");
         } else {
-            setCurrentDice([]);
-            setPlacedDice([]);
-            setGameHistory([]);
-            setTimeout(() => {
-                rollDiceForCurrentPlayer();
-            }, 100);
+            setOutOfDiceFail(true);
+            setGameState("results");
         }
     };
 
@@ -381,6 +382,7 @@ export default function Home() {
                 { boosterRolls, success: true }
             );
             setTimeout(() => {
+                setOutOfDiceFail(false);
                 setGameState("results");
             }, 4000);
         } else {
@@ -402,6 +404,7 @@ export default function Home() {
             );
             if (firePile + 1 >= 5) {
                 setTimeout(() => {
+                    setOutOfDiceFail(false);
                     setGameState("results");
                 }, 3000);
             }
@@ -422,6 +425,7 @@ export default function Home() {
         setFireDice([]);
         setSelectedDie(null);
         setShowLaunchHelper(false);
+        setOutOfDiceFail(false);
         
         // Close any open modals
         closeModal();
@@ -975,6 +979,7 @@ export default function Home() {
                     rocketGrid={rocketGrid}
                     firePile={firePile}
                     boosterRowLocked={boosterRowLocked}
+                    outOfDiceFail={outOfDiceFail}
                     onRestart={resetGamePreservingSetup}
                 />
             )}
