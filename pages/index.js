@@ -9,10 +9,6 @@ import GameModal from '../components/GameModal';
 import {
     Star,
     Flame,
-    X,
-    CheckCircle,
-    AlertTriangle,
-    Rocket,
     HelpCircle,
     Atom,
     Biohazard,
@@ -42,7 +38,7 @@ import {
     Telescope,
     Satellite
 } from 'lucide-react';
-import Head from "next/head";
+import Head from 'next/head';
 import LaunchResults from '../components/LaunchResults';
 
 export default function Home() {
@@ -191,6 +187,16 @@ export default function Home() {
             }, 50);
         }
     }, [currentPlayerIndex, gameState]);
+
+    useEffect(() => {
+        if (welcomeAnim) {
+            const timer = setTimeout(() => {
+                setGameState('setup');
+            }, 2100);
+            
+            return () => clearTimeout(timer);
+        }
+    }, [welcomeAnim]);
 
     const startGame = (playerData) => {
         // Store original player setup for future resets
@@ -870,7 +876,6 @@ export default function Home() {
                             onMouseLeave={(e) => e.target.style.backgroundColor = '#f97316'}
                             onClick={() => {
                                 setWelcomeAnim(true);
-                                setTimeout(() => setGameState('setup'), 3500);
                             }}
                         >
                             Play

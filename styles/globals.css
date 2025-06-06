@@ -1924,11 +1924,11 @@ body {
 
 /* Welcome transition animations */
 .stars-exit {
-    animation: starsFall 3s forwards;
+    animation: starsFall 2s forwards;
 }
 
 .rocket-exit {
-    animation: shakeThenUp 3s forwards;
+    animation: shakeThenUp 2s forwards;
 }
 
 @keyframes starsFall {
