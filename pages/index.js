@@ -921,7 +921,8 @@ export default function Home() {
                                 </button>
                                 <button
                                     onClick={nextPlayer}
-                                    className="btn btn-primary"
+                                    disabled={currentDice.every((d) => !d.placed)}
+                                    className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? "btn-next-disabled" : ""}`}
                                 >
                                     Next Player →
                                 </button>
