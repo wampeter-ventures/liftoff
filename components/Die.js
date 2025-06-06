@@ -186,12 +186,8 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
                     dropTarget.classList.contains('grid-slot') ||
                     dropTarget.classList.contains('fire-drop-zone')
                 ) {
-                    // Dispatch a click after releasing to place the die
-                    setTimeout(() => {
-                        dropTarget.dispatchEvent(
-                            new MouseEvent('click', { bubbles: true })
-                        );
-                    }, 0);
+                    // Use native click to trigger React handlers
+                    dropTarget.click();
                 }
             }
             
