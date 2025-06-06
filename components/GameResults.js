@@ -130,65 +130,66 @@ function GameResults({
     const renderRocketSummary = () => {
         const maxBodyRowsDisplay = 5;
 
+        const boosterPositions = Object.keys(rocketGrid).filter((pos) => {
+            const die = rocketGrid[pos];
+            return die && die.value === 6;
+        });
+        const boosterRow = boosterPositions.length
+            ? parseInt(boosterPositions[0].split("-")[0])
+            : null;
+
         return (
             <div className="mt-4 p-3 sm:p-4 border rounded-lg bg-slate-50 dark:bg-slate-700/50">
                 <h3 className="text-sm font-semibold text-center mb-2 text-slate-700 dark:text-slate-200">
                     Final Rocket Assembly
                 </h3>
                 <div className="space-y-1.5 text-xs">
-                    {Array.from({ length: maxBodyRowsDisplay }, (_, i) => i + 1).map((rowNum) => (
-                        <div
-                            key={`summary-row-${rowNum}`}
-                            className="flex items-center p-1.5 bg-slate-100 dark:bg-slate-600/70 rounded"
-                        >
-                            <div className="w-12 font-medium text-slate-600 dark:text-slate-300 text-right pr-1">Row {rowNum}:</div>
+                    {Array.from({ length: maxBodyRowsDisplay }, (_, i) => i + 1).map((rowNum) => {
+                        const isBoosterRow = boosterRow !== null && rowNum === boosterRow;
+                        return (
                             <div
-                                className="flex-grow grid gap-1 mx-1"
-                                style={{ gridTemplateColumns: `repeat(${rowNum}, minmax(0, 1fr))` }}
+                                key={`summary-row-${rowNum}`}
+                                className="flex items-center justify-center p-1.5 bg-slate-100 dark:bg-slate-600/70 rounded"
                             >
-                                {Array.from({ length: rowNum }, (_, colNum) => {
-                                    const position = `${rowNum}-${colNum + 1}`;
-                                    const die = rocketGrid[position];
-                                    return (
-                                        <div
-                                            key={position}
-                                            className={`h-5 w-full flex items-center justify-center rounded-sm border text-slate-700 dark:text-slate-200 ${
-                                                die
-                                                    ? "bg-green-200 dark:bg-green-700 border-green-400 dark:border-green-600"
-                                                    : "bg-slate-200 dark:bg-slate-500 border-slate-300 dark:border-slate-400"
-                                            }`}
-                                        >
-                                            {die ? die.value : <span className="opacity-50">·</span>}
-                                        </div>
-                                    );
-                                })}
+                                <div className="w-12 font-medium text-slate-600 dark:text-slate-300 text-right pr-1">Row {rowNum}:</div>
+                                <div className="flex justify-center gap-1 mx-1">
+                                    {Array.from({ length: rowNum }, (_, colNum) => {
+                                        const position = `${rowNum}-${colNum + 1}`;
+                                        const die = isBoosterRow ? null : rocketGrid[position];
+                                        return (
+                                            <div
+                                                key={position}
+                                                className={`h-5 w-5 flex items-center justify-center rounded-sm border text-slate-700 dark:text-slate-200 ${
+                                                    die
+                                                        ? "bg-green-200 dark:bg-green-700 border-green-400 dark:border-green-600"
+                                                        : "bg-slate-200 dark:bg-slate-500 border-slate-300 dark:border-slate-400"
+                                                }`}
+                                            >
+                                                {die ? die.value : <span className="opacity-50">·</span>}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                {completedBodyRows.includes(rowNum) ? (
+                                    <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0 ml-1" />
+                                ) : (
+                                    <div className="w-4 h-4 ml-1 flex-shrink-0" />
+                                )}
                             </div>
-                            {completedBodyRows.includes(rowNum) ? (
-                                <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0 ml-1" />
-                            ) : (
-                                <div className="w-4 h-4 ml-1 flex-shrink-0" />
-                            )}
-                        </div>
-                    ))}
+                        );
+                    })}
                     <div
-                        className={`flex items-center p-1.5 rounded mt-2 ${boosterRowLocked ? "bg-amber-100 dark:bg-amber-700/50" : "bg-slate-100 dark:bg-slate-600/70"}`}
+                        className={`flex items-center justify-center p-1.5 rounded mt-2 ${boosterRowLocked ? "bg-amber-100 dark:bg-amber-700/50" : "bg-slate-100 dark:bg-slate-600/70"}`}
                     >
                         <div className="w-12 font-medium text-slate-600 dark:text-slate-300 text-right pr-1">Boosters:</div>
-                        <div
-                            className="flex-grow grid gap-1 mx-1"
-                            style={{ gridTemplateColumns: `repeat(${Math.max(1, rocketHeight)}, minmax(0, 1fr))` }}
-                        >
+                        <div className="flex justify-center gap-1 mx-1">
                             {Array.from({ length: Math.max(1, rocketHeight) }, (_, colNum) => {
-                                // Look for 6s in the booster row based on actual grid positions
-                                const boosterPositions = Object.keys(rocketGrid).filter(pos => {
-                                    const die = rocketGrid[pos];
-                                    return die && die.value === 6;
-                                });
-                                const die = boosterPositions[colNum] ? rocketGrid[boosterPositions[colNum]] : null;
+                                const pos = boosterPositions[colNum];
+                                const die = pos ? rocketGrid[pos] : null;
                                 return (
                                     <div
                                         key={`booster-${colNum + 1}`}
-                                        className={`h-5 w-full flex items-center justify-center rounded-sm border text-slate-700 dark:text-slate-200 ${
+                                        className={`h-5 w-5 flex items-center justify-center rounded-sm border text-slate-700 dark:text-slate-200 ${
                                             die
                                                 ? "bg-orange-300 dark:bg-orange-600 border-orange-500 dark:border-orange-500"
                                                 : "bg-slate-200 dark:bg-slate-500 border-slate-300 dark:border-slate-400"
