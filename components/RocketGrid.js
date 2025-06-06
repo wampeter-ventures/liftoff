@@ -21,6 +21,9 @@ function RocketGrid({
     const [hasAnyPlacedDice, setHasAnyPlacedDice] = useState(false);
     const [showInitialGuide, setShowInitialGuide] = useState(true);
     const [showPictureMode, setShowPictureMode] = useState(false);
+    const [rowsToRemove, setRowsToRemove] = useState([]);
+    const [rowsHidden, setRowsHidden] = useState([]);
+    const prevBoosterLocked = React.useRef(boosterRowLocked);
 
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
@@ -63,6 +66,32 @@ function RocketGrid({
         }, 100);
         return () => clearTimeout(timer);
     }, [currentDice, grid, rocketHeight, boosterRowLocked, selectedDie, showInitialGuide]);
+
+    // Handle removal animation when boosters lock the rocket height
+    useEffect(() => {
+        if (boosterRowLocked && !prevBoosterLocked.current) {
+            // Calculate rows that will no longer be used
+            if (rocketHeight < 5) {
+                const toRemove = [];
+                for (let r = rocketHeight + 2; r <= 6; r++) {
+                    toRemove.push(r);
+                }
+                if (toRemove.length) {
+                    setRowsToRemove(toRemove);
+                    const timer = setTimeout(() => {
+                        setRowsHidden(toRemove);
+                        setRowsToRemove([]);
+                    }, 600);
+                    return () => clearTimeout(timer);
+                }
+            }
+        } else if (!boosterRowLocked && prevBoosterLocked.current) {
+            // Reveal all rows when returning from failed launch
+            setRowsHidden([]);
+            setRowsToRemove([]);
+        }
+        prevBoosterLocked.current = boosterRowLocked;
+    }, [boosterRowLocked, rocketHeight]);
 
     // Compute eligibility *for display* for every slot on the grid
     const eligibleLabels = React.useMemo(() => {
@@ -236,8 +265,8 @@ function RocketGrid({
                 
                 <div className="rocket-grid">
                     {[1, 2, 3, 4, 5, 6]
+                        .filter((row) => !rowsHidden.includes(row))
                         .filter((row) => {
-                            // Only hide rows if there is actually a 6 (booster) placed
                             const boosters = Object.keys(grid)
                                 .filter((k) => grid[k] && grid[k].value === 6)
                                 .map((k) => parseInt(k.split("-")[0]));
@@ -245,9 +274,11 @@ function RocketGrid({
                             const boosterRow = Math.min(...boosters);
                             return row <= boosterRow;
                         })
-
                         .map((row) => (
-                            <div key={row} className={`rocket-row row-${row}`}>
+                            <div
+                                key={row}
+                                className={`rocket-row row-${row} ${rowsToRemove.includes(row) ? 'row-remove' : ''}`}
+                            >
                                 <div className="row-slots">
                                     {Array.from({ length: row }, (_, i) => {
                                         const pos = `${row}-${i + 1}`;

@@ -410,6 +410,31 @@ body {
     justify-content: center;
     gap: 20px;
     min-height: 40px;
+    max-height: 56px;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+}
+
+.rocket-row.row-remove {
+    opacity: 0;
+    max-height: 0;
+}
+
+.rocket-row.row-remove::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    border-top: 2px solid var(--color-fire-red);
+    transform: translateY(-50%) rotate(-10deg);
+    animation: rowCrossFade 0.5s forwards;
+}
+
+@keyframes rowCrossFade {
+    from { opacity: 1; }
+    to { opacity: 0; }
 }
 
 .row-label {
