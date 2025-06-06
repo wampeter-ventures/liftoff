@@ -57,6 +57,7 @@ function RocketGrid({
         .map((k) => parseInt(k.split("-")[0]));
     const boosterRow = boostersPlaced.length ? Math.min(...boostersPlaced) : null;
 
+
     // Compute all valid positions for the *current hand* (to highlight green slots)
     useEffect(() => {
         const timer = setTimeout(() => {
