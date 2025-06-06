@@ -43,12 +43,14 @@ const DrawerFooter = ({ className, ...props }) => (
   <div className={`mt-auto flex flex-col gap-2 p-4 ${className || ''}`} {...props} />
 );
 
-const DrawerTitle = React.forwardRef(({ className, ...props }, ref) => (
+const DrawerTitle = React.forwardRef(({ className, children, ...props }, ref) => (
   <h2
     ref={ref}
     className={`text-lg font-semibold leading-none tracking-tight ${className || ''}`}
     {...props}
-  />
+  >
+    {children || <span aria-hidden="true"></span>}
+  </h2>
 ));
 
 const DrawerDescription = React.forwardRef(({ className, ...props }, ref) => (

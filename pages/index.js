@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import GameLogic from '../lib/gameLogic';
-import Die from '../components/Die';
 import DiceRoll from '../components/DiceRoll';
 import RocketGrid from '../components/RocketGrid';
-import GameSetup from '../components/GameSetup';
+import GameSetup, { HelpDrawer } from '../components/GameSetup';
 import GameResults from '../components/GameResults';
 import IntroSequence from '../components/IntroSequence';
 import GameModal from '../components/GameModal';
-import { HelpDrawer } from '../components/GameSetup';
-import { Star, Flame, X, CheckCircle, AlertTriangle, Rocket, HelpCircle } from 'lucide-react';
+import { Star, Flame, HelpCircle } from 'lucide-react';
 import Head from 'next/head';
 import LaunchResults from '../components/LaunchResults';
 
