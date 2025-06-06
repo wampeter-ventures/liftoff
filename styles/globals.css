@@ -315,6 +315,11 @@ body {
     text-align: center;
 }
 
+.rocket-section.on-top {
+    position: relative;
+    z-index: 1100;
+}
+
 .rocket-section h3 {
     font-family: "Courier New", "SF Mono", "Monaco", "Menlo", monospace;
     font-size: 20px;
@@ -511,6 +516,7 @@ body {
     z-index: 10;
     margin-top: 24px;
 }
+
 
 .dice-roll-container h3 {
     font-size: 16px;
