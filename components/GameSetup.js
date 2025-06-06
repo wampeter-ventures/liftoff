@@ -48,6 +48,35 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const [hasLoadedPreservedSetup, setHasLoadedPreservedSetup] = useState(false);
   const { toast } = useToast();
 
+  // Load any saved setup from localStorage if no preserved setup provided
+  useEffect(() => {
+    if ((preservedPlayerSetup?.length || 0) > 0 || hasLoadedPreservedSetup) return;
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('playerSetup') : null;
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setPlayerCount(parsed.length);
+          setPlayers(parsed.map((p, i) => ({ id: p.id || Date.now() + i, ...p })));
+          setHasLoadedPreservedSetup(true);
+        }
+      } catch (err) {
+        console.error('Failed to load player setup from localStorage', err);
+      }
+    }
+  }, [preservedPlayerSetup, hasLoadedPreservedSetup]);
+
+  // Persist player setup whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('playerSetup', JSON.stringify(players));
+      } catch (err) {
+        console.error('Failed to save player setup', err);
+      }
+    }
+  }, [players]);
+
   // Initialize with preserved setup if available
   useEffect(() => {
     if (preservedPlayerSetup && preservedPlayerSetup.length > 0 && !hasLoadedPreservedSetup) {
@@ -137,6 +166,13 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   };
 
   const handleConfirmAndStartGame = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('playerSetup', JSON.stringify(players));
+      } catch (err) {
+        console.error('Failed to save player setup', err);
+      }
+    }
     onStartGame(players);
     setIsDrawerOpen(false);
     toast({
