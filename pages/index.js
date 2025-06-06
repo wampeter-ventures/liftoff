@@ -417,6 +417,7 @@ export default function Home() {
                             setGameState("results");
                         }, 3000);
                 }
+                }
             }
         }, 1000);
     };
