@@ -355,11 +355,11 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
               size="lg"
               className="w-full sm:w-auto bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-slate-50 text-base"
             >
-              Let's Build This Rocket! <Rocket className="ml-2 h-5 w-5" />
+              Let's Build This Ship! <Rocket className="ml-2 h-5 w-5" />
             </Button>
             <DrawerClose asChild>
               <Button variant="outline" size="lg" className="w-full sm:w-auto text-base">
-                Reviewing Intel (Close)
+                Back to Base (Close)
               </Button>
             </DrawerClose>
           </DrawerFooter>
