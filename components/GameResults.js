@@ -9,8 +9,6 @@ import {
   Disc3,
   XCircle,
   Bomb,
-  CheckCircle2,
-  Flame,
   TrendingUp,
   AlertOctagon,
 } from "lucide-react";
@@ -19,7 +17,6 @@ import GameLogic from '../lib/gameLogic';
 function GameResults({
     rocketGrid,
     firePile,
-    rocketHeight,
     boosterRowLocked,
     onRestart,
 }) {
@@ -127,88 +124,6 @@ function GameResults({
 
     const destination = getDestinationDetails();
 
-    const renderRocketSummary = () => {
-        const maxBodyRowsDisplay = 5;
-
-        return (
-            <div className="mt-4 p-3 sm:p-4 border rounded-lg bg-slate-50 dark:bg-slate-700/50">
-                <h3 className="text-sm font-semibold text-center mb-2 text-slate-700 dark:text-slate-200">
-                    Final Rocket Assembly
-                </h3>
-                <div className="space-y-1.5 text-xs">
-                    {Array.from({ length: maxBodyRowsDisplay }, (_, i) => i + 1).map((rowNum) => (
-                        <div
-                            key={`summary-row-${rowNum}`}
-                            className="flex items-center p-1.5 bg-slate-100 dark:bg-slate-600/70 rounded"
-                        >
-                            <div className="w-12 font-medium text-slate-600 dark:text-slate-300 text-right pr-1">Row {rowNum}:</div>
-                            <div
-                                className="flex-grow grid gap-1 mx-1"
-                                style={{ gridTemplateColumns: `repeat(${rowNum}, minmax(0, 1fr))` }}
-                            >
-                                {Array.from({ length: rowNum }, (_, colNum) => {
-                                    const position = `${rowNum}-${colNum + 1}`;
-                                    const die = rocketGrid[position];
-                                    return (
-                                        <div
-                                            key={position}
-                                            className={`h-5 w-full flex items-center justify-center rounded-sm border text-slate-700 dark:text-slate-200 ${
-                                                die
-                                                    ? "bg-green-200 dark:bg-green-700 border-green-400 dark:border-green-600"
-                                                    : "bg-slate-200 dark:bg-slate-500 border-slate-300 dark:border-slate-400"
-                                            }`}
-                                        >
-                                            {die ? die.value : <span className="opacity-50">·</span>}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            {completedBodyRows.includes(rowNum) ? (
-                                <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0 ml-1" />
-                            ) : (
-                                <div className="w-4 h-4 ml-1 flex-shrink-0" />
-                            )}
-                        </div>
-                    ))}
-                    <div
-                        className={`flex items-center p-1.5 rounded mt-2 ${boosterRowLocked ? "bg-amber-100 dark:bg-amber-700/50" : "bg-slate-100 dark:bg-slate-600/70"}`}
-                    >
-                        <div className="w-12 font-medium text-slate-600 dark:text-slate-300 text-right pr-1">Boosters:</div>
-                        <div
-                            className="flex-grow grid gap-1 mx-1"
-                            style={{ gridTemplateColumns: `repeat(${Math.max(1, rocketHeight)}, minmax(0, 1fr))` }}
-                        >
-                            {Array.from({ length: Math.max(1, rocketHeight) }, (_, colNum) => {
-                                // Look for 6s in the booster row based on actual grid positions
-                                const boosterPositions = Object.keys(rocketGrid).filter(pos => {
-                                    const die = rocketGrid[pos];
-                                    return die && die.value === 6;
-                                });
-                                const die = boosterPositions[colNum] ? rocketGrid[boosterPositions[colNum]] : null;
-                                return (
-                                    <div
-                                        key={`booster-${colNum + 1}`}
-                                        className={`h-5 w-full flex items-center justify-center rounded-sm border text-slate-700 dark:text-slate-200 ${
-                                            die
-                                                ? "bg-orange-300 dark:bg-orange-600 border-orange-500 dark:border-orange-500"
-                                                : "bg-slate-200 dark:bg-slate-500 border-slate-300 dark:border-slate-400"
-                                        }`}
-                                    >
-                                        {die ? die.value : <span className="opacity-50">·</span>}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                        {boosterRowLocked ? (
-                            <Flame className="h-4 w-4 text-orange-500 flex-shrink-0 ml-1" />
-                        ) : (
-                            <div className="w-4 h-4 ml-1 flex-shrink-0" />
-                        )}
-                    </div>
-                </div>
-            </div>
-        );
-    };
 
     return (
         <div className="game-results mt-4 px-4">
@@ -230,7 +145,7 @@ function GameResults({
                         <div className="p-2 sm:p-3 bg-slate-100 dark:bg-slate-700/50 rounded-md">
                             <div className="flex items-center justify-center text-sky-600 dark:text-sky-400">
                                 <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 mr-1.5" />
-                                <span className="text-xl sm:text-2xl font-bold">{completedBodyRows.length}</span>
+                                <span className="text-xl sm:text-2xl font-bold">{completedBodyRows.length}/5</span>
                             </div>
                             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-0.5">Completed Body Rows</p>
                         </div>
@@ -250,7 +165,6 @@ function GameResults({
                             </p>
                         </div>
                     </div>
-                    {renderRocketSummary()}
                 </CardContent>
                 <CardFooter className="p-4 sm:p-5 pt-6 sm:pt-8 border-t dark:border-slate-700/50">
                     <Button
