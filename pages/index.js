@@ -533,10 +533,11 @@ export default function Home() {
         setPlacementEffect(null);
         setLaunchCountdown(0);
         setOutOfDiceFail(false);
-
+        setWelcomeAnim(false); 
+    
         // Close any open modals
         closeModal();
-
+    
         // Reset the rocket grid to empty
         const grid = {};
         for (let row = 1; row <= 6; row++) {
@@ -564,6 +565,7 @@ export default function Home() {
         clearAllGameState();
         // Clear the original setup when going back to welcome
         setOriginalPlayerSetup([]);
+        setWelcomeAnim(false);
         setGameState('welcome');
     };
 
