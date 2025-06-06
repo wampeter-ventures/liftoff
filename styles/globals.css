@@ -1743,7 +1743,6 @@ body {
     z-index: 1000;
     pointer-events: none;
 }
-
 /* Starry background for results screen */
 .results-background {
     position: fixed;

@@ -52,7 +52,6 @@ function RocketGrid({
         if (rocketComplete) return 'Ready to Attempt Launch';
         return `Mission: ${getPlanetName(rocketHeight)}`;
     }, [boosterRowLocked, rocketComplete, rocketHeight]);
-
     const boostersPlaced = Object.keys(grid)
         .filter((k) => grid[k] && grid[k].value === 6)
         .map((k) => parseInt(k.split("-")[0]));

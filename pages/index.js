@@ -381,7 +381,7 @@ export default function Home() {
                 if (hasSuccessfulBooster) {
                     showModal(
                         'launch',
-                        '🎲 CMON SIXES, WE NEED A SIX...',
+                        '🎲 CMON SIXES...',
                         'The fate of your rocket hangs in the balance...',
                         { boosterRolls, success: true }
                     );
@@ -401,7 +401,7 @@ export default function Home() {
                     setBoosterRowLocked(false);
                     showModal(
                         'launch',
-                        '🎲 CMON SIXES, WE NEED A SIX...',
+                        '🎲 CMON SIXES...',
                         'The fate of your rocket hangs in the balance...',
                         { boosterRolls, success: false }
                     );
