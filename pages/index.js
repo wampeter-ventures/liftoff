@@ -60,6 +60,7 @@ export default function Home() {
     const [selectedDie, setSelectedDie] = useState(null);
     const [stars, setStars] = useState([]);
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
+    const [welcomeAnim, setWelcomeAnim] = useState(false);
 
     // Confirmation animation state
     const [fireFlash, setFireFlash] = useState(false);
@@ -586,8 +587,8 @@ export default function Home() {
     };
 
     // Starry Background Component
-    const StarryBackground = () => (
-        <div className="absolute inset-0 overflow-hidden">
+    const StarryBackground = ({ animateExit = false }) => (
+        <div className={`absolute inset-0 overflow-hidden ${animateExit ? 'stars-exit' : ''}`}>
             {/* Small varied stars */}
             {stars.map((star) => (
                 <div
@@ -741,11 +742,11 @@ export default function Home() {
 
             {gameState === 'welcome' && (
                 <div className="welcome-screen">
-                    <StarryBackground />
+                    <StarryBackground animateExit={welcomeAnim} />
 
                     {/* Content */}
                     <div className="relative z-10 flex flex-col items-center">
-                        <div className="welcome-icon mb-8">
+                        <div className={`welcome-icon mb-8 ${welcomeAnim ? 'rocket-exit' : ''}`}>
                             <svg
                                 width="120"
                                 height="120"
@@ -863,7 +864,10 @@ export default function Home() {
                             }}
                             onMouseEnter={(e) => e.target.style.backgroundColor = '#db7127'}
                             onMouseLeave={(e) => e.target.style.backgroundColor = '#f97316'}
-                            onClick={() => setGameState('setup')}
+                            onClick={() => {
+                                setWelcomeAnim(true);
+                                setTimeout(() => setGameState('setup'), 3500);
+                            }}
                         >
                             Play
                         </button>

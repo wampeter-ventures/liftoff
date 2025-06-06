@@ -1921,3 +1921,27 @@ body {
     from { transform: translate(0, 0); }
     to { transform: translate(300px, -300px); }
 }
+
+/* Welcome transition animations */
+.stars-exit {
+    animation: starsFall 2s forwards;
+}
+
+.rocket-exit {
+    animation: shakeThenUp 2s forwards;
+}
+
+@keyframes starsFall {
+    from { transform: translateY(0); }
+    to { transform: translateY(100vh); }
+}
+
+@keyframes shakeThenUp {
+    0% { transform: translateY(0); }
+    10% { transform: translate(-2px, 0) rotate(-5deg); }
+    20% { transform: translate(2px, 0) rotate(5deg); }
+    30% { transform: translate(-2px, 0) rotate(-5deg); }
+    40% { transform: translate(2px, 0) rotate(5deg); }
+    50% { transform: translateY(0); }
+    100% { transform: translateY(-120vh); }
+}
