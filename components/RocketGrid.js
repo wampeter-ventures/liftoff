@@ -13,7 +13,6 @@ function RocketGrid({
     onPlaceSelectedDie,
     onCanLaunch,
     onAttemptLaunch,
-    onSetShowLaunchHelper,
     highlightSlot,
     showBoosterAnimation,
     placementEffect,
@@ -26,12 +25,20 @@ function RocketGrid({
     const [showInitialGuide, setShowInitialGuide] = useState(true);
     const [showPictureMode, setShowPictureMode] = useState(false);
 
-    const getPlanetName = (height) => {
-        if (height >= 5) return 'Neptune';
-        if (height >= 4) return 'Saturn';
-        if (height >= 3) return 'Jupiter';
-        if (height >= 2) return 'Mars';
-        if (height >= 1) return 'Moon';
+    const getPlanetName = (rows, boosters) => {
+        if (rows >= 5) {
+            if (boosters >= 6) return 'Eris';
+            if (boosters >= 5) return 'Makemake';
+            if (boosters >= 4) return 'Haumea';
+            if (boosters >= 3) return 'Pluto';
+            if (boosters >= 2) return 'Neptune';
+            if (boosters >= 1) return 'Uranus';
+            return 'Earth';
+        }
+        if (rows >= 4 && boosters >= 1) return 'Saturn';
+        if (rows >= 3 && boosters >= 1) return 'Jupiter';
+        if (rows >= 2 && boosters >= 1) return 'Ceres';
+        if (rows >= 1 && boosters >= 1) return 'Mars';
         return 'Earth';
     };
 
@@ -50,11 +57,24 @@ function RocketGrid({
         return true;
     }, [grid, boosterRowLocked, rocketHeight]);
 
+    const boosterCount = Object.values(grid).filter((d) => d && d.value === 6).length;
+
+    const completedBodyRows = React.useMemo(() => {
+        const allCompleted = GameLogic.getCompletedRows(grid);
+        return allCompleted.filter((rowNum) => {
+            for (let col = 1; col <= rowNum; col++) {
+                const die = grid[`${rowNum}-${col}`];
+                if (die && die.value !== 6) return true;
+            }
+            return false;
+        });
+    }, [grid]);
+
     const headerText = React.useMemo(() => {
         if (!boosterRowLocked) return 'Rocket Assembly';
-        if (rocketComplete) return 'Ready to Attempt Launch';
-        return `Mission: ${getPlanetName(rocketHeight)}`;
-    }, [boosterRowLocked, rocketComplete, rocketHeight]);
+        return `Mission: ${getPlanetName(rocketHeight, boosterCount)}`;
+    }, [boosterRowLocked, rocketHeight, boosterCount]);
+
     const boostersPlaced = Object.keys(grid)
         .filter((k) => grid[k] && grid[k].value === 6)
         .map((k) => parseInt(k.split('-')[0]));
@@ -315,23 +335,7 @@ function RocketGrid({
                             </div>
                         ))}
                 </div>
-
-                {boosterRowLocked && !preparingLaunch && (
-                    <div className="launch-section">
-                        <button
-                            className={`btn btn-launch ${!onCanLaunch() ? 'btn-disabled' : 'btn-primary'}`}
-                            onClick={() => {
-                                if (onCanLaunch()) {
-                                    onAttemptLaunch();
-                                } else {
-                                    onSetShowLaunchHelper && onSetShowLaunchHelper(true);
-                                }
-                            }}
-                        >
-                            Launch Rocket!
-                        </button>
-                    </div>
-                )}
+                {/* Launch button moved to main controls */}
             </div>
         </>
     );
