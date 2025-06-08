@@ -246,9 +246,11 @@ body {
 
 .players-compact-container {
     flex: 1;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    scroll-behavior: smooth;
 }
 
 .players-compact {
