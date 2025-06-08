@@ -18,14 +18,17 @@ import GameLogic from '../lib/gameLogic';
 function GameResults({
     rocketGrid,
     firePile,
+    lostParts = 0,
     boosterRowLocked,
     outOfDiceFail = false,
+    gameMode = 'classic',
+    adventureDestination = null,
     onRestart,
 }) {
-    const { getCompletedRows } = GameLogic;
+    const { getCompletedRows, adventureDestinations, getAdventureDestination } = GameLogic;
 
     const allCompletedRows = getCompletedRows(rocketGrid);
-    const isExplosion = firePile >= 5;
+    const isExplosion = gameMode === 'classic' && firePile >= 5;
 
     // Filter to only count body rows (exclude booster rows that contain only 6s)
     const completedBodyRows = allCompletedRows.filter(rowNum => {
@@ -40,7 +43,7 @@ function GameResults({
         return false; // This row only contains 6s (booster row)
     });
 
-    // Calculate victory level based on completed BODY rows only: 1=Moon, 2=Mars, 3=Jupiter, 4=Saturn, 5=Neptune
+    // Calculate victory level for classic mode
     const calculateVictoryLevel = () => {
         if (!boosterRowLocked) return 0; // need at least one booster
         const bodyRowCount = completedBodyRows.length;
@@ -52,7 +55,11 @@ function GameResults({
         return 0;
     };
 
-    const victoryLevel = calculateVictoryLevel();
+    const victoryLevel = gameMode === 'classic' ? calculateVictoryLevel() : 0;
+    const computedAdventureDestination =
+        gameMode === 'adventure'
+            ? getAdventureDestination(rocketGrid, boosterRowLocked)
+            : null;
 
     const getDestinationDetails = () => {
         if (isExplosion) {
@@ -74,6 +81,17 @@ function GameResults({
                     'The crew ran out of dice and your would-be rocket never came together. Time to regroup and try again!',
                 bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
                 textColor: 'text-yellow-700 dark:text-yellow-300',
+            };
+        }
+
+        const finalAdventure = adventureDestination || computedAdventureDestination;
+        if (gameMode === 'adventure' && finalAdventure) {
+            return {
+                name: `${finalAdventure.name.toUpperCase()} REACHED!`,
+                icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-purple-500" />,
+                description: `Your crew made it to ${finalAdventure.name}!`,
+                bgColor: 'bg-purple-100 dark:bg-purple-900/30',
+                textColor: 'text-purple-700 dark:text-purple-300',
             };
         }
 
@@ -171,12 +189,12 @@ function GameResults({
                                 className={`flex items-center justify-center ${isExplosion ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}
                             >
                                 <AlertOctagon className="h-5 w-5 sm:h-6 sm:w-6 mr-1.5" />
-                                <span className="text-xl sm:text-2xl font-bold">{firePile}</span>
+                                <span className="text-xl sm:text-2xl font-bold">{gameMode === 'adventure' ? lostParts : firePile}</span>
                             </div>
                             <p
                                 className={`text-xs sm:text-sm mt-0.5 ${isExplosion ? 'text-red-600 dark:text-red-300' : 'text-slate-600 dark:text-slate-300'}`}
                             >
-                                Dice in Fire!
+                                {gameMode === 'adventure' ? 'Parts Lost' : 'Dice in Fire!'}
                             </p>
                         </div>
                     </div>

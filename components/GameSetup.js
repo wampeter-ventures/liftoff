@@ -43,6 +43,7 @@ import { useToast } from '../hooks/use-toast';
 
 function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const [playerCount, setPlayerCount] = useState(8);
+  const [mode, setMode] = useState('classic');
   
   // Temporary: Clear old cached player names to show new company names
   useEffect(() => {
@@ -214,7 +215,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
         console.error('Failed to save player setup', err);
       }
     }
-    onStartGame(players);
+    onStartGame(players, mode);
     setIsDrawerOpen(false);
     toast({
       title: 'Engines Primed!',
@@ -281,21 +282,35 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
             <Label htmlFor="player-count" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">
               Number of Construction Bays (1-8):
             </Label>
-            <Select value={String(playerCount)} onValueChange={(value) => handlePlayerCountChange(Number(value))}>
-              <SelectTrigger id="player-count" className="w-full text-sm">
-                <SelectValue placeholder="Select number of players" />
-              </SelectTrigger>
-              <SelectContent>
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                  <SelectItem key={num} value={String(num)} className="text-sm">
-                    {num}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Configure Bays</h3>
+          <Select value={String(playerCount)} onValueChange={(value) => handlePlayerCountChange(Number(value))}>
+            <SelectTrigger id="player-count" className="w-full text-sm">
+              <SelectValue placeholder="Select number of players" />
+            </SelectTrigger>
+            <SelectContent>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                <SelectItem key={num} value={String(num)} className="text-sm">
+                  {num}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="mode-select" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+            Game Mode:
+          </Label>
+          <Select value={mode} onValueChange={(value) => setMode(value)}>
+            <SelectTrigger id="mode-select" className="w-full text-sm">
+              <SelectValue placeholder="Select mode" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="classic" className="text-sm">Classic</SelectItem>
+              <SelectItem value="adventure" className="text-sm">Adventure</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Configure Bays</h3>
             <div className="space-y-2 max-h-[calc(100vh-400px)] min-h-[100px] overflow-y-auto pr-1 custom-scrollbar">
               {players.map((player, index) => (
                 <div key={player.id} className="p-3 border rounded-md bg-slate-50 dark:bg-slate-700/60">

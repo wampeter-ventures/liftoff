@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Die from './Die';
 import GameLogic from '../lib/gameLogic';
 
-function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, rocketHeight, boosterRowLocked }) {
+function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, rocketHeight, boosterRowLocked, adventure = false }) {
     const [draggedDie, setDraggedDie] = useState(null);
     const [isRolling, setIsRolling] = useState(false);
     const [rollingDice, setRollingDice] = useState([]);
@@ -128,8 +128,10 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
                         return `Click or drag dice:
 ⚙️ Body part (1-5) 🔋 Boosters (6)`;
                     } else if (!anyDicePlaced) {
-                        // Only show fire message if this is a fresh roll with no eligible dice
-                        return 'No eligible body parts or boosters, send a die to the fire! 🔥 ';
+                        // Only show jettison message if this is a fresh roll with no eligible dice
+                        return adventure
+                            ? 'No eligible parts, jettison one to Lost in Space!'
+                            : 'No eligible body parts or boosters, send a die to the fire! 🔥 ';
                     } else {
                         // Some dice were already placed, show regular message
                         return `Click or drag dice:
