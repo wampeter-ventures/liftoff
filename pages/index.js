@@ -409,18 +409,15 @@ export default function Home() {
     };
 
     const checkVictoryConditions = () => {
-        const victoryLevel = GameLogic.calculateVictoryLevel(
-            rocketGrid,
-            rocketHeight,
-            boosterRowLocked,
-        );
-        if (victoryLevel > 0) {
-            setOutOfDiceFail(false);
-            setGameState('results');
-        } else {
+        // If the rocket body isn't complete, players ran out of parts mid-build
+        if (!canLaunch()) {
             setOutOfDiceFail(true);
             setGameState('results');
+            return;
         }
+
+        setOutOfDiceFail(false);
+        setGameState('results');
     };
 
     const canLaunch = () => {
