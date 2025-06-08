@@ -246,9 +246,11 @@ body {
 
 .players-compact-container {
     flex: 1;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    scroll-behavior: smooth;
 }
 
 .players-compact {
@@ -277,6 +279,13 @@ body {
 .player-compact.eliminated {
     opacity: 0.5;
     background-color: var(--color-mid-gray);
+}
+
+.player-compact.all-dice {
+    background-color: transparent;
+    position: sticky;
+    left: 0;
+    z-index: 1;
 }
 
 .player-name-short {
