@@ -1299,6 +1299,15 @@ body {
     opacity: 0.2;
 }
 
+.intro-rocket.liftoff {
+    animation: rocketLiftoff 3s ease-in forwards;
+}
+
+@keyframes rocketLiftoff {
+    0% { transform: translate(-50%, -50%); }
+    100% { transform: translate(-50%, -150%); }
+}
+
 .rocket-intro-image {
     max-height: 60vh;
     max-width: 300px;
@@ -1351,6 +1360,24 @@ body {
 .intro-icon {
     position: absolute;
     pointer-events: none;
+}
+
+.intro-levels-card {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 120%);
+    opacity: 0;
+    z-index: 4;
+}
+
+.intro-levels-card.slide-up {
+    animation: levelsSlideUp 1s ease-out forwards;
+}
+
+@keyframes levelsSlideUp {
+    from { transform: translate(-50%, 120%); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
 }
 
 /* Intro animation keyframes */
