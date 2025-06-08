@@ -1954,3 +1954,18 @@ body {
     50% { transform: translateY(0); }
     100% { transform: translateY(-120vh); }
 }
+
+.wolf-mode {
+    background-color: #000;
+    color: #fff;
+    position: relative;
+}
+.wolf-mode::before {
+    content: '✨✨🌟';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    pointer-events: none;
+}
