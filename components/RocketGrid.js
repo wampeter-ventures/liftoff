@@ -17,7 +17,8 @@ function RocketGrid({
     highlightSlot,
     showBoosterAnimation,
     placementEffect,
-    preparingLaunch
+    preparingLaunch,
+    gameMode = 'classic'
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
     const [validPositions, setValidPositions] = useState(new Set());
@@ -53,8 +54,12 @@ function RocketGrid({
     const headerText = React.useMemo(() => {
         if (!boosterRowLocked) return 'Rocket Assembly';
         if (rocketComplete) return 'Ready to Attempt Launch';
+        if (gameMode === 'adventure') {
+            const dest = GameLogic.getAdventureDestination(grid, boosterRowLocked);
+            return dest ? `Mission: ${dest.name}` : 'Mission: ???';
+        }
         return `Mission: ${getPlanetName(rocketHeight)}`;
-    }, [boosterRowLocked, rocketComplete, rocketHeight]);
+    }, [boosterRowLocked, rocketComplete, rocketHeight, grid, gameMode]);
     const boostersPlaced = Object.keys(grid)
         .filter((k) => grid[k] && grid[k].value === 6)
         .map((k) => parseInt(k.split('-')[0]));

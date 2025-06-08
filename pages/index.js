@@ -48,12 +48,18 @@ export default function Home() {
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
     const [rocketGrid, setRocketGrid] = useState({});
     const [firePile, setFirePile] = useState(0);
+    const [lostParts, setLostParts] = useState(0);
     const [currentDice, setCurrentDice] = useState([]);
     const [placedDice, setPlacedDice] = useState([]);
     const [gameHistory, setGameHistory] = useState([]);
     const [rocketHeight, setRocketHeight] = useState(0);
     const [boosterRowLocked, setBoosterRowLocked] = useState(false);
     const [fireDice, setFireDice] = useState([]);
+    const [lostDice, setLostDice] = useState([]);
+    const [unlockedEris, setUnlockedEris] = useState(false);
+    const [unlockedWolf, setUnlockedWolf] = useState(false);
+    const [adventureDestination, setAdventureDestination] = useState(null);
+    const [lastAdventureIndex, setLastAdventureIndex] = useState(-1);
     const [showLaunchHelper, setShowLaunchHelper] = useState(false);
     const [preparingLaunch, setPreparingLaunch] = useState(false);
     const [launchCountdown, setLaunchCountdown] = useState(0);
@@ -99,6 +105,7 @@ export default function Home() {
         Satellite,
     ];
     const [outOfDiceFail, setOutOfDiceFail] = useState(false);
+    const [gameMode, setGameMode] = useState('classic');
 
     // Modal state
     const [modal, setModal] = useState({
@@ -141,6 +148,32 @@ export default function Home() {
                 }
             } catch (err) {
                 console.error('Failed to parse saved player setup', err);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        try {
+            localStorage.setItem(
+                'adventureUnlocks',
+                JSON.stringify({ unlockedEris, unlockedWolf })
+            );
+        } catch (err) {
+            console.error('Failed to save adventure unlocks', err);
+        }
+    }, [unlockedEris, unlockedWolf]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const unlocks = localStorage.getItem('adventureUnlocks');
+        if (unlocks) {
+            try {
+                const parsed = JSON.parse(unlocks);
+                setUnlockedEris(!!parsed.unlockedEris);
+                setUnlockedWolf(!!parsed.unlockedWolf);
+            } catch (err) {
+                console.error('Failed to parse adventure unlocks', err);
             }
         }
     }, []);
@@ -194,6 +227,43 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
+        if (gameMode !== 'adventure') return;
+        const dest = GameLogic.getAdventureDestination(rocketGrid, boosterRowLocked);
+        if (!dest) return;
+        if (dest.index > lastAdventureIndex) {
+            setLastAdventureIndex(dest.index);
+            if (dest.name === 'Uranus') {
+                setPlayers(players.map(p => ({
+                    ...p,
+                    diceCount: p.diceCount + lostDice.filter(d => d.playerId === p.id).length
+                })));
+                setLostParts(0);
+                setLostDice([]);
+            }
+            if (dest.name === 'Makemake') {
+                setUnlockedEris(true);
+            }
+            if (dest.name === 'Eris') {
+                setUnlockedWolf(true);
+                setPlayers(players.map(p => ({ ...p, diceCount: p.diceCount + 6 })));
+            }
+            if (typeof window !== 'undefined') {
+                try {
+                    localStorage.setItem(
+                        'adventureUnlocks',
+                        JSON.stringify({
+                            unlockedEris: dest.name === 'Makemake' || unlockedEris,
+                            unlockedWolf: dest.name === 'Eris' || unlockedWolf
+                        })
+                    );
+                } catch (err) {
+                    console.error('Failed to save adventure unlocks', err);
+                }
+            }
+        }
+    }, [rocketGrid, boosterRowLocked, gameMode, lastAdventureIndex, players, lostDice, unlockedEris, unlockedWolf]);
+
+    useEffect(() => {
         if (!isHydrated) return;
         
         if (welcomeAnim) {
@@ -205,7 +275,7 @@ export default function Home() {
         }
     }, [welcomeAnim, isHydrated]);
 
-    const startGame = (playerData) => {
+    const startGame = (playerData, mode = 'classic') => {
         // Store original player setup for future resets
         setOriginalPlayerSetup(playerData.map(player => ({
             ...player,
@@ -221,6 +291,9 @@ export default function Home() {
             }
         }
 
+        setGameMode(mode);
+        setAdventureDestination(null);
+        setLastAdventureIndex(-1);
         setPlayers(playerData);
         setCurrentPlayerIndex(0);
         setOutOfDiceFail(false);
@@ -303,6 +376,10 @@ export default function Home() {
     };
 
     const sendToFire = (die) => {
+        if (gameMode === 'adventure') {
+            sendToLost(die);
+            return;
+        }
         const updatedDice = currentDice.map((d) =>
             d.id === die.id ? { ...d, placed: true } : d,
         );
@@ -312,7 +389,7 @@ export default function Home() {
         setFireDice((prevFireDice) => [...prevFireDice, die]);
         setFireFlash(true);
         setTimeout(() => setFireFlash(false), 900);
-        if (newFirePile >= 5) {
+        if (gameMode === 'classic' && newFirePile >= 5) {
             setOutOfDiceFail(false);
             setGameState('results');
             return;
@@ -323,6 +400,25 @@ export default function Home() {
                 action: 'fire',
                 die,
                 previousFirePile: firePile,
+            },
+        ]);
+    };
+
+    const sendToLost = (die) => {
+        const updatedDice = currentDice.map((d) =>
+            d.id === die.id ? { ...d, placed: true } : d,
+        );
+        setCurrentDice(updatedDice);
+        setLostParts((parts) => parts + 1);
+        setLostDice((prev) => [...prev, die]);
+        setFireFlash(true);
+        setTimeout(() => setFireFlash(false), 900);
+        setGameHistory([
+            ...gameHistory,
+            {
+                action: 'lost',
+                die,
+                previousLostParts: lostParts,
             },
         ]);
     };
@@ -346,6 +442,13 @@ export default function Home() {
             );
             setCurrentDice(updatedDice);
             setFireDice(fireDice.filter((d) => d.id !== lastAction.die.id));
+        } else if (lastAction.action === 'lost') {
+            setLostParts(lastAction.previousLostParts);
+            const updatedDice = currentDice.map((d) =>
+                d.id === lastAction.die.id ? { ...d, placed: false } : d,
+            );
+            setCurrentDice(updatedDice);
+            setLostDice(lostDice.filter((d) => d.id !== lastAction.die.id));
         }
         setGameHistory(gameHistory.slice(0, -1));
     };
@@ -369,7 +472,7 @@ export default function Home() {
             return player;
         });
         setPlayers(updatedPlayers);
-        if (firePile >= 5) {
+        if (gameMode === 'classic' && firePile >= 5) {
             setOutOfDiceFail(false);
             setGameState('results');
             return;
@@ -409,6 +512,46 @@ export default function Home() {
     };
 
     const checkVictoryConditions = () => {
+        if (gameMode === 'adventure') {
+            const dest = GameLogic.getAdventureDestination(
+                rocketGrid,
+                boosterRowLocked,
+            );
+            if (dest) {
+                setAdventureDestination(dest);
+                setLastAdventureIndex(dest.index);
+                if (dest.name === 'Makemake') {
+                    setUnlockedEris(true);
+                }
+                if (dest.name === 'Eris') {
+                    setUnlockedWolf(true);
+                }
+                if (dest.name === 'Uranus') {
+                    // restore lost parts
+                    setPlayers(players.map(p => ({ ...p, diceCount: p.diceCount + lostDice.filter(d => d.playerId === p.id).length })));
+                    setLostParts(0);
+                    setLostDice([]);
+                }
+                // persist unlocks
+                if (typeof window !== 'undefined') {
+                    try {
+                        localStorage.setItem(
+                            'adventureUnlocks',
+                            JSON.stringify({ unlockedEris: dest.name === 'Makemake' || unlockedEris, unlockedWolf: dest.name === 'Eris' || unlockedWolf })
+                        );
+                    } catch (err) {
+                        console.error('Failed to save adventure unlocks', err);
+                    }
+                }
+                setOutOfDiceFail(false);
+                setGameState('results');
+            } else {
+                setOutOfDiceFail(true);
+                setGameState('results');
+            }
+            return;
+        }
+
         const victoryLevel = GameLogic.calculateVictoryLevel(
             rocketGrid,
             rocketHeight,
@@ -497,8 +640,13 @@ export default function Home() {
                     const newGrid = { ...rocketGrid };
                     boosters.forEach(([pos], i) => {
                         if (i === 0) {
-                            setFireDice((fireDice) => [...fireDice, rocketGrid[pos]]);
-                            setFirePile((pile) => pile + 1);
+                            if (gameMode === 'adventure') {
+                                setLostDice((d) => [...d, rocketGrid[pos]]);
+                                setLostParts((p) => p + 1);
+                            } else {
+                                setFireDice((fireDice) => [...fireDice, rocketGrid[pos]]);
+                                setFirePile((pile) => pile + 1);
+                            }
                         }
                         newGrid[pos] = null;
                     });
@@ -510,11 +658,11 @@ export default function Home() {
                         'The fate of your rocket hangs in the balance...',
                         { boosterRolls, success: false }
                     );
-                    if (firePile + 1 >= 5) {
+                    if (gameMode === 'classic' && firePile + 1 >= 5) {
                         setTimeout(() => {
                             setGameState('results');
                         }, 3000);
-                }
+                    }
                 }
             }
         }, 1000);
@@ -526,12 +674,14 @@ export default function Home() {
         setCurrentPlayerIndex(0);
         setRocketGrid({});
         setFirePile(0);
+        setLostParts(0);
         setCurrentDice([]);
         setPlacedDice([]);
         setGameHistory([]);
         setRocketHeight(0);
         setBoosterRowLocked(false);
         setFireDice([]);
+        setLostDice([]);
         setSelectedDie(null);
         setShowLaunchHelper(false);
         setHighlightSlot(null);
@@ -540,7 +690,8 @@ export default function Home() {
         setPlacementEffect(null);
         setLaunchCountdown(0);
         setOutOfDiceFail(false);
-        setWelcomeAnim(false); 
+        setWelcomeAnim(false);
+        setLastAdventureIndex(-1);
     
         // Close any open modals
         closeModal();
@@ -601,7 +752,11 @@ export default function Home() {
     const sendSelectedToFire = () => {
         if (!selectedDie) return false;
 
-        sendToFire(selectedDie);
+        if (gameMode === 'adventure') {
+            sendToLost(selectedDie);
+        } else {
+            sendToFire(selectedDie);
+        }
         setSelectedDie(null); // Clear selection after sending to fire
         return true;
     };
@@ -1014,7 +1169,11 @@ export default function Home() {
                                                 'text/plain',
                                             ),
                                         );
-                                        sendToFire(dieData);
+                                        if (gameMode === 'adventure') {
+                                            sendToLost(dieData);
+                                        } else {
+                                            sendToFire(dieData);
+                                        }
                                     } catch (error) {
                                         console.error(
                                             'Error dropping die to fire:',
@@ -1024,9 +1183,9 @@ export default function Home() {
                                 }}
                                 onClick={sendSelectedToFire}
                             >
-                                <span className="fire-label">Fire:</span>
+                                <span className="fire-label">{gameMode === 'adventure' ? 'Lost:' : 'Fire:'}</span>
                                 <div className="fire-dice-container">
-                                    {fireDice.map((die, index) => (
+                                    {(gameMode === 'adventure' ? lostDice : fireDice).map((die, index) => (
                                         <div
                                             key={die.id}
                                             className={`fire-flame fire-flame-${index + 1}`}
@@ -1037,7 +1196,7 @@ export default function Home() {
                                             />
                                         </div>
                                     ))}
-                                    {Array.from(
+                                    {gameMode === 'classic' && Array.from(
                                         { length: 5 - firePile },
                                         (_, i) => (
                                             <div
@@ -1067,6 +1226,7 @@ export default function Home() {
                                     showBoosterAnimation={showBoosterAnim}
                                     placementEffect={placementEffect}
                                     preparingLaunch={preparingLaunch}
+                                    gameMode={gameMode}
                                 />
                             </div>
 
@@ -1080,6 +1240,7 @@ export default function Home() {
                                 rocketGrid={rocketGrid}
                                 rocketHeight={rocketHeight}
                                 boosterRowLocked={boosterRowLocked}
+                                adventure={gameMode === 'adventure'}
                             />
 
                             <div className="game-controls">
@@ -1106,8 +1267,11 @@ export default function Home() {
                 <GameResults
                     rocketGrid={rocketGrid}
                     firePile={firePile}
+                    lostParts={lostParts}
                     boosterRowLocked={boosterRowLocked}
                     outOfDiceFail={outOfDiceFail}
+                    gameMode={gameMode}
+                    adventureDestination={adventureDestination}
                     onRestart={resetGamePreservingSetup}
                 />
             )}
