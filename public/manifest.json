@@ -4,8 +4,8 @@
   "description": "A collaborative dice-building game where players work together to assemble rockets and reach for the stars",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#1a1a2e",
+  "background_color": "#075056",
+  "theme_color": "#075056",
   "icons": [
     {
       "src": "/icon-192.png",

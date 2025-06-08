@@ -185,7 +185,7 @@ function GameResults({
                     <Button
                         size="lg"
                         onClick={onRestart}
-                        className="w-full text-base font-semibold bg-black hover:bg-gray-800 dark:bg-black dark:hover:bg-gray-800 text-white"
+                        className="w-full text-base font-semibold bg-[#075056] hover:bg-[#054547] dark:bg-[#075056] dark:hover:bg-[#054547] text-white"
                     >
                         Try Another Wild Launch! <Rocket className="ml-2 h-4 w-4" />
                     </Button>

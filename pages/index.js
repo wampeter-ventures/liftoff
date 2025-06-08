@@ -733,8 +733,8 @@ export default function Home() {
             {showLaunchHelper && (
                 <div
                     style={{
-                        background: '#fff9cd',
-                        border: '2px solid #f4d35e',
+                        background: '#FDF6E3',
+                        border: '2px solid #F4D47C',
                         padding: '16px 20px',
                         borderRadius: '12px',
                         position: 'absolute',
@@ -839,14 +839,14 @@ export default function Home() {
                                 {/* Flame */}
                                 <path
                                     d="M45 80 L47 92 L50 87 L53 92 L55 80"
-                                    stroke="#FFA500"
+                                    stroke="#FF5B04"
                                     strokeWidth="2.5"
                                     fill="none"
                                     className="animate-pulse"
                                 />
                                 <path
                                     d="M47 85 L48 90 L50 88 L52 90 L53 85"
-                                    stroke="#FF6B35"
+                                    stroke="#F4D47C"
                                     strokeWidth="2"
                                     fill="none"
                                     className="animate-pulse"
@@ -879,11 +879,11 @@ export default function Home() {
                         <button
                             className="btn btn-primary btn-large mb-6 text-white border-none transition-all duration-300"
                             style={{
-                                backgroundColor: '#f97316',
+                                backgroundColor: '#FF5B04',
                                 border: 'none'
                             }}
-                            onMouseEnter={(e) => e.target.style.backgroundColor = '#db7127'}
-                            onMouseLeave={(e) => e.target.style.backgroundColor = '#f97316'}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#d84e00'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = '#FF5B04'}
                             onClick={() => {
                                 setWelcomeAnim(true);
                             }}
@@ -902,7 +902,7 @@ export default function Home() {
             )}
 
             {gameState === 'setup' && (
-                <div className="fixed inset-0 bg-black">
+                <div className="fixed inset-0" style={{ backgroundColor: '#075056' }}>
                     <StarryBackground />
                     <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
                         <GameSetup
