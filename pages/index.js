@@ -1064,7 +1064,6 @@ export default function Home() {
                                     onPlaceSelectedDie={placeSelectedDie}
                                     onCanLaunch={canLaunch}
                                     onAttemptLaunch={attemptLaunch}
-                                    onSetShowLaunchHelper={setShowLaunchHelper}
                                     highlightSlot={highlightSlot}
                                     showBoosterAnimation={showBoosterAnim}
                                     placementEffect={placementEffect}
@@ -1085,18 +1084,25 @@ export default function Home() {
                             />
 
                             <div className="game-controls">
-                                <button
-                                    onClick={undoLastMove}
-                                    disabled={gameHistory.length === 0}
-                                    className="btn btn-secondary"
-                                >
-                                    Undo
-                                </button>
+                                {boosterRowLocked && !preparingLaunch && (
+                                    <button
+                                        className={`btn btn-launch ${!canLaunch() ? 'btn-disabled' : 'btn-primary'}`}
+                                        onClick={() => {
+                                            if (canLaunch()) {
+                                                attemptLaunch();
+                                            } else {
+                                                setShowLaunchHelper(true);
+                                            }
+                                        }}
+                                    >
+                                        Launch
+                                    </button>
+                                )}
                                 <button
                                     onClick={nextPlayer}
                                     className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? 'btn-next-disabled' : ''}`}
                                 >
-                                    Next Player →
+                                    Next →
                                 </button>
                             </div>
                         </div>
