@@ -25,11 +25,11 @@ function IntroSequence({ onComplete, stars }) {
         
         // Generate planets with rotation and movement
         const planetTypes = [
-            { emoji: '🪐', color: '#FFA500' }, // Saturn
-            { emoji: '🌍', color: '#4169E1' }, // Earth
-            { emoji: '🔴', color: '#FF4500' }, // Mars
-            { emoji: '🌕', color: '#C0C0C0' }, // Moon
-            { emoji: '☄️', color: '#FFD700' }  // Comet
+            { emoji: '🪐', color: '#F4D47C' }, // Saturn
+            { emoji: '🌍', color: '#075056' }, // Earth
+            { emoji: '🔴', color: '#FF5B04' }, // Mars
+            { emoji: '🌕', color: '#D3DBDD' }, // Moon
+            { emoji: '☄️', color: '#FDF6E3' }  // Comet
         ];
         
         for (let i = 0; i < 8; i++) {
@@ -75,7 +75,7 @@ function IntroSequence({ onComplete, stars }) {
                     size: 15 + Math.random() * 20,
                     speed: 1.5 + Math.random() * 2.5,
                     rotationSpeed: 5 + Math.random() * 15,
-                    color: ['#FFD700', '#FFA500', '#FF6B35', '#4169E1', '#32CD32'][Math.floor(Math.random() * 5)]
+                    color: ['#F4D47C', '#FF5B04', '#075056', '#233038', '#D3DBDD'][Math.floor(Math.random() * 5)]
                 });
             }
         }
@@ -113,11 +113,11 @@ function IntroSequence({ onComplete, stars }) {
                         });
                     } else if (type === 'planet') {
                         const planetTypes = [
-                            { emoji: '🪐', color: '#FFA500' },
-                            { emoji: '🌍', color: '#4169E1' },
-                            { emoji: '🔴', color: '#FF4500' },
-                            { emoji: '🌕', color: '#C0C0C0' },
-                            { emoji: '☄️', color: '#FFD700' }
+                            { emoji: '🪐', color: '#F4D47C' },
+                            { emoji: '🌍', color: '#075056' },
+                            { emoji: '🔴', color: '#FF5B04' },
+                            { emoji: '🌕', color: '#D3DBDD' },
+                            { emoji: '☄️', color: '#FDF6E3' }
                         ];
                         const planet = planetTypes[Math.floor(Math.random() * planetTypes.length)];
                         updatedElements.push({
@@ -154,7 +154,7 @@ function IntroSequence({ onComplete, stars }) {
                             size: 15 + Math.random() * 20,
                             speed: 1.5 + Math.random() * 2.5,
                             rotationSpeed: 5 + Math.random() * 15,
-                            color: ['#FFD700', '#FFA500', '#FF6B35', '#4169E1', '#32CD32'][Math.floor(Math.random() * 5)]
+                            color: ['#F4D47C', '#FF5B04', '#075056', '#233038', '#D3DBDD'][Math.floor(Math.random() * 5)]
                         });
                     }
                 }

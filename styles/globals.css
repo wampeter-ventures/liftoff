@@ -10,48 +10,48 @@
 /* Shadcn/UI CSS Variables */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --background: 43.8 86.7% 94.1%; /* #FDF6E3 */
+    --foreground: 202.9 23.1% 17.8%; /* #233038 */
+    --card: 43.8 86.7% 94.1%;
+    --card-foreground: 202.9 23.1% 17.8%;
+    --popover: 43.8 86.7% 94.1%;
+    --popover-foreground: 202.9 23.1% 17.8%;
+    --primary: 20.8 100% 50.8%; /* #FF5B04 */
+    --primary-foreground: 43.8 86.7% 94.1%;
+    --secondary: 184.6 84.9% 18.2%; /* #075056 */
+    --secondary-foreground: 43.8 86.7% 94.1%;
+    --muted: 192 12.8% 84.7%; /* #D3DBDD */
+    --muted-foreground: 202.9 23.1% 17.8%;
+    --accent: 44 84.5% 72.2%; /* #F4D47C */
+    --accent-foreground: 202.9 23.1% 17.8%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --destructive-foreground: 43.8 86.7% 94.1%;
+    --border: 192 12.8% 84.7%;
+    --input: 192 12.8% 84.7%;
+    --ring: 20.8 100% 50.8%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 210 20% 98%;
-    --primary-foreground: 220.9 39.3% 11%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
+    --background: 202.9 23.1% 17.8%; /* #233038 */
+    --foreground: 43.8 86.7% 94.1%; /* #FDF6E3 */
+    --card: 202.9 23.1% 17.8%;
+    --card-foreground: 43.8 86.7% 94.1%;
+    --popover: 202.9 23.1% 17.8%;
+    --popover-foreground: 43.8 86.7% 94.1%;
+    --primary: 43.8 86.7% 94.1%;
+    --primary-foreground: 202.9 23.1% 17.8%;
+    --secondary: 184.6 84.9% 18.2%;
+    --secondary-foreground: 43.8 86.7% 94.1%;
+    --muted: 192 12.8% 84.7%;
+    --muted-foreground: 202.9 23.1% 17.8%;
+    --accent: 44 84.5% 72.2%;
+    --accent-foreground: 202.9 23.1% 17.8%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 216 12.2% 83.9%;
+    --destructive-foreground: 43.8 86.7% 94.1%;
+    --border: 184.6 84.9% 18.2%;
+    --input: 184.6 84.9% 18.2%;
+    --ring: 20.8 100% 50.8%;
   }
 }
 
@@ -113,16 +113,16 @@
 
 /* NYT Games Inspired Design */
 :root {
-    --color-background: #FFFFFF;
-    --color-light-gray: #F2F2F2;
-    --color-mid-gray: #D1D1D1;
-    --color-dark-gray: #1D1D1F;
-    --color-accent-green: #00A676;
-    --color-accent-blue: #0055A5;
-    --color-accent-gold: #FFC72C;
+    --color-background: #FDF6E3;
+    --color-light-gray: #D3DBDD;
+    --color-mid-gray: #D3DBDD;
+    --color-dark-gray: #233038;
+    --color-accent-green: #075056;
+    --color-accent-blue: #FF5B04;
+    --color-accent-gold: #F4D47C;
     --color-fire-red: #C11B17;
-    --color-welcome-bg: #FFA500;
-    --color-welcome-rocket: #FF6B35;
+    --color-welcome-bg: #FF5B04;
+    --color-welcome-rocket: #075056;
 }
 
 * {
@@ -748,7 +748,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #000000;
+    background: var(--color-dark-gray);
     display: flex;
     flex-direction: column;
     align-items: center;
