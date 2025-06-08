@@ -1,9 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Star, Atom, Satellite, Orbit, Radar, Zap, Sparkles, Snowflake } from 'lucide-react';
+import { Star, Atom, Satellite, Orbit, Radar, Zap, Sparkles, Snowflake, Globe as Planet, Disc3 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
 
 function IntroSequence({ onComplete, stars }) {
-    const [phase, setPhase] = useState(1); // 1: rocket fade in, 2: stars fade out, 3: game board transition
+    const [phase, setPhase] = useState(1); // 1: fade in, 2: liftoff, 3: show levels
     const [animatedElements, setAnimatedElements] = useState([]);
+
+    // Hardest at the top, easiest (Mars) at the bottom
+    const levels = [
+        { name: 'Eris', emoji: '⚫' },
+        { name: 'Makemake', emoji: '🍡' },
+        { name: 'Haumea', emoji: '🥚' },
+        { name: 'Pluto', emoji: '🤎' },
+        { name: 'Neptune', Icon: Planet },
+        { name: 'Uranus', emoji: '🔵' },
+        { name: 'Saturn', Icon: Disc3 },
+        { name: 'Jupiter', Icon: Planet },
+        { name: 'Ceres', emoji: '⚪' },
+        { name: 'Mars', Icon: Orbit },
+    ];
 
     // Generate animated background elements
     useEffect(() => {
@@ -168,16 +184,12 @@ function IntroSequence({ onComplete, stars }) {
 
     useEffect(() => {
         const timers = [
-            // Phase 1: Rocket fades in (1s)
-            setTimeout(() => setPhase(2), 1000),
-            // Phase 2: Stars fade out (1s after rocket is visible)
-            setTimeout(() => setPhase(3), 2000),
-            // Phase 3: Transition to game (1s after stars fade)
-            setTimeout(() => onComplete(), 3000)
+            setTimeout(() => setPhase(2), 1000), // start liftoff
+            setTimeout(() => setPhase(3), 2000) // show levels card
         ];
 
         return () => timers.forEach(clearTimeout);
-    }, [onComplete]);
+    }, []);
 
     return (
         <div className="intro-sequence">
@@ -268,7 +280,7 @@ function IntroSequence({ onComplete, stars }) {
             </div>
 
             {/* Rocket Image with vibration */}
-            <div className={`intro-rocket ${phase >= 1 ? 'fade-in' : ''} ${phase >= 3 ? 'fade-to-background' : ''}`}>
+            <div className={`intro-rocket ${phase >= 1 ? 'fade-in' : ''} ${phase >= 2 ? 'liftoff' : ''} ${phase >= 3 ? 'fade-to-background' : ''}`}>
                 <img
                     src="/rocket_big.png"
                     alt="Mission Rocket"
@@ -280,10 +292,36 @@ function IntroSequence({ onComplete, stars }) {
             </div>
 
             {/* Mission text overlay */}
-            <div className={`intro-text ${phase >= 1 ? 'fade-in' : ''} ${phase >= 3 ? 'fade-out' : ''}`}>
+            <div className={`intro-text ${phase >= 1 ? 'fade-in' : ''} ${phase >= 2 ? 'fade-out' : ''}`}>
                 <h2 style={{ animation: 'textPulse 2s ease-in-out infinite' }}>Mission Initialized</h2>
                 <p style={{ animation: 'textGlow 3s ease-in-out infinite' }}>Prepare for Launch</p>
             </div>
+
+            {phase >= 3 && (
+                <div className={`intro-levels-card slide-up`}>
+                    <Card className="w-72 bg-slate-800/80 text-white text-center">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-base font-semibold">Mission Briefing</CardTitle>
+                            <p className="text-xs mt-1">The more boosters we have, the farther we can go.</p>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex flex-col items-center space-y-1 text-sm">
+                                {levels.map((lvl) => (
+                                    <div key={lvl.name} className="flex items-center space-x-1">
+                                        {lvl.Icon ? (
+                                            <lvl.Icon className="h-4 w-4" />
+                                        ) : (
+                                            <span>{lvl.emoji}</span>
+                                        )}
+                                        <span>{lvl.name}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <Button className="mt-3 w-full" onClick={onComplete}>BUILD →</Button>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
         </div>
     );
 }
