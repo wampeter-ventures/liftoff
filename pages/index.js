@@ -68,6 +68,8 @@ export default function Home() {
     const [highlightSlot, setHighlightSlot] = useState(null);
     const [showBoosterAnim, setShowBoosterAnim] = useState(false);
     const [placementEffect, setPlacementEffect] = useState(null); // { pos, Icon }
+    const [wolfLaunchAttempted, setWolfLaunchAttempted] = useState(false);
+    const [wolfOutcome, setWolfOutcome] = useState(null);
 
     const playersContainerRef = useRef(null);
     const playerRefs = useRef([]);
@@ -236,6 +238,35 @@ export default function Home() {
         setOutOfDiceFail(false);
         setGameState('intro');
         rollDiceForCurrentPlayer(playerData);
+    };
+
+    const startWolfLevel = () => {
+        const grid = {};
+        for (let row = 1; row <= 5; row++) {
+            for (let col = 1; col <= row; col++) {
+                grid[`${row}-${col}`] = {
+                    id: `prefill-${row}-${col}`,
+                    value: col,
+                    playerId: 0,
+                    playerName: 'Prefill',
+                    placed: true,
+                };
+            }
+        }
+        for (let col = 1; col <= 6; col++) {
+            grid[`6-${col}`] = null;
+        }
+        setRocketGrid(grid);
+        setRocketHeight(5);
+        setBoosterRowLocked(false);
+        setFirePile(0);
+        setFireDice([]);
+        setPlayers([{ id: 1, name: 'Eris Explorer', diceCount: 6 }]);
+        setCurrentPlayerIndex(0);
+        setWolfLaunchAttempted(false);
+        setWolfOutcome(null);
+        setGameState('wolf');
+        setTimeout(() => rollDiceForCurrentPlayer([{ id: 1, name: 'Eris Explorer', diceCount: 6 }]), 50);
     };
 
     const rollDiceForCurrentPlayer = (playerData = players) => {
@@ -497,9 +528,17 @@ export default function Home() {
                         'The fate of your rocket hangs in the balance...',
                         { boosterRolls, success: true }
                     );
-                    setTimeout(() => {
-                        setGameState('results');
-                    }, 4000);
+                    if (gameState === 'wolf') {
+                        setWolfLaunchAttempted(true);
+                        setWolfOutcome('success');
+                        setTimeout(() => {
+                            setGameState('wolf_results');
+                        }, 4000);
+                    } else {
+                        setTimeout(() => {
+                            setGameState('results');
+                        }, 4000);
+                    }
                 } else {
                     const newGrid = { ...rocketGrid };
                     boosters.forEach(([pos], i) => {
@@ -517,11 +556,17 @@ export default function Home() {
                         'The fate of your rocket hangs in the balance...',
                         { boosterRolls, success: false }
                     );
-                    if (firePile + 1 >= 5) {
+                    if (gameState === 'wolf') {
+                        setWolfLaunchAttempted(true);
+                        setWolfOutcome('fail');
+                        setTimeout(() => {
+                            setGameState('wolf_results');
+                        }, 3000);
+                    } else if (firePile + 1 >= 5) {
                         setTimeout(() => {
                             setGameState('results');
                         }, 3000);
-                }
+                    }
                 }
             }
         }, 1000);
@@ -1110,6 +1155,95 @@ export default function Home() {
                 </>
             )}
 
+            {gameState === 'wolf' && (
+                <div className="fixed inset-0 bg-black text-white">
+                    <StarryBackground />
+                    <div className="relative z-10 pt-4">
+                        {/* Gameplay Help Drawer */}
+                        <HelpDrawer
+                            isOpen={showGameplayHelp}
+                            onOpenChange={setShowGameplayHelp}
+                        />
+                        {launchCountdown > 0 && (
+                            <div className="launch-countdown-overlay">{launchCountdown}</div>
+                        )}
+
+                        <div className="game-container wolf-mode">
+                            <div className="top-status">
+                                <button className="nav-back-inline" onClick={resetGamePreservingSetup}>&lt;</button>
+                                <div className="players-compact-container" ref={playersContainerRef}>
+                                    <div className="players-compact">
+                                        <div className="player-compact current">
+                                            <div className="player-name-short">YOU</div>
+                                            <div className="dice-count-small">{players[0]?.diceCount}🎲</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="nav-back-inline" onClick={() => setShowGameplayHelp(true)} style={{ marginLeft: 'auto' }}>
+                                    <HelpCircle size={18} />
+                                </button>
+                            </div>
+
+                            <div className="game-board">
+                                <div className={`rocket-section ${launchCountdown > 0 ? 'on-top' : ''}`}>
+                                    <RocketGrid
+                                        grid={rocketGrid}
+                                        onDropDie={placeDie}
+                                        rocketHeight={rocketHeight}
+                                        boosterRowLocked={boosterRowLocked}
+                                        currentDice={currentDice}
+                                        selectedDie={selectedDie}
+                                        onPlaceSelectedDie={placeSelectedDie}
+                                        onCanLaunch={canLaunch}
+                                        onAttemptLaunch={attemptLaunch}
+                                        highlightSlot={highlightSlot}
+                                        showBoosterAnimation={showBoosterAnim}
+                                        placementEffect={placementEffect}
+                                        preparingLaunch={preparingLaunch}
+                                    />
+                                </div>
+
+                                <DiceRoll
+                                    dice={currentDice}
+                                    selectedDie={selectedDie}
+                                    onSelectDie={selectDie}
+                                    onDragStart={(e, die) => {}}
+                                    rocketGrid={rocketGrid}
+                                    rocketHeight={rocketHeight}
+                                    boosterRowLocked={boosterRowLocked}
+                                />
+
+                                <div className="game-controls">
+                                    {boosterRowLocked && !preparingLaunch && (
+                                        <button
+                                            className={`btn btn-launch ${!canLaunch() ? 'btn-next-disabled' : 'btn-primary'}`}
+                                            onClick={() => {
+                                                if (!wolfLaunchAttempted && canLaunch()) {
+                                                    attemptLaunch();
+                                                }
+                                            }}
+                                        >
+                                            Launch to Wolf
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {gameState === 'wolf_results' && (
+                <GameResults
+                    rocketGrid={rocketGrid}
+                    firePile={firePile}
+                    boosterRowLocked={boosterRowLocked}
+                    outOfDiceFail={outOfDiceFail}
+                    onRestart={resetGamePreservingSetup}
+                    wolfOutcome={wolfOutcome}
+                />
+            )}
+
             {gameState === 'results' && (
                 <GameResults
                     rocketGrid={rocketGrid}
@@ -1117,6 +1251,7 @@ export default function Home() {
                     boosterRowLocked={boosterRowLocked}
                     outOfDiceFail={outOfDiceFail}
                     onRestart={resetGamePreservingSetup}
+                    onWolfStart={startWolfLevel}
                 />
             )}
         </div>
