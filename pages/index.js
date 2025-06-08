@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import GameLogic from '../lib/gameLogic';
 import DiceRoll from '../components/DiceRoll';
 import RocketGrid from '../components/RocketGrid';
@@ -68,6 +68,9 @@ export default function Home() {
     const [highlightSlot, setHighlightSlot] = useState(null);
     const [showBoosterAnim, setShowBoosterAnim] = useState(false);
     const [placementEffect, setPlacementEffect] = useState(null); // { pos, Icon }
+
+    const playersContainerRef = useRef(null);
+    const playerRefs = useRef([]);
 
     const placementIcons = [
         Atom,
@@ -192,6 +195,13 @@ export default function Home() {
     useEffect(() => {
         setIsHydrated(true);
     }, []);
+
+    useEffect(() => {
+        const target = playerRefs.current[currentPlayerIndex + 1];
+        if (target && playersContainerRef.current) {
+            target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+    }, [currentPlayerIndex]);
 
     useEffect(() => {
         if (!isHydrated) return;
@@ -941,49 +951,44 @@ export default function Home() {
                             >
                                 &lt;
                             </button>
-                            <div className="players-compact-container">
+                            <div className="players-compact-container" ref={playersContainerRef}>
                                 <div className="players-compact">
                                     {(() => {
-                                        // Filter out eliminated players (0 dice)
-                                        const activePlayers = players.filter(player => player.diceCount > 0);
-                                        const activeCurrentIndex = activePlayers.findIndex((_, index) =>
-                                            players.indexOf(activePlayers[index]) === currentPlayerIndex
-                                        );
-
-                                        // Calculate which players to show (center around current player)
-                                        const maxVisible = 5; // Maximum players to show at once
-                                        let startIndex = Math.max(0, activeCurrentIndex - Math.floor(maxVisible / 2));
-                                        const endIndex = Math.min(activePlayers.length, startIndex + maxVisible);
-
-                                        // Adjust if we're near the end
-                                        if (endIndex - startIndex < maxVisible && activePlayers.length > maxVisible) {
-                                            startIndex = Math.max(0, endIndex - maxVisible);
-                                        }
-
-                                        const visiblePlayers = activePlayers.slice(startIndex, endIndex);
-
-                                        return visiblePlayers.map((player, visIndex) => {
-                                            const originalIndex = players.indexOf(player);
-                                            return (
+                                        const totalDice = players.reduce((sum, p) => sum + p.diceCount, 0);
+                                        return [
+                                            (
                                                 <div
-                                                    key={player.name || originalIndex}
+                                                    key="all-dice"
+                                                    ref={(el) => {
+                                                        playerRefs.current[0] = el;
+                                                    }}
+                                                    className="player-compact all-dice"
+                                                >
+                                                    <div className="player-name-short">All</div>
+                                                    <div className="dice-count-small">{totalDice}🎲</div>
+                                                </div>
+                                            ),
+                                            ...players.map((player, index) => (
+                                                <div
+                                                    key={player.name || index}
+                                                    ref={(el) => {
+                                                        playerRefs.current[index + 1] = el;
+                                                    }}
                                                     className={`player-compact ${
-                                                        originalIndex === currentPlayerIndex ? 'current' : ''
-                                                    }`}
+                                                        index === currentPlayerIndex ? 'current' : ''
+                                                    } ${player.diceCount === 0 ? 'eliminated' : ''}`}
                                                 >
                                                     <div className="player-name-short">
                                                         {player.name.startsWith('Player ')
-                                                            ? `P${originalIndex + 1}`
+                                                            ? `P${index + 1}`
                                                             : player.name.length <= 3
                                                               ? player.name
                                                               : player.name.substring(0, 3)}
                                                     </div>
-                                                    <div className="dice-count-small">
-                                                        {player.diceCount}🎲
-                                                    </div>
+                                                    <div className="dice-count-small">{player.diceCount}🎲</div>
                                                 </div>
-                                            );
-                                        });
+                                            ))
+                                        ];
                                     })()}
                                 </div>
                             </div>
