@@ -26,12 +26,20 @@ function RocketGrid({
     const [showInitialGuide, setShowInitialGuide] = useState(true);
     const [showPictureMode, setShowPictureMode] = useState(false);
 
-    const getPlanetName = (height) => {
-        if (height >= 5) return 'Neptune';
+    const getPlanetName = (height, boosters) => {
+        if (height >= 5) {
+            if (boosters >= 6) return 'Eris';
+            if (boosters >= 5) return 'Makemake';
+            if (boosters >= 4) return 'Haumea';
+            if (boosters >= 3) return 'Pluto';
+            if (boosters >= 2) return 'Neptune';
+            if (boosters >= 1) return 'Uranus';
+            return 'Uranus';
+        }
         if (height >= 4) return 'Saturn';
         if (height >= 3) return 'Jupiter';
-        if (height >= 2) return 'Mars';
-        if (height >= 1) return 'Moon';
+        if (height >= 2) return 'Ceres';
+        if (height >= 1) return 'Mars';
         return 'Earth';
     };
 
@@ -50,11 +58,14 @@ function RocketGrid({
         return true;
     }, [grid, boosterRowLocked, rocketHeight]);
 
+    const boosterCount = Object.values(grid).filter((d) => d && d.value === 6).length;
+
     const headerText = React.useMemo(() => {
         if (!boosterRowLocked) return 'Rocket Assembly';
         if (rocketComplete) return 'Ready to Attempt Launch';
-        return `Mission: ${getPlanetName(rocketHeight)}`;
-    }, [boosterRowLocked, rocketComplete, rocketHeight]);
+        return `Mission: ${getPlanetName(rocketHeight, boosterCount)}`;
+    }, [boosterRowLocked, rocketComplete, rocketHeight, boosterCount]);
+
     const boostersPlaced = Object.keys(grid)
         .filter((k) => grid[k] && grid[k].value === 6)
         .map((k) => parseInt(k.split('-')[0]));

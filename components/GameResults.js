@@ -4,7 +4,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Button } from './ui/button';
 import {
   Rocket,
-  Moon,
   Orbit,
   Globe as Planet,
   Disc3,
@@ -40,15 +39,27 @@ function GameResults({
         return false; // This row only contains 6s (booster row)
     });
 
-    // Calculate victory level based on completed BODY rows only: 1=Moon, 2=Mars, 3=Jupiter, 4=Saturn, 5=Neptune
+    // Calculate victory level using body rows and boosters
     const calculateVictoryLevel = () => {
         if (!boosterRowLocked) return 0; // need at least one booster
+
         const bodyRowCount = completedBodyRows.length;
-        if (bodyRowCount >= 5) return 5; // Neptune
+        const boosterCount = Object.values(rocketGrid).filter(
+            (d) => d && d.value === 6,
+        ).length;
+
+        if (bodyRowCount >= 5) {
+            if (boosterCount >= 6) return 10; // Eris
+            if (boosterCount >= 5) return 9; // Makemake
+            if (boosterCount >= 4) return 8; // Haumea
+            if (boosterCount >= 3) return 7; // Pluto
+            if (boosterCount >= 2) return 6; // Neptune
+            return 5; // Uranus
+        }
         if (bodyRowCount >= 4) return 4; // Saturn
         if (bodyRowCount >= 3) return 3; // Jupiter
-        if (bodyRowCount >= 2) return 2; // Mars
-        if (bodyRowCount >= 1) return 1; // Moon
+        if (bodyRowCount >= 2) return 2; // Ceres
+        if (bodyRowCount >= 1) return 1; // Mars
         return 0;
     };
 
@@ -78,16 +89,7 @@ function GameResults({
         }
 
         switch (victoryLevel) {
-            case 1: // Moon (1 row)
-                return {
-                    name: 'TOUCHDOWN ON THE MOON!',
-                    icon: <Moon className="h-16 w-16 sm:h-20 sm:w-20 text-slate-500" />,
-                    description:
-                        'One small step for your rocket, one giant leap for... well, you! You\'ve made it to Earth\'s trusty satellite. Not bad for a rookie!',
-                    bgColor: 'bg-slate-100 dark:bg-slate-700/30',
-                    textColor: 'text-slate-700 dark:text-slate-300',
-                };
-            case 2: // Mars (2 rows)
+            case 1: // Mars (1 row)
                 return {
                     name: 'MARTIAN GETAWAY!',
                     icon: <Orbit className="h-16 w-16 sm:h-20 sm:w-20 text-orange-500" />,
@@ -95,6 +97,15 @@ function GameResults({
                         'You\'ve painted the Red Planet... with your rocket\'s landing gear! A successful mission to Mars. Hope you packed snacks for the little green dudes!',
                     bgColor: 'bg-orange-100 dark:bg-orange-900/30',
                     textColor: 'text-orange-700 dark:text-orange-300',
+                };
+            case 2: // Ceres (2 rows)
+                return {
+                    name: 'CERES STOPOVER!',
+                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-stone-500" />,
+                    description:
+                        'You\'ve made a pit stop at the solar system\'s favorite dwarf planet! Ceres may be small, but hey, at least the parking is free and there\'s plenty of water ice for slushies!',
+                    bgColor: 'bg-stone-100 dark:bg-stone-900/30',
+                    textColor: 'text-stone-700 dark:text-stone-300',
                 };
             case 3: // Jupiter (3 rows)
                 return {
@@ -114,7 +125,16 @@ function GameResults({
                     bgColor: 'bg-amber-100 dark:bg-amber-900/30',
                     textColor: 'text-amber-700 dark:text-amber-300',
                 };
-            case 5: // Neptune (5 rows)
+            case 5: // Uranus (5 rows, 1 booster)
+                return {
+                    name: 'URANUS SIDEWAYS ADVENTURE!',
+                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-teal-500" />,
+                    description:
+                        'You\'ve reached the tilted ice giant! Uranus rolls sideways through space, and now so does your rocket. Hope you didn\'t forget your space dramamine!',
+                    bgColor: 'bg-teal-100 dark:bg-teal-900/30',
+                    textColor: 'text-teal-700 dark:text-teal-300',
+                };
+            case 6: // Neptune (5 rows, 2 boosters)
                 return {
                     name: 'NEPTUNE\'S DEEP BLUE YONDER!',
                     icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-blue-500" />,
@@ -122,6 +142,42 @@ function GameResults({
                         'You\'ve reached the windy, azure giant, Neptune! If you see any tridents, probably best to steer clear. What an epic journey!',
                     bgColor: 'bg-blue-100 dark:bg-blue-900/30',
                     textColor: 'text-blue-700 dark:text-blue-300',
+                };
+            case 7: // Pluto (5 rows, 3 boosters)
+                return {
+                    name: "PLUTO'S DISTANT HELLO!",
+                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-amber-700" />,
+                    description:
+                        "You've made it to everyone's favorite ex-planet! Pluto may have been demoted, but your rocket sure hasn't. That's one heck of a long-distance relationship!",
+                    bgColor: 'bg-amber-100 dark:bg-amber-900/30',
+                    textColor: 'text-amber-700 dark:text-amber-300',
+                };
+            case 8: // Haumea (5 rows, 4 boosters)
+                return {
+                    name: "HAUMEA'S OVAL OFFICE!",
+                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-red-500" />,
+                    description:
+                        "You've reached the rugby ball of space! Haumea spins so fast it's stretched into an egg shape. Your rocket fit right in with all that cosmic stretching!",
+                    bgColor: 'bg-red-100 dark:bg-red-900/30',
+                    textColor: 'text-red-700 dark:text-red-300',
+                };
+            case 9: // Makemake (5 rows, 5 boosters)
+                return {
+                    name: 'MAKEMAKE MASTERY!',
+                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-rose-700" />,
+                    description:
+                        "You've conquered the Easter Island of space! Makemake is as mysterious as its name is fun to say. Make-make-make your way to the ultimate cosmic achievement!",
+                    bgColor: 'bg-rose-100 dark:bg-rose-900/30',
+                    textColor: 'text-rose-700 dark:text-rose-300',
+                };
+            case 10: // Eris (5 rows, 6 boosters)
+                return {
+                    name: 'ERIS: CHAOS CONQUERED!',
+                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-yellow-400" />,
+                    description:
+                        "You've tamed the goddess of chaos herself! Eris caused all that planet reclassification drama, but your rocket just caused the universe to applaud. Ultimate space legend achieved!",
+                    bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
+                    textColor: 'text-yellow-700 dark:text-yellow-300',
                 };
             default: // Victory Level 0 or unhandled
                 return {
