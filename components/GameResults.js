@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import ResultsBackground from './ResultsBackground';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Button } from './ui/button';
+import StatsDrawer from './StatsDrawer';
+import { recordGame } from '../lib/stats';
 import {
   Rocket,
   Orbit,
@@ -11,6 +13,7 @@ import {
   Bomb,
   TrendingUp,
   AlertOctagon,
+  BarChart2,
 } from 'lucide-react';
 import GameLogic from '../lib/gameLogic';
 
@@ -25,6 +28,7 @@ function GameResults({
 }) {
     const { getCompletedRows } = GameLogic;
     const [showWolfHint, setShowWolfHint] = useState(false);
+    const [showStats, setShowStats] = useState(false);
 
     const allCompletedRows = getCompletedRows(rocketGrid);
     const isExplosion = firePile >= 5;
@@ -67,6 +71,41 @@ function GameResults({
     };
 
     const victoryLevel = calculateVictoryLevel();
+
+    useEffect(() => {
+        const planetMap = {
+            1: 'Mars',
+            2: 'Ceres',
+            3: 'Jupiter',
+            4: 'Saturn',
+            5: 'Uranus',
+            6: 'Neptune',
+            7: 'Pluto',
+            8: 'Haumea',
+            9: 'Makemake',
+            10: 'Eris',
+        };
+        let planetName = null;
+        let success = false;
+
+        if (!isExplosion && !outOfDiceFail) {
+            if (wolfOutcome === 'success') {
+                success = true;
+                planetName = 'Wolf 1061';
+            } else if (wolfOutcome === 'fail') {
+                success = true;
+                planetName = 'Eris';
+            } else if (victoryLevel > 0) {
+                success = true;
+                planetName = planetMap[victoryLevel];
+            }
+        }
+
+        if (!(victoryLevel === 10 && onWolfStart && !wolfOutcome)) {
+            recordGame({ success, planetName });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (victoryLevel === 10 && onWolfStart && !wolfOutcome) {
@@ -298,6 +337,7 @@ function GameResults({
                     {!(
                         victoryLevel === 10 && showWolfHint && !wolfOutcome
                     ) && (
+                        <>
                         <Button
                             size="lg"
                             onClick={onRestart}
@@ -306,9 +346,19 @@ function GameResults({
                             Try Another Wild Launch!{' '}
                             <Rocket className="ml-2 h-4 w-4" />
                         </Button>
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            onClick={() => setShowStats(true)}
+                            className="w-full text-base font-semibold"
+                        >
+                            Stats <BarChart2 className="ml-2 h-4 w-4" />
+                        </Button>
+                        </>
                     )}
                 </CardFooter>
             </Card>
+            <StatsDrawer open={showStats} onOpenChange={setShowStats} />
             </div>
         </div>
     );
