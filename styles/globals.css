@@ -198,6 +198,13 @@ body {
     background-color: var(--color-light-gray);
 }
 
+.wolf-mode .nav-back-inline {
+    color: #fff;
+}
+.wolf-mode .nav-back-inline:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 .fire-status {
     display: flex;
     justify-content: center;
@@ -1071,6 +1078,10 @@ body {
     color: #FFFFFF;
 }
 
+.wolf-mode .row-6 .grid-slot:not(.occupied) .required-number {
+    color: #666;
+}
+
 .booster-slot {
     background-color: #555;
     border-color: #555;
@@ -1908,11 +1919,16 @@ body {
 
 .results-background .star,
 .results-background .planet,
-.results-background .fun-icon {
+.results-background .fun-icon,
+.results-background .firework {
     position: absolute;
     animation-name: diagonalDrift;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
+}
+
+.results-background .firework {
+    animation-name: diagonalDrift, spinSlow;
 }
 
 .results-background .star {
@@ -1929,6 +1945,11 @@ body {
 @keyframes diagonalDrift {
     from { transform: translate(0, 0); }
     to { transform: translate(300px, -300px); }
+}
+
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Welcome transition animations */
@@ -1953,4 +1974,95 @@ body {
     40% { transform: translate(2px, 0) rotate(5deg); }
     50% { transform: translateY(0); }
     100% { transform: translateY(-120vh); }
+}
+
+.wolf-mode {
+    background-color: #000;
+    color: #fff;
+    position: relative;
+}
+.wolf-mode .rocket-section-header {
+    color: #fff;
+}
+.wolf-mode .fire-label {
+    color: #fff;
+}
+.wolf-mode .game-controls {
+    background-color: #000;
+}
+
+.wolf-hint {
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+}
+
+.retro-space-text {
+    font-family: "Courier New", "SF Mono", "Monaco", "Menlo", monospace;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.radio-signal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.radio-signal::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 2px solid #facc15;
+    border-radius: 50%;
+    animation: radioPulse 2s infinite;
+}
+
+@keyframes radioPulse {
+    0% {
+        transform: scale(0.2);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.wolf-emoji-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 40;
+    overflow: hidden;
+}
+
+.wolf-emoji-overlay .emoji {
+    position: absolute;
+    animation-name: emojiFly;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.wolf-emoji-overlay .emoji.spin {
+    animation-name: emojiFly, spinSlow;
+}
+
+@keyframes emojiFly {
+    to {
+        top: calc(100vh + 40px);
+        left: -40px;
+    }
 }
