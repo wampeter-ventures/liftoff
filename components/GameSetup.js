@@ -6,6 +6,7 @@ import { Label } from './ui/label';
 import { Card, CardContent, CardFooter } from './ui/card';
 import { Separator } from './ui/separator';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import StatsDrawer from './StatsDrawer';
 import {
   Drawer,
   DrawerClose,
@@ -23,7 +24,7 @@ import {
   Sparkles,
   Bomb,
   HelpCircle,
-  Settings as SettingsIcon,
+  BarChart2,
   BookOpenText,
   Zap,
   Target,
@@ -88,6 +89,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   const [error, setError] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showTldrRules, setShowTldrRules] = useState(false);
+  const [showStatsDrawer, setShowStatsDrawer] = useState(false);
   const [hasLoadedPreservedSetup, setHasLoadedPreservedSetup] = useState(false);
   const { toast } = useToast();
 
@@ -261,9 +263,14 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
             <HelpCircle className="h-5 w-5" />
             <span className="sr-only">How to Play</span>
           </Button>
-          <Button variant="ghost" size="icon" className="text-slate-600 dark:text-slate-400">
-            <SettingsIcon className="h-5 w-5" />
-            <span className="sr-only">Settings</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowStatsDrawer(true)}
+            className="text-slate-600 dark:text-slate-400"
+          >
+            <BarChart2 className="h-5 w-5" />
+            <span className="sr-only">Stats</span>
           </Button>
         </div>
       </div>
@@ -391,6 +398,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
+      <StatsDrawer open={showStatsDrawer} onOpenChange={setShowStatsDrawer} />
     </div>
   );
 }
