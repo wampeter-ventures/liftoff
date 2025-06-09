@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Die from './Die';
 
-function LaunchResults({ boosterRolls, success }) {
+function LaunchResults({ boosterRolls, success, onComplete }) {
     const [isRolling, setIsRolling] = useState(true);
     const [animatedRolls, setAnimatedRolls] = useState([]);
     const [showFinalRolls, setShowFinalRolls] = useState(false);
@@ -18,6 +18,7 @@ function LaunchResults({ boosterRolls, success }) {
             if (index >= boosterRolls.length) {
                 setIsRolling(false);
                 setShowFinalRolls(true);
+                if (onComplete) onComplete();
                 return;
             }
 

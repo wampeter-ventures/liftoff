@@ -66,6 +66,7 @@ export default function Home() {
     const [welcomeAnim, setWelcomeAnim] = useState(false);
     const [isHydrated, setIsHydrated] = useState(false);
     const [showA2HS, setShowA2HS] = useState(false);
+    const [launchResultsComplete, setLaunchResultsComplete] = useState(false);
 
     // Confirmation animation state
     const [fireFlash, setFireFlash] = useState(false);
@@ -136,6 +137,7 @@ export default function Home() {
             message: '',
             data: null
         });
+        setLaunchResultsComplete(false);
     };
 
     // Load any saved player setup from localStorage on mount
@@ -538,11 +540,12 @@ export default function Home() {
                 setPreparingLaunch(false);
                 setLaunchCountdown(0);
                 if (hasSuccessfulBooster) {
+                    setLaunchResultsComplete(false);
                     showModal(
                         'launch',
                         '🎲 CMON SIXES...',
                         'The fate of your rocket hangs in the balance...',
-                        { boosterRolls, success: true }
+                        { boosterRolls, success: true, onComplete: () => setLaunchResultsComplete(true) }
                     );
                     if (gameState === 'wolf') {
                         setWolfLaunchAttempted(true);
@@ -566,11 +569,12 @@ export default function Home() {
                     });
                     setRocketGrid(newGrid);
                     setBoosterRowLocked(false);
+                    setLaunchResultsComplete(false);
                     showModal(
                         'launch',
                         '🎲 CMON SIXES...',
                         'The fate of your rocket hangs in the balance...',
-                        { boosterRolls, success: false }
+                        { boosterRolls, success: false, onComplete: () => setLaunchResultsComplete(true) }
                     );
                     if (gameState === 'wolf') {
                         setWolfLaunchAttempted(true);
@@ -741,11 +745,13 @@ export default function Home() {
                 type={modal.type}
                 title={modal.title}
                 message={modal.message}
+                showOkButton={modal.type !== 'launch' ? true : launchResultsComplete}
             >
                 {modal.data && modal.data.boosterRolls && (
                     <LaunchResults
                         boosterRolls={modal.data.boosterRolls}
                         success={modal.data.success}
+                        onComplete={modal.data.onComplete}
                     />
                 )}
             </GameModal>
