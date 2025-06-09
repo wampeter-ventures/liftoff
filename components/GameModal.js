@@ -91,7 +91,7 @@ function GameModal({ isOpen, onClose, type = 'info', title, message, children, s
                     {children}
                 </div>
 
-                {showOkButton && (
+                {showOkButton && (type !== 'launch' || showFinalRolls) && (
                     <div className="modal-footer">
                         <button
                             className="btn btn-primary modal-ok-btn"

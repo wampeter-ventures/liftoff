@@ -42,6 +42,7 @@ import {
 } from 'lucide-react';
 import Head from 'next/head';
 import LaunchResults from '../components/LaunchResults';
+import AddToHomeScreen from '../components/AddToHomeScreen';
 
 export default function Home() {
     const [gameState, setGameState] = useState('welcome');
@@ -64,6 +65,8 @@ export default function Home() {
     const [showGameplayHelp, setShowGameplayHelp] = useState(false);
     const [welcomeAnim, setWelcomeAnim] = useState(false);
     const [isHydrated, setIsHydrated] = useState(false);
+    const [showA2HS, setShowA2HS] = useState(false);
+    const [launchResultsComplete, setLaunchResultsComplete] = useState(false);
 
     // Confirmation animation state
     const [fireFlash, setFireFlash] = useState(false);
@@ -134,6 +137,7 @@ export default function Home() {
             message: '',
             data: null
         });
+        setLaunchResultsComplete(false);
     };
 
     // Load any saved player setup from localStorage on mount
@@ -149,6 +153,17 @@ export default function Home() {
             } catch (err) {
                 console.error('Failed to parse saved player setup', err);
             }
+        }
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const ua = navigator.userAgent;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const safari = /Safari/i.test(ua) && /iPhone|iPad|iPod/i.test(ua) && !/CriOS/i.test(ua) && !/FxiOS/i.test(ua);
+        const android = /Android/i.test(ua);
+        if (!isStandalone && !localStorage.getItem('a2hsInstalled') && (safari || android)) {
+            setShowA2HS(true);
         }
     }, []);
 
@@ -525,11 +540,12 @@ export default function Home() {
                 setPreparingLaunch(false);
                 setLaunchCountdown(0);
                 if (hasSuccessfulBooster) {
+                    setLaunchResultsComplete(false);
                     showModal(
                         'launch',
                         '🎲 CMON SIXES...',
                         'The fate of your rocket hangs in the balance...',
-                        { boosterRolls, success: true }
+                        { boosterRolls, success: true, onComplete: () => setLaunchResultsComplete(true) }
                     );
                     if (gameState === 'wolf') {
                         setWolfLaunchAttempted(true);
@@ -553,11 +569,12 @@ export default function Home() {
                     });
                     setRocketGrid(newGrid);
                     setBoosterRowLocked(false);
+                    setLaunchResultsComplete(false);
                     showModal(
                         'launch',
                         '🎲 CMON SIXES...',
                         'The fate of your rocket hangs in the balance...',
-                        { boosterRolls, success: false }
+                        { boosterRolls, success: false, onComplete: () => setLaunchResultsComplete(true) }
                     );
                     if (gameState === 'wolf') {
                         setWolfLaunchAttempted(true);
@@ -728,11 +745,13 @@ export default function Home() {
                 type={modal.type}
                 title={modal.title}
                 message={modal.message}
+                showOkButton={modal.type !== 'launch' ? true : launchResultsComplete}
             >
                 {modal.data && modal.data.boosterRolls && (
                     <LaunchResults
                         boosterRolls={modal.data.boosterRolls}
                         success={modal.data.success}
+                        onComplete={modal.data.onComplete}
                     />
                 )}
             </GameModal>
@@ -769,6 +788,7 @@ export default function Home() {
             )}
 
             {gameState === 'welcome' && (
+                <>
                 <div className="welcome-screen">
                     <StarryBackground animateExit={welcomeAnim} />
 
@@ -894,6 +914,7 @@ export default function Home() {
                             onMouseLeave={(e) => e.target.style.backgroundColor = '#f97316'}
                             onClick={() => {
                                 setWelcomeAnim(true);
+                                setShowA2HS(false);
                             }}
                         >
                             Play
@@ -907,6 +928,8 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
+                {showA2HS && <AddToHomeScreen />}
+                </>
             )}
 
             {gameState === 'setup' && (
