@@ -86,13 +86,26 @@ function GameResults({
             10: 'Eris',
         };
         let planetName = null;
-        if (wolfOutcome === 'success') {
-            planetName = 'Wolf 1061';
-        } else if (victoryLevel > 0) {
-            planetName = planetMap[victoryLevel];
+
+      
+        let success = false;
+
+        if (!isExplosion && !outOfDiceFail) {
+            if (wolfOutcome === 'success') {
+                success = true;
+                planetName = 'Wolf 1061';
+            } else if (wolfOutcome === 'fail') {
+                success = true;
+                planetName = 'Eris';
+            } else if (victoryLevel > 0) {
+                success = true;
+                planetName = planetMap[victoryLevel];
+            }
         }
-        const success = planetName !== null;
-        recordGame({ success, planetName });
+
+        if (!(victoryLevel === 10 && onWolfStart && !wolfOutcome)) {
+            recordGame({ success, planetName });
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
