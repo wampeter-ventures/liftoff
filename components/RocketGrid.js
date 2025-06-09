@@ -16,7 +16,8 @@ function RocketGrid({
     highlightSlot,
     showBoosterAnimation,
     placementEffect,
-    preparingLaunch
+    preparingLaunch,
+    wolfMode = false
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
     const [validPositions, setValidPositions] = useState(new Set());
@@ -71,9 +72,10 @@ function RocketGrid({
     }, [grid]);
 
     const headerText = React.useMemo(() => {
+        if (wolfMode) return 'Mission: Wolf-1061';
         if (!boosterRowLocked) return 'Rocket Assembly';
         return `Mission: ${getPlanetName(rocketHeight, boosterCount)}`;
-    }, [boosterRowLocked, rocketHeight, boosterCount]);
+    }, [wolfMode, boosterRowLocked, rocketHeight, boosterCount]);
 
     const boostersPlaced = Object.keys(grid)
         .filter((k) => grid[k] && grid[k].value === 6)
@@ -85,16 +87,20 @@ function RocketGrid({
     useEffect(() => {
         const timer = setTimeout(() => {
             const unplacedDice = currentDice.filter((d) => !d.placed);
-            const positions = new Set();
-            unplacedDice.forEach((die) => {
-                GameLogic.getValidPositions(
-                    die.value,
-                    grid,
-                    rocketHeight,
-                    boosterRowLocked,
-                ).forEach((pos) => positions.add(pos));
-            });
-            setValidPositions(positions);
+            if (unplacedDice.length === 0) {
+                setValidPositions(new Set());
+                setSelectedDieValidPositions(new Set());
+            } else {
+                const positions = new Set();
+                unplacedDice.forEach((die) => {
+                    GameLogic.getValidPositions(
+                        die.value,
+                        grid,
+                        rocketHeight,
+                        boosterRowLocked,
+                    ).forEach((pos) => positions.add(pos));
+                });
+                setValidPositions(positions);
 
             // Also compute valid positions for the selected die specifically
             if (selectedDie && !selectedDie.placed) {
@@ -108,6 +114,7 @@ function RocketGrid({
                 setSelectedDieValidPositions(selectedPositions);
             } else {
                 setSelectedDieValidPositions(new Set());
+            }
             }
 
             // Check if there are any placed dice
