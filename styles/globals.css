@@ -1954,3 +1954,68 @@ body {
     50% { transform: translateY(0); }
     100% { transform: translateY(-120vh); }
 }
+
+.wolf-mode {
+    background-color: #000;
+    color: #fff;
+    position: relative;
+}
+.wolf-mode::before {
+    content: '✨✨🌟';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    pointer-events: none;
+}
+
+.wolf-hint {
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+}
+
+.retro-space-text {
+    font-family: "Courier New", "SF Mono", "Monaco", "Menlo", monospace;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.radio-signal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.radio-signal::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 2px solid #facc15;
+    border-radius: 50%;
+    animation: radioPulse 2s infinite;
+}
+
+@keyframes radioPulse {
+    0% {
+        transform: scale(0.2);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
