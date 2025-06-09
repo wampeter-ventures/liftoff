@@ -332,7 +332,7 @@ function GameResults({
                             onClick={onRestart}
                             className="w-full text-base font-semibold bg-black hover:bg-gray-800 dark:bg-black dark:hover:bg-gray-800 text-white"
                         >
-                            Try Another Wild Launch!{' '}
+                            Back to Base{' '}
                             <Rocket className="ml-2 h-4 w-4" />
                         </Button>
                         <Button
