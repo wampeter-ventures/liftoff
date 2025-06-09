@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ResultsBackground from './ResultsBackground';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Button } from './ui/button';
@@ -20,8 +20,11 @@ function GameResults({
     boosterRowLocked,
     outOfDiceFail = false,
     onRestart,
+    onWolfStart = null,
+    wolfOutcome = null,
 }) {
     const { getCompletedRows } = GameLogic;
+    const [showWolfHint, setShowWolfHint] = useState(false);
 
     const allCompletedRows = getCompletedRows(rocketGrid);
     const isExplosion = firePile >= 5;
@@ -65,7 +68,35 @@ function GameResults({
 
     const victoryLevel = calculateVictoryLevel();
 
+    useEffect(() => {
+        if (victoryLevel === 10 && onWolfStart && !wolfOutcome) {
+            const t = setTimeout(() => setShowWolfHint(true), 500);
+            return () => clearTimeout(t);
+        }
+        return undefined;
+    }, [victoryLevel, onWolfStart, wolfOutcome]);
+
     const getDestinationDetails = () => {
+        if (wolfOutcome) {
+            if (wolfOutcome === 'success') {
+                return {
+                    name: 'WOLF 1061 ACHIEVED!',
+                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-green-400" />,
+                    description:
+                        'Against all odds your bonus boosters roared to life and carried the crew to Wolf 1061. Signs of life glimmer on the horizon!',
+                    bgColor: 'bg-green-100 dark:bg-green-900/30',
+                    textColor: 'text-green-700 dark:text-green-300',
+                };
+            }
+            return {
+                name: 'ERIS VICTORY!',
+                icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-yellow-400" />,
+                description:
+                    'You reached Eris and tried for Wolf 1061, but the boosters fizzled. The crew shelves that dream for another day.',
+                bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
+                textColor: 'text-yellow-700 dark:text-yellow-300',
+            };
+        }
         if (isExplosion) {
             return {
                 name: 'TOTAL KABOOM!',
@@ -237,7 +268,30 @@ function GameResults({
                         </div>
                     </div>
                 </CardContent>
-                <CardFooter className="p-4 sm:p-5 pt-6 sm:pt-8 border-t dark:border-slate-700/50">
+                <CardFooter className="p-4 sm:p-5 pt-6 sm:pt-8 border-t dark:border-slate-700/50 flex flex-col gap-3">
+                    {victoryLevel === 10 && showWolfHint && !wolfOutcome && (
+                        <div className="wolf-hint text-center space-y-2">
+                            <p className="retro-space-text text-sm text-slate-600 dark:text-slate-300">
+                                URGENT: Radio signal detected from the distant planet Wolf-1061, located in the rare Goldilocks Zone.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                                <Button
+                                    size="lg"
+                                    onClick={onWolfStart}
+                                    className="w-full text-base font-semibold bg-black hover:bg-gray-800 dark:bg-black dark:hover:bg-gray-800 text-white"
+                                >
+                                    Explore?
+                                </Button>
+                                <Button
+                                    size="lg"
+                                    onClick={onRestart}
+                                    className="w-full text-base font-semibold bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
+                                >
+                                    Back to Base
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                     <Button
                         size="lg"
                         onClick={onRestart}
