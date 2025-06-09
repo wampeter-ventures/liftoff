@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 import UpdateNotification from '../components/UpdateNotification';
+import AddToHomeScreen from '../components/AddToHomeScreen';
 
 function MyApp({ Component, pageProps }) {
   // Initialize PostHog
@@ -125,6 +126,7 @@ function MyApp({ Component, pageProps }) {
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         </Head>
         <Component {...pageProps} />
+        <AddToHomeScreen />
         <UpdateNotification />
       </>
     </PostHogProvider>
