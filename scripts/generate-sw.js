@@ -53,8 +53,12 @@ self.addEventListener('activate', (event) => {
     }).then(() => {
       // Take control of all pages immediately
       return self.clients.claim();
-    }).then(() => {
+    }).then(async () => {
       console.log('Service Worker activated and claiming clients');
+      const allClients = await self.clients.matchAll({ type: 'window' });
+      for (const client of allClients) {
+        client.postMessage({ type: 'RELOAD_APP' });
+      }
     })
   );
 });
@@ -127,6 +131,9 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  if (event.data && event.data.type === 'CHECK_UPDATE') {
+    self.registration.update();
   }
 });`;
 
