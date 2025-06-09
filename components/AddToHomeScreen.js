@@ -68,7 +68,9 @@ const AddToHomeScreen = () => {
     >
       <div className="flex items-center gap-2">
         <Rocket size={20} className="text-purple-300" />
-        <span className="text-sm">Liftoff is better as an app</span>
+
+        <span className="text-sm">Liftoff is better as an app (including offline mode)</span>
+
       </div>
       <button
         onClick={handleAdd}
