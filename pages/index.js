@@ -36,7 +36,9 @@ import {
     Bug,
     HardHat,
     Telescope,
-    Satellite
+    Satellite,
+    Globe,
+    Moon
 } from 'lucide-react';
 import Head from 'next/head';
 import LaunchResults from '../components/LaunchResults';
@@ -68,6 +70,8 @@ export default function Home() {
     const [highlightSlot, setHighlightSlot] = useState(null);
     const [showBoosterAnim, setShowBoosterAnim] = useState(false);
     const [placementEffect, setPlacementEffect] = useState(null); // { pos, Icon }
+    const [wolfLaunchAttempted, setWolfLaunchAttempted] = useState(false);
+    const [wolfOutcome, setWolfOutcome] = useState(null);
 
     const playersContainerRef = useRef(null);
     const playerRefs = useRef([]);
@@ -236,6 +240,35 @@ export default function Home() {
         setOutOfDiceFail(false);
         setGameState('intro');
         rollDiceForCurrentPlayer(playerData);
+    };
+
+    const startWolfLevel = () => {
+        const grid = {};
+        for (let row = 1; row <= 5; row++) {
+            for (let col = 1; col <= row; col++) {
+                grid[`${row}-${col}`] = {
+                    id: `prefill-${row}-${col}`,
+                    value: col,
+                    playerId: 0,
+                    playerName: 'Prefill',
+                    placed: true,
+                };
+            }
+        }
+        for (let col = 1; col <= 6; col++) {
+            grid[`6-${col}`] = null;
+        }
+        setRocketGrid(grid);
+        setRocketHeight(5);
+        setBoosterRowLocked(false);
+        setFirePile(0);
+        setFireDice([]);
+        setPlayers([{ id: 1, name: 'Eris Explorer', diceCount: 6 }]);
+        setCurrentPlayerIndex(0);
+        setWolfLaunchAttempted(false);
+        setWolfOutcome(null);
+        setGameState('wolf');
+        setTimeout(() => rollDiceForCurrentPlayer([{ id: 1, name: 'Eris Explorer', diceCount: 6 }]), 50);
     };
 
     const rollDiceForCurrentPlayer = (playerData = players) => {
@@ -497,9 +530,17 @@ export default function Home() {
                         'The fate of your rocket hangs in the balance...',
                         { boosterRolls, success: true }
                     );
-                    setTimeout(() => {
-                        setGameState('results');
-                    }, 4000);
+                    if (gameState === 'wolf') {
+                        setWolfLaunchAttempted(true);
+                        setWolfOutcome('success');
+                        setTimeout(() => {
+                            setGameState('wolf_results');
+                        }, 4000);
+                    } else {
+                        setTimeout(() => {
+                            setGameState('results');
+                        }, 4000);
+                    }
                 } else {
                     const newGrid = { ...rocketGrid };
                     boosters.forEach(([pos], i) => {
@@ -517,11 +558,17 @@ export default function Home() {
                         'The fate of your rocket hangs in the balance...',
                         { boosterRolls, success: false }
                     );
-                    if (firePile + 1 >= 5) {
+                    if (gameState === 'wolf') {
+                        setWolfLaunchAttempted(true);
+                        setWolfOutcome('fail');
+                        setTimeout(() => {
+                            setGameState('wolf_results');
+                        }, 3000);
+                    } else if (firePile + 1 >= 5) {
                         setTimeout(() => {
                             setGameState('results');
                         }, 3000);
-                }
+                    }
                 }
             }
         }, 1000);
@@ -646,71 +693,24 @@ export default function Home() {
                 </div>
             ))}
 
-            {/* Custom SVG Planets with rotation */}
-            {/* Saturn */}
-            <div
-                className="absolute top-1/4 left-1/6 animate-spin opacity-30"
-                style={{ animationDuration: '20s' }}
-            >
-                <svg width="40" height="40" viewBox="0 0 40 40" className="text-orange-300">
-                    <circle cx="20" cy="20" r="12" fill="currentColor" />
-                    <ellipse cx="20" cy="20" rx="18" ry="4" fill="none" stroke="currentColor" strokeWidth="2" />
-                    <ellipse cx="20" cy="20" rx="16" ry="3" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-                </svg>
-            </div>
-
-            {/* Earth */}
-            <div
-                className="absolute top-3/4 right-1/4 animate-spin opacity-25"
-                style={{ animationDuration: '25s' }}
-            >
-                <svg width="32" height="32" viewBox="0 0 32 32" className="text-blue-400">
-                    <circle cx="16" cy="16" r="12" fill="currentColor" />
-                    <path d="M8 12 Q12 8 16 12 Q20 8 24 12 Q20 16 16 20 Q12 16 8 12" fill="rgba(34, 197, 94, 0.8)" />
-                    <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-                </svg>
-            </div>
-
-            {/* Mars */}
-            <div
-                className="absolute top-1/2 right-1/6 animate-spin opacity-20"
-                style={{ animationDuration: '30s' }}
-            >
-                <svg width="28" height="28" viewBox="0 0 28 28" className="text-red-400">
-                    <circle cx="14" cy="14" r="10" fill="currentColor" />
-                    <circle cx="10" cy="10" r="2" fill="rgba(139, 69, 19, 0.6)" />
-                    <circle cx="18" cy="16" r="1.5" fill="rgba(139, 69, 19, 0.6)" />
-                    <circle cx="12" cy="18" r="1" fill="rgba(139, 69, 19, 0.6)" />
-                </svg>
-            </div>
-
-            {/* Jupiter */}
-            <div
-                className="absolute top-1/6 right-1/3 animate-spin opacity-15"
-                style={{ animationDuration: '35s' }}
-            >
-                <svg width="45" height="45" viewBox="0 0 45 45" className="text-yellow-500">
-                    <circle cx="22.5" cy="22.5" r="18" fill="currentColor" />
-                    <ellipse cx="22.5" cy="18" rx="16" ry="2" fill="rgba(255, 165, 0, 0.8)" />
-                    <ellipse cx="22.5" cy="22.5" rx="15" ry="1.5" fill="rgba(255, 140, 0, 0.8)" />
-                    <ellipse cx="22.5" cy="27" rx="14" ry="2" fill="rgba(255, 165, 0, 0.8)" />
-                    <circle cx="18" cy="20" r="1.5" fill="rgba(139, 69, 19, 0.6)" />
-                </svg>
-            </div>
-
-            {/* Moon */}
-            <div
-                className="absolute top-2/3 left-1/3 animate-spin opacity-35"
-                style={{ animationDuration: '15s' }}
-            >
-                <svg width="24" height="24" viewBox="0 0 24 24" className="text-gray-300">
-                    <circle cx="12" cy="12" r="10" fill="currentColor" />
-                    <circle cx="8" cy="8" r="1.5" fill="rgba(156, 163, 175, 0.6)" />
-                    <circle cx="16" cy="10" r="1" fill="rgba(156, 163, 175, 0.6)" />
-                    <circle cx="10" cy="16" r="0.8" fill="rgba(156, 163, 175, 0.6)" />
-                    <circle cx="14" cy="16" r="1.2" fill="rgba(156, 163, 175, 0.6)" />
-                </svg>
-            </div>
+            {/* Lucide planets */}
+            {[
+                { Icon: Orbit, size: 32, duration: 20, className: 'text-orange-300', style: { top: '25%', left: '16%' } },
+                { Icon: Globe, size: 28, duration: 25, className: 'text-blue-400', style: { top: '75%', right: '25%' } },
+                { Icon: Satellite, size: 24, duration: 30, className: 'text-red-400', style: { top: '50%', right: '16%' } },
+                { Icon: Moon, size: 20, duration: 15, className: 'text-gray-300', style: { top: '66%', left: '33%' } },
+            ].map(({ Icon, size, duration, className, style }, i) => (
+                <div
+                    key={`planet-${i}`}
+                    className={`absolute animate-spin opacity-30 ${className}`}
+                    style={{
+                        animationDuration: `${duration}s`,
+                        ...style,
+                    }}
+                >
+                    <Icon size={size} />
+                </div>
+            ))}
         </div>
     );
 
@@ -1068,6 +1068,7 @@ export default function Home() {
                                     showBoosterAnimation={showBoosterAnim}
                                     placementEffect={placementEffect}
                                     preparingLaunch={preparingLaunch}
+                                    wolfMode={false}
                                 />
                             </div>
 
@@ -1110,6 +1111,136 @@ export default function Home() {
                 </>
             )}
 
+            {gameState === 'wolf' && (
+                <div className="fixed inset-0 bg-black text-white">
+                    <StarryBackground />
+                    <div className="relative z-10 pt-4">
+                        {/* Gameplay Help Drawer */}
+                        <HelpDrawer
+                            isOpen={showGameplayHelp}
+                            onOpenChange={setShowGameplayHelp}
+                        />
+                        {launchCountdown > 0 && (
+                            <div className="launch-countdown-overlay">{launchCountdown}</div>
+                        )}
+
+                        <div className="game-container wolf-mode">
+                            <div className="top-status">
+                                <button className="nav-back-inline" onClick={resetGamePreservingSetup}>&lt;</button>
+                                <div className="players-compact-container" ref={playersContainerRef}>
+                                    <div className="players-compact">
+                                        <div className="player-compact current">
+                                            <div className="player-name-short">YOU</div>
+                                            <div className="dice-count-small">{players[0]?.diceCount}🎲</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="nav-back-inline" onClick={() => setShowGameplayHelp(true)} style={{ marginLeft: 'auto' }}>
+                                    <HelpCircle size={18} />
+                                </button>
+                            </div>
+
+                            <div className="fire-status">
+                                <div
+                                    className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''} ${fireFlash ? 'confirm-fire' : ''}`}
+                                    onDragOver={(e) => {
+                                        e.preventDefault();
+                                        e.dataTransfer.dropEffect = 'move';
+                                    }}
+                                    onDrop={(e) => {
+                                        e.preventDefault();
+                                        try {
+                                            const dieData = JSON.parse(
+                                                e.dataTransfer.getData('text/plain'),
+                                            );
+                                            sendToFire(dieData);
+                                        } catch (error) {
+                                            console.error('Error dropping die to fire:', error);
+                                        }
+                                    }}
+                                    onClick={sendSelectedToFire}
+                                >
+                                    <span className="fire-label">Fire:</span>
+                                    <div className="fire-dice-container">
+                                        {fireDice.map((die, index) => (
+                                            <div key={die.id} className={`fire-flame fire-flame-${index + 1}`}>
+                                                <Flame size={24} className="flame-icon" />
+                                            </div>
+                                        ))}
+                                        {Array.from({ length: 5 - firePile }, (_, i) => (
+                                            <div key={`empty-${i}`} className="fire-slot-empty" />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="game-board">
+                                <div className={`rocket-section ${launchCountdown > 0 ? 'on-top' : ''}`}>
+                                    <RocketGrid
+                                        grid={rocketGrid}
+                                        onDropDie={placeDie}
+                                        rocketHeight={rocketHeight}
+                                        boosterRowLocked={boosterRowLocked}
+                                        currentDice={currentDice}
+                                        selectedDie={selectedDie}
+                                        onPlaceSelectedDie={placeSelectedDie}
+                                        onCanLaunch={canLaunch}
+                                        onAttemptLaunch={attemptLaunch}
+                                        highlightSlot={highlightSlot}
+                                        showBoosterAnimation={showBoosterAnim}
+                                        placementEffect={placementEffect}
+                                        preparingLaunch={preparingLaunch}
+                                        wolfMode={true}
+                                    />
+                                </div>
+
+                                <DiceRoll
+                                    dice={currentDice}
+                                    selectedDie={selectedDie}
+                                    onSelectDie={selectDie}
+                                    onDragStart={(e, die) => {}}
+                                    rocketGrid={rocketGrid}
+                                    rocketHeight={rocketHeight}
+                                    boosterRowLocked={boosterRowLocked}
+                                />
+
+                                <div className="game-controls">
+                                    {boosterRowLocked && !preparingLaunch && (
+                                        <button
+                                            className={`btn btn-launch ${!canLaunch() ? 'btn-next-disabled' : 'btn-primary'}`}
+                                            onClick={() => {
+                                                if (!wolfLaunchAttempted && canLaunch()) {
+                                                    attemptLaunch();
+                                                }
+                                            }}
+                                        >
+                                            Launch to Wolf
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={nextPlayer}
+                                        className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? 'btn-next-disabled' : ''}`}
+                                    >
+                                        Next →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {gameState === 'wolf_results' && (
+                <GameResults
+                    rocketGrid={rocketGrid}
+                    firePile={firePile}
+                    boosterRowLocked={boosterRowLocked}
+                    outOfDiceFail={outOfDiceFail}
+                    onRestart={resetGamePreservingSetup}
+                    wolfOutcome={wolfOutcome}
+                />
+            )}
+
             {gameState === 'results' && (
                 <GameResults
                     rocketGrid={rocketGrid}
@@ -1117,6 +1248,7 @@ export default function Home() {
                     boosterRowLocked={boosterRowLocked}
                     outOfDiceFail={outOfDiceFail}
                     onRestart={resetGamePreservingSetup}
+                    onWolfStart={startWolfLevel}
                 />
             )}
         </div>

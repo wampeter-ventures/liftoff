@@ -16,7 +16,8 @@ function RocketGrid({
     highlightSlot,
     showBoosterAnimation,
     placementEffect,
-    preparingLaunch
+    preparingLaunch,
+    wolfMode = false
 }) {
     const [dragOverPosition, setDragOverPosition] = useState(null);
     const [validPositions, setValidPositions] = useState(new Set());
@@ -72,8 +73,9 @@ function RocketGrid({
 
     const headerText = React.useMemo(() => {
         if (!boosterRowLocked) return 'Rocket Assembly';
+        if (wolfMode) return 'Mission: Wolf 1061';
         return `Mission: ${getPlanetName(rocketHeight, boosterCount)}`;
-    }, [boosterRowLocked, rocketHeight, boosterCount]);
+    }, [boosterRowLocked, rocketHeight, boosterCount, wolfMode]);
 
     const boostersPlaced = Object.keys(grid)
         .filter((k) => grid[k] && grid[k].value === 6)
