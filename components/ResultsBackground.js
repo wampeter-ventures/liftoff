@@ -42,14 +42,13 @@ function ResultsBackground() {
     },
   ];
 
-  const funIcons = [
-    {
-      id: 'chicken',
-      content: '🐔',
-      size: 24,
-      duration: 55,
-    },
-  ];
+  const animalEmojis = ['🐶', '🦊', '🐵', '🐱', '🐼', '🦁', '🐸'];
+  const funIcons = animalEmojis.map((emoji, i) => ({
+    id: `animal-${i}`,
+    content: emoji,
+    size: 24,
+    duration: 40 + Math.random() * 30,
+  }));
 
   return (
     <div className="results-background pointer-events-none">
