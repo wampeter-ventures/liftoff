@@ -338,7 +338,7 @@ function IntroSequence({ onComplete, stars }) {
                                     </div>
                                 ))}
                             </div>
-                            <Button className="mt-3 w-full bg-white text-black hover:bg-gray-200" onClick={onComplete}>BUILD →</Button>
+                            <Button className="mt-3 w-full bg-white !text-black hover:bg-gray-200" onClick={onComplete}>BUILD →</Button>
                         </CardContent>
                     </Card>
                 </div>
