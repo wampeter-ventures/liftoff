@@ -460,8 +460,8 @@ export const renderDetailedRules = () => (
       </div>
       <p className="text-xs text-slate-500 dark:text-slate-400">
         Build your rocket's magnificent body <strong className="text-green-500">DOWNWARDS</strong>, row by glorious row
-        (all 1s, then all 2s, etc.). Think of it as a reverse skyscraper of pure awesome. The bigger the body, the
-        farther you MIGHT go.
+        (a 1 as the nose, then a body row of 1-2, then 1-2-3, etc.). The bigger the body, the farther you MIGHT go
+        (if your boosters work).
       </p>
     </div>
     <div className="p-2 rounded-md bg-slate-100 dark:bg-slate-600/50">
