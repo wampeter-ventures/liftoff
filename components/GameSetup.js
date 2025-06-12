@@ -485,8 +485,7 @@ export const renderDetailedRules = () => (
           <strong className="text-sky-600 dark:text-sky-300">3. Uh Oh, Space Junk! (Can't Place?):</strong>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             If you can't legally place any dice (sad trombone!), you must sacrifice one poor, innocent die to the
-            dreaded <strong className="text-red-600 dark:text-red-400">"Fire Pile."</strong> It's for the greater
-            good... maybe.
+            dreaded <strong className="text-red-600 dark:text-red-400">"Fire Pile."</strong>
           </p>
 
         </li>
@@ -511,8 +510,7 @@ export const renderDetailedRules = () => (
 
     <div className="p-3 rounded-lg bg-teal-50 dark:bg-teal-900/30">
       <h4 className="font-bold text-lg text-teal-500 dark:text-teal-400 mb-2 flex items-center">
-        <PartyPopper className="inline h-5 w-5 mr-2 flex-shrink-0" /> To Infinity... And Hopefully Not Beyond
-        (Liftoff!):
+        <PartyPopper className="inline h-5 w-5 mr-2 flex-shrink-0" /> LIFTOFF!
       </h4>
       <ul className="space-y-1.5 text-slate-600 dark:text-slate-300">
         <li className="pl-4 relative">
@@ -524,12 +522,11 @@ export const renderDetailedRules = () => (
         <li className="pl-4 relative">
           <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-teal-500 dark:text-teal-400" />
           Roll <em className="font-semibold">ONLY</em> your Booster dice. Nail a 6 on any of them?{' '}
-          <strong className="text-xl text-teal-500">WHOOSH!</strong> You've achieved LIFTOFF! You're a star! (The other
-          players are probably just space dust now, metaphorically speaking).
+          <strong className="text-xl text-teal-500">WHOOSH!</strong> You've achieved LIFTOFF!
         </li>
         <li className="pl-4 relative">
           <ChevronRight className="absolute left-[-4px] top-1 h-4 w-4 text-teal-500 dark:text-teal-400" />
-          The more impressive your rocket (especially that body!), the farther you'll travel. Aim for the stars!
+          The bigger your rocket and the more boosters you have, the farther you'll travel. Can you make it to Wolf-1061? We hear there’s life out there…
         </li>
       </ul>
     </div>
