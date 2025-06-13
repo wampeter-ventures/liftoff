@@ -324,7 +324,7 @@ function IntroSequence({ onComplete, stars }) {
                             <p className="text-xs mt-1">The more boosters we have, the farther we can go.</p>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-sm grid grid-cols-3 gap-x-4 pl-4">
+                            <div className="text-sm grid grid-cols-3 gap-x-6 pl-4">
                                 <div className="font-semibold">Planet</div>
                                 <div className="font-semibold">Rocket Body</div>
                                 <div className="font-semibold">Boosters</div>
