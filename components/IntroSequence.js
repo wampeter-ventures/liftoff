@@ -318,13 +318,13 @@ function IntroSequence({ onComplete, stars }) {
 
             {phase >= 3 && (
                 <div className={`intro-levels-card slide-up`}>
-                    <Card className="w-72 bg-slate-800/80 text-white text-center">
+                    <Card className="w-96 bg-slate-800/80 text-white text-center">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-base font-semibold">Mission Briefing</CardTitle>
                             <p className="text-xs mt-1">The more boosters we have, the farther we can go.</p>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-sm grid grid-cols-3 gap-x-6 pl-4">
+                            <div className="text-sm grid grid-cols-3 gap-x-8 pl-4">
                                 <div className="font-semibold">Planet</div>
                                 <div className="font-semibold">Rocket Body</div>
                                 <div className="font-semibold">Boosters</div>
