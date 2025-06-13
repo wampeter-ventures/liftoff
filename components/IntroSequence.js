@@ -7,7 +7,17 @@ import {
     Radar,
     Zap,
     Sparkles,
-    Snowflake
+    Snowflake,
+    CircleSlash,
+    CircleDashed,
+    CircleDot,
+    Circle,
+    CircleOff,
+    CircleCheck,
+    CircleMinus,
+    CirclePlus,
+    CircleX,
+    CircleArrowDown
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -18,17 +28,16 @@ function IntroSequence({ onComplete, stars }) {
 
     // Mission briefing table for rocket progress
     const levels = [
-        { body: 'Level 1', booster: '1+' },
-        { body: 'Level 2', booster: '1+' },
-        { body: 'Level 3', booster: '1+' },
-        { body: 'Level 4', booster: '1+' },
-        { body: 'Level 5', booster: '1+' },
-        { body: 'Level 5', booster: 'Boosters 1' },
-        { body: 'Level 5', booster: 'Boosters 2' },
-        { body: 'Level 5', booster: 'Boosters 3' },
-        { body: 'Level 5', booster: 'Boosters 4' },
-        { body: 'Level 5', booster: 'Boosters 5' },
-        { body: 'Level 5', booster: 'Boosters 6' },
+        { name: 'Eris', Icon: CircleSlash, body: 'Level 5', booster: '6' },
+        { name: 'Makemake', Icon: CircleDashed, body: 'Level 5', booster: '5' },
+        { name: 'Haumea', Icon: CircleDot, body: 'Level 5', booster: '4' },
+        { name: 'Pluto', Icon: Circle, body: 'Level 5', booster: '3' },
+        { name: 'Neptune', Icon: CircleOff, body: 'Level 5', booster: '2' },
+        { name: 'Uranus', Icon: CircleCheck, body: 'Level 5', booster: '1' },
+        { name: 'Saturn', Icon: CircleMinus, body: 'Level 4', booster: '1+' },
+        { name: 'Jupiter', Icon: CirclePlus, body: 'Level 3', booster: '1+' },
+        { name: 'Ceres', Icon: CircleX, body: 'Level 2', booster: '1+' },
+        { name: 'Mars', Icon: CircleArrowDown, body: 'Level 1', booster: '1+' },
     ];
 
     // Generate animated background elements
@@ -315,11 +324,16 @@ function IntroSequence({ onComplete, stars }) {
                             <p className="text-xs mt-1">The more boosters we have, the farther we can go.</p>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-sm grid grid-cols-2 gap-x-4 pl-4">
+                            <div className="text-sm grid grid-cols-3 gap-x-4 pl-4">
+                                <div className="font-semibold">Planet</div>
                                 <div className="font-semibold">Rocket Body</div>
                                 <div className="font-semibold">Boosters</div>
                                 {levels.map((lvl, idx) => (
                                     <React.Fragment key={idx}>
+                                        <div className="flex items-center space-x-1">
+                                            {lvl.Icon && <lvl.Icon className="h-4 w-4" />}
+                                            <span>{lvl.name}</span>
+                                        </div>
                                         <div>{lvl.body}</div>
                                         <div>{lvl.booster}</div>
                                     </React.Fragment>
