@@ -7,17 +7,7 @@ import {
     Radar,
     Zap,
     Sparkles,
-    Snowflake,
-    CircleSlash,
-    CircleDashed,
-    CircleDot,
-    Circle,
-    CircleOff,
-    CircleCheck,
-    CircleMinus,
-    CirclePlus,
-    CircleX,
-    CircleArrowDown
+    Snowflake
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -26,18 +16,19 @@ function IntroSequence({ onComplete, stars }) {
     const [phase, setPhase] = useState(1); // 1: fade in, 2: liftoff, 3: show levels
     const [animatedElements, setAnimatedElements] = useState([]);
 
-    // Hardest at the top, easiest (Mars) at the bottom
+    // Mission briefing table for rocket progress
     const levels = [
-        { name: 'Eris', Icon: CircleSlash },
-        { name: 'Makemake', Icon: CircleDashed },
-        { name: 'Haumea', Icon: CircleDot },
-        { name: 'Pluto', Icon: Circle },
-        { name: 'Neptune', Icon: CircleOff },
-        { name: 'Uranus', Icon: CircleCheck },
-        { name: 'Saturn', Icon: CircleMinus },
-        { name: 'Jupiter', Icon: CirclePlus },
-        { name: 'Ceres', Icon: CircleX },
-        { name: 'Mars', Icon: CircleArrowDown },
+        { body: 'Level 1', booster: '1+' },
+        { body: 'Level 2', booster: '1+' },
+        { body: 'Level 3', booster: '1+' },
+        { body: 'Level 4', booster: '1+' },
+        { body: 'Level 5', booster: '1+' },
+        { body: 'Level 5', booster: 'Boosters 1' },
+        { body: 'Level 5', booster: 'Boosters 2' },
+        { body: 'Level 5', booster: 'Boosters 3' },
+        { body: 'Level 5', booster: 'Boosters 4' },
+        { body: 'Level 5', booster: 'Boosters 5' },
+        { body: 'Level 5', booster: 'Boosters 6' },
     ];
 
     // Generate animated background elements
@@ -324,18 +315,14 @@ function IntroSequence({ onComplete, stars }) {
                             <p className="text-xs mt-1">The more boosters we have, the farther we can go.</p>
                         </CardHeader>
                         <CardContent>
-                            <div className="flex flex-col items-start space-y-1 text-sm pl-8">
-                                {levels.map((lvl) => (
-                                    <div key={lvl.name} className="flex items-center space-x-2">
-                                        <span className="w-6 text-center">
-                                            {lvl.Icon ? (
-                                                <lvl.Icon className="h-4 w-4" />
-                                            ) : (
-                                                <span className="text-base">{lvl.emoji}</span>
-                                            )}
-                                        </span>
-                                        <span>{lvl.name}</span>
-                                    </div>
+                            <div className="text-sm grid grid-cols-2 gap-x-4 pl-4">
+                                <div className="font-semibold">Rocket Body</div>
+                                <div className="font-semibold">Boosters</div>
+                                {levels.map((lvl, idx) => (
+                                    <React.Fragment key={idx}>
+                                        <div>{lvl.body}</div>
+                                        <div>{lvl.booster}</div>
+                                    </React.Fragment>
                                 ))}
                             </div>
                             <Button className="mt-3 w-full bg-white !text-black hover:bg-gray-200" onClick={onComplete}>BUILD →</Button>
