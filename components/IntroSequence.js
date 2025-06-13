@@ -330,8 +330,10 @@ function IntroSequence({ onComplete, stars }) {
                                 <div className="font-semibold">Boosters</div>
                                 {levels.map((lvl, idx) => (
                                     <React.Fragment key={idx}>
-                                        <div className="flex items-center space-x-1">
-                                            {lvl.Icon && <lvl.Icon className="h-4 w-4" />}
+                                        <div className="flex items-center space-x-2">
+                                            <span className="w-6 text-center">
+                                                <lvl.Icon className="h-4 w-4" />
+                                            </span>
                                             <span>{lvl.name}</span>
                                         </div>
                                         <div>{lvl.body}</div>
