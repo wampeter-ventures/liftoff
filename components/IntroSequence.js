@@ -26,18 +26,18 @@ function IntroSequence({ onComplete, stars }) {
     const [phase, setPhase] = useState(1); // 1: fade in, 2: liftoff, 3: show levels
     const [animatedElements, setAnimatedElements] = useState([]);
 
-    // Hardest at the top, easiest (Mars) at the bottom
+    // Mission briefing table for rocket progress
     const levels = [
-        { name: 'Eris', Icon: CircleSlash },
-        { name: 'Makemake', Icon: CircleDashed },
-        { name: 'Haumea', Icon: CircleDot },
-        { name: 'Pluto', Icon: Circle },
-        { name: 'Neptune', Icon: CircleOff },
-        { name: 'Uranus', Icon: CircleCheck },
-        { name: 'Saturn', Icon: CircleMinus },
-        { name: 'Jupiter', Icon: CirclePlus },
-        { name: 'Ceres', Icon: CircleX },
-        { name: 'Mars', Icon: CircleArrowDown },
+        { name: 'Eris', Icon: CircleSlash, body: 'Level 5', booster: '6' },
+        { name: 'Makemake', Icon: CircleDashed, body: 'Level 5', booster: '5' },
+        { name: 'Haumea', Icon: CircleDot, body: 'Level 5', booster: '4' },
+        { name: 'Pluto', Icon: Circle, body: 'Level 5', booster: '3' },
+        { name: 'Neptune', Icon: CircleOff, body: 'Level 5', booster: '2' },
+        { name: 'Uranus', Icon: CircleCheck, body: 'Level 5', booster: '1' },
+        { name: 'Saturn', Icon: CircleMinus, body: 'Level 4', booster: '1+' },
+        { name: 'Jupiter', Icon: CirclePlus, body: 'Level 3', booster: '1+' },
+        { name: 'Ceres', Icon: CircleX, body: 'Level 2', booster: '1+' },
+        { name: 'Mars', Icon: CircleArrowDown, body: 'Level 1', booster: '1+' },
     ];
 
     // Generate animated background elements
@@ -318,24 +318,27 @@ function IntroSequence({ onComplete, stars }) {
 
             {phase >= 3 && (
                 <div className={`intro-levels-card slide-up`}>
-                    <Card className="w-72 bg-slate-800/80 text-white text-center">
+                    <Card className="w-96 bg-slate-800/80 text-white text-center">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-base font-semibold">Mission Briefing</CardTitle>
                             <p className="text-xs mt-1">The more boosters we have, the farther we can go.</p>
                         </CardHeader>
                         <CardContent>
-                            <div className="flex flex-col items-start space-y-1 text-sm pl-8">
-                                {levels.map((lvl) => (
-                                    <div key={lvl.name} className="flex items-center space-x-2">
-                                        <span className="w-6 text-center">
-                                            {lvl.Icon ? (
+                            <div className="text-sm grid grid-cols-3 gap-x-8 pl-4">
+                                <div className="font-semibold">Planet</div>
+                                <div className="font-semibold">Rocket Body</div>
+                                <div className="font-semibold">Boosters</div>
+                                {levels.map((lvl, idx) => (
+                                    <React.Fragment key={idx}>
+                                        <div className="flex items-center space-x-2">
+                                            <span className="w-6 text-center">
                                                 <lvl.Icon className="h-4 w-4" />
-                                            ) : (
-                                                <span className="text-base">{lvl.emoji}</span>
-                                            )}
-                                        </span>
-                                        <span>{lvl.name}</span>
-                                    </div>
+                                            </span>
+                                            <span>{lvl.name}</span>
+                                        </div>
+                                        <div>{lvl.body}</div>
+                                        <div>{lvl.booster}</div>
+                                    </React.Fragment>
                                 ))}
                             </div>
                             <Button className="mt-3 w-full bg-white !text-black hover:bg-gray-200" onClick={onComplete}>BUILD →</Button>
