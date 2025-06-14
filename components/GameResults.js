@@ -352,51 +352,7 @@ function GameResults({
                         </div>
                     </CardContent>
                 )}
-                <CardFooter className="p-4 sm:p-5 pt-6 sm:pt-8 border-t dark:border-slate-700/50 flex flex-col gap-3">
-                    {victoryLevel === 10 && showWolfHint && !wolfOutcome && (
-                        <div className="wolf-hint text-center space-y-2">
-                            <p className="retro-space-text text-sm text-slate-600 dark:text-slate-300">
-                                URGENT: Radio signal detected from the distant planet Wolf-1061, located in the rare Goldilocks Zone.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                                <Button
-                                    size="lg"
-                                    onClick={onWolfStart}
-                                    className="w-full text-base font-semibold bg-yellow-500 hover:bg-yellow-600 text-black"
-                                >
-                                    Explore?
-                                </Button>
-                                <Button
-                                    size="lg"
-                                    onClick={onRestart}
-                                    className="w-full text-base font-semibold bg-black hover:bg-gray-800 text-white"
-                                >
-                                    Back to Base
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                    {!wolfOutcome &&
-                        !(victoryLevel === 10 && showWolfHint && !wolfOutcome) && (
-                            <Button
-                                size="lg"
-                                onClick={onRestart}
-                                className="w-full text-base font-semibold bg-black hover:bg-gray-800 dark:bg-black dark:hover:bg-gray-800 text-white"
-                            >
-                                Try Another Wild Launch!{' '}
-                                <Rocket className="ml-2 h-4 w-4" />
-                            </Button>
-                        )}
-                    {wolfOutcome && (
-                        <Button
-                            size="lg"
-                            onClick={onRestart}
-                            className="w-full text-base font-semibold bg-black hover:bg-gray-800 text-white"
-                        >
-                            Back to Base
-                        </Button>
-                    </div>
-                </CardContent>
+                
                 <CardFooter className="p-4 sm:p-5 pt-6 sm:pt-8 border-t dark:border-slate-700/50 flex flex-col gap-3">
                     {victoryLevel === 10 && showWolfHint && !wolfOutcome && (
                         <div className="wolf-hint text-center space-y-2">
