@@ -2016,7 +2016,7 @@ body {
 }
 .wolf-mode .game-controls {
     background-color: #000;
-  
+}
 .wolf-mode::before {
     content: '✨✨🌟';
     position: absolute;
