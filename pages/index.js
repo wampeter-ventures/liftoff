@@ -6,6 +6,7 @@ import GameSetup, { HelpDrawer } from '../components/GameSetup';
 import GameResults from '../components/GameResults';
 import IntroSequence from '../components/IntroSequence';
 import GameModal from '../components/GameModal';
+import WolfEmojiOverlay from '../components/WolfEmojiOverlay';
 import {
     Star,
     Flame,
@@ -71,7 +72,7 @@ export default function Home() {
     // Confirmation animation state
     const [fireFlash, setFireFlash] = useState(false);
     const [highlightSlot, setHighlightSlot] = useState(null);
-    const [showBoosterAnim, setShowBoosterAnim] = useState(false);
+    const [showBoosterAnim, setShowBoosterAnim] = useState('');
     const [placementEffect, setPlacementEffect] = useState(null); // { pos, Icon }
     const [wolfLaunchAttempted, setWolfLaunchAttempted] = useState(false);
     const [wolfOutcome, setWolfOutcome] = useState(null);
@@ -254,7 +255,7 @@ export default function Home() {
         setCurrentPlayerIndex(0);
         setOutOfDiceFail(false);
         setGameState('intro');
-        rollDiceForCurrentPlayer(playerData);
+        rollDiceForCurrentPlayer(playerData, 0);
     };
 
     const startWolfLevel = () => {
@@ -284,12 +285,16 @@ export default function Home() {
         setWolfLaunchAttempted(false);
         setWolfOutcome(null);
         setGameState('wolf');
-        setTimeout(() => rollDiceForCurrentPlayer([{ id: 1, name: 'Eris Explorer', diceCount: 6 }]), 50);
+        setTimeout(
+            () => rollDiceForCurrentPlayer([{ id: 1, name: 'Eris Explorer', diceCount: 6 }], 0),
+            50,
+        );
     };
 
-    const rollDiceForCurrentPlayer = (playerData = players) => {
+    const rollDiceForCurrentPlayer = (playerData = players, index = currentPlayerIndex) => {
+
         if (!playerData || playerData.length === 0) return;
-        const currentPlayer = playerData[currentPlayerIndex];
+        const currentPlayer = playerData[index];
         if (!currentPlayer) return;
         setCurrentDice([]);
         setPlacedDice([]);
@@ -326,9 +331,24 @@ export default function Home() {
 
         if (die.value === 6) {
             setBoosterRowLocked(true);
-            if (!wasBoosterLocked) {
-                setShowBoosterAnim(true);
-                setTimeout(() => setShowBoosterAnim(false), 4000);
+            const boostersAfter = Object.values(newGrid).filter(
+                (d) => d && d.value === 6,
+            ).length;
+            if (gameState === 'wolf') {
+                const messages = [
+                    'SIGNAL DETECTED: Is that a howl? A moo?!',
+                    'SIGNAL DETECTED: Faint whistling\u2014sounds like space karaoke.',
+                    'SIGNAL DETECTED: Message fragment: \u201cBRING MORE CHEESE.\u201d',
+                    'SIGNAL DETECTED: Interference\u2026 is someone practicing knock-knock jokes?',
+                    'SIGNAL DETECTED: Hearing what can only be described as synchronized clapping.',
+                    'SIGNAL LOCKED: Transmission reads, \u201cWELCOME, EARTHLINGS! SNACKS REQUIRED.\u201d',
+                ];
+                const msg = messages[Math.min(boostersAfter, messages.length) - 1];
+                setShowBoosterAnim(msg);
+                setTimeout(() => setShowBoosterAnim(''), 4000);
+            } else if (!wasBoosterLocked) {
+                setShowBoosterAnim('\ud83d\udd0b Boosters Online!');
+                setTimeout(() => setShowBoosterAnim(''), 4000);
             }
         } else {
             const row = parseInt(position.split('-')[0]);
@@ -436,7 +456,7 @@ export default function Home() {
         // SINGLE PLAYER FIX: If only one player, just re-roll their dice for the next turn
         if (players.length === 1) {
             setTimeout(() => {
-                rollDiceForCurrentPlayer(updatedPlayers);
+                rollDiceForCurrentPlayer(updatedPlayers, currentPlayerIndex);
             }, 100);
             return;
         }
@@ -460,7 +480,7 @@ export default function Home() {
         }
         if (nextIndex === currentPlayerIndex) {
             setTimeout(() => {
-                rollDiceForCurrentPlayer(updatedPlayers);
+                rollDiceForCurrentPlayer(updatedPlayers, currentPlayerIndex);
             }, 100);
             return;
         }
@@ -608,7 +628,7 @@ export default function Home() {
         setShowLaunchHelper(false);
         setHighlightSlot(null);
         setFireFlash(false);
-        setShowBoosterAnim(false);
+        setShowBoosterAnim('');
         setPlacementEffect(null);
         setLaunchCountdown(0);
         setOutOfDiceFail(false);
@@ -641,8 +661,6 @@ export default function Home() {
     };
 
     const goToWelcome = () => {
-        console.log('goToWelcome called!');
-        console.trace(); // This will show you exactly what called this function
         clearAllGameState();
         setOriginalPlayerSetup([]);
         setWelcomeAnim(false);
@@ -1138,6 +1156,8 @@ export default function Home() {
             {gameState === 'wolf' && (
                 <div className="fixed inset-0 bg-black text-white">
                     <StarryBackground />
+                    <WolfEmojiOverlay />
+
                     <div className="relative z-10 pt-4">
                         {/* Gameplay Help Drawer */}
                         <HelpDrawer
@@ -1260,6 +1280,7 @@ export default function Home() {
                     firePile={firePile}
                     boosterRowLocked={boosterRowLocked}
                     outOfDiceFail={outOfDiceFail}
+
                     onRestart={resetGamePreservingSetup}
                     wolfOutcome={wolfOutcome}
                 />
@@ -1271,6 +1292,7 @@ export default function Home() {
                     firePile={firePile}
                     boosterRowLocked={boosterRowLocked}
                     outOfDiceFail={outOfDiceFail}
+
                     onRestart={resetGamePreservingSetup}
                     onWolfStart={startWolfLevel}
                 />

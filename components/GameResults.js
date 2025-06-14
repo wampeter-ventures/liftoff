@@ -13,6 +13,9 @@ import {
   Bomb,
   TrendingUp,
   AlertOctagon,
+  Dog,
+  Cat,
+  Ghost,
   BarChart2,
 } from 'lucide-react';
 import GameLogic from '../lib/gameLogic';
@@ -28,6 +31,7 @@ function GameResults({
 }) {
     const { getCompletedRows } = GameLogic;
     const [showWolfHint, setShowWolfHint] = useState(false);
+
     const [showStats, setShowStats] = useState(false);
 
     const allCompletedRows = getCompletedRows(rocketGrid);
@@ -73,6 +77,7 @@ function GameResults({
     const victoryLevel = calculateVictoryLevel();
 
     useEffect(() => {
+
         const planetMap = {
             1: 'Mars',
             2: 'Ceres',
@@ -121,6 +126,39 @@ function GameResults({
         if (wolfOutcome) {
             if (wolfOutcome === 'success') {
                 return {
+                    name: 'LIFE DISCOVERED ON WOLF-1061!',
+                    icon: (
+                        <div className="flex justify-center gap-2">
+                            <Dog className="h-8 w-8 text-green-400" />
+                            <Ghost className="h-8 w-8 text-fuchsia-400" />
+                            <Cat className="h-8 w-8 text-blue-400" />
+                        </div>
+                    ),
+                    description: (
+                        <>
+                            <strong>You did it! You actually did it.</strong>
+                            {" Against all cosmic odds, your rocket punched through the edge of our solar system and landed in the mysterious Wolf 1061 system—13.8 light-years away and just maybe, possibly, PROBABLY crawling with adorable, weird, pizza-loving aliens."}
+                            <br />
+                            <br />
+                            {"But wait. Did you know real astronomers think Wolf 1061c might "}
+                            <em>ACTUALLY</em>
+                            {" have the right conditions for life?"}
+                            <br />👾 {"There could be oceans. There could be alien hamsters. There could be…you, if you build fast enough."}
+                            <br />
+                            <br />
+                            {"Curious? Go down the rabbit hole: "}
+                            <a
+                                href="https://en.wikipedia.org/wiki/Wolf_1061"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline"
+                            >
+                                Could Wolf 1061c Host Life? (Wikipedia)
+                            </a>
+                        </>
+                    ),
+                    bgColor: 'bg-green-100 dark:bg-green-900/30',
+                    textColor: 'text-gray-800 dark:text-gray-200',
                     name: 'WOLF 1061 ACHIEVED!',
                     icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-green-400" />,
                     description:
@@ -286,32 +324,35 @@ function GameResults({
                     </CardDescription>
                 </CardHeader>
 
-                <CardContent className="p-4 sm:p-5 space-y-3 sm:space-y-4 pt-6 sm:pt-8">
-                    <div className="grid grid-cols-2 gap-3 sm:gap-4 text-center">
-                        <div className="p-2 sm:p-3 bg-slate-100 dark:bg-slate-700/50 rounded-md">
-                            <div className="flex items-center justify-center text-sky-600 dark:text-sky-400">
-                                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 mr-1.5" />
-                                <span className="text-xl sm:text-2xl font-bold">{completedBodyRows.length}/5</span>
+                {!wolfOutcome && (
+                    <CardContent className="p-4 sm:p-5 space-y-3 sm:space-y-4 pt-6 sm:pt-8">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4 text-center">
+                            <div className="p-2 sm:p-3 bg-slate-100 dark:bg-slate-700/50 rounded-md">
+                                <div className="flex items-center justify-center text-sky-600 dark:text-sky-400">
+                                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 mr-1.5" />
+                                    <span className="text-xl sm:text-2xl font-bold">{completedBodyRows.length}/5</span>
+                                </div>
+                                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-0.5">Completed Body Rows</p>
                             </div>
-                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-0.5">Completed Body Rows</p>
-                        </div>
-                        <div
-                            className={`p-2 sm:p-3 rounded-md ${isExplosion ? 'bg-red-100 dark:bg-red-700/50' : 'bg-slate-100 dark:bg-slate-700/50'}`}
-                        >
                             <div
-                                className={`flex items-center justify-center ${isExplosion ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}
+                                className={`p-2 sm:p-3 rounded-md ${isExplosion ? 'bg-red-100 dark:bg-red-700/50' : 'bg-slate-100 dark:bg-slate-700/50'}`}
                             >
-                                <AlertOctagon className="h-5 w-5 sm:h-6 sm:w-6 mr-1.5" />
-                                <span className="text-xl sm:text-2xl font-bold">{firePile}</span>
+                                <div
+                                    className={`flex items-center justify-center ${isExplosion ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}
+                                >
+                                    <AlertOctagon className="h-5 w-5 sm:h-6 sm:w-6 mr-1.5" />
+                                    <span className="text-xl sm:text-2xl font-bold">{firePile}</span>
+                                </div>
+                                <p
+                                    className={`text-xs sm:text-sm mt-0.5 ${isExplosion ? 'text-red-600 dark:text-red-300' : 'text-slate-600 dark:text-slate-300'}`}
+                                >
+                                    Dice in Fire!
+                                </p>
                             </div>
-                            <p
-                                className={`text-xs sm:text-sm mt-0.5 ${isExplosion ? 'text-red-600 dark:text-red-300' : 'text-slate-600 dark:text-slate-300'}`}
-                            >
-                                Dice in Fire!
-                            </p>
                         </div>
-                    </div>
-                </CardContent>
+                    </CardContent>
+                )}
+                
                 <CardFooter className="p-4 sm:p-5 pt-6 sm:pt-8 border-t dark:border-slate-700/50 flex flex-col gap-3">
                     {victoryLevel === 10 && showWolfHint && !wolfOutcome && (
                         <div className="wolf-hint text-center space-y-2">

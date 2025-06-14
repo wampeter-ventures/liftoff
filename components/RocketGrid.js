@@ -72,10 +72,12 @@ function RocketGrid({
     }, [grid]);
 
     const headerText = React.useMemo(() => {
+        if (wolfMode) return 'Mission: Wolf-1061';
         if (!boosterRowLocked) return 'Rocket Assembly';
         if (wolfMode) return 'Mission: Wolf 1061';
         return `Mission: ${getPlanetName(rocketHeight, boosterCount)}`;
-    }, [boosterRowLocked, rocketHeight, boosterCount, wolfMode]);
+    }, [wolfMode, boosterRowLocked, rocketHeight, boosterCount]);
+
 
     const boostersPlaced = Object.keys(grid)
         .filter((k) => grid[k] && grid[k].value === 6)
@@ -320,7 +322,7 @@ function RocketGrid({
 
                 {showBoosterAnimation && (
                     <div className="booster-celebration">
-                        🔋 Boosters Online!
+                        {showBoosterAnimation}
                     </div>
                 )}
                 

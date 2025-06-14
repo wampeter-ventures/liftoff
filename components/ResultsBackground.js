@@ -50,6 +50,14 @@ function ResultsBackground() {
     duration: 40 + Math.random() * 30,
   }));
 
+  const fireworks = Array.from({ length: 8 }, (_, i) => ({
+    id: `fw-${i}`,
+    content: Math.random() > 0.5 ? '✩' : '✬',
+    size: 20 + Math.random() * 10,
+    duration: 10 + Math.random() * 10,
+  }));
+
+
   return (
     <div className="results-background pointer-events-none">
       {stars.map((star) => (
@@ -89,6 +97,21 @@ function ResultsBackground() {
         <div
           key={f.id}
           className="fun-icon"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            fontSize: `${f.size}px`,
+            animationDuration: `${f.duration}s`,
+          }}
+        >
+          {f.content}
+        </div>
+      ))}
+
+      {fireworks.map((f) => (
+        <div
+          key={f.id}
+          className="firework"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,

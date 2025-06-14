@@ -198,6 +198,13 @@ body {
     background-color: var(--color-light-gray);
 }
 
+.wolf-mode .nav-back-inline {
+    color: #fff;
+}
+.wolf-mode .nav-back-inline:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 .fire-status {
     display: flex;
     justify-content: center;
@@ -1071,6 +1078,10 @@ body {
     color: #FFFFFF;
 }
 
+.wolf-mode .row-6 .grid-slot:not(.occupied) .required-number {
+    color: #666;
+}
+
 .booster-slot {
     background-color: #555;
     border-color: #555;
@@ -1935,11 +1946,16 @@ body {
 
 .results-background .star,
 .results-background .planet,
-.results-background .fun-icon {
+.results-background .fun-icon,
+.results-background .firework {
     position: absolute;
     animation-name: diagonalDrift;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
+}
+
+.results-background .firework {
+    animation-name: diagonalDrift, spinSlow;
 }
 
 .results-background .star {
@@ -1956,6 +1972,11 @@ body {
 @keyframes diagonalDrift {
     from { transform: translate(0, 0); }
     to { transform: translate(300px, -300px); }
+}
+
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Welcome transition animations */
@@ -1992,6 +2013,9 @@ body {
 }
 .wolf-mode .fire-label {
     color: #fff;
+}
+.wolf-mode .game-controls {
+    background-color: #000;
 }
 .wolf-mode::before {
     content: '✨✨🌟';
@@ -2053,7 +2077,33 @@ body {
     }
 }
 
-@keyframes sparkle {
+.wolf-emoji-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 40;
+    overflow: hidden;
+}
+
+.wolf-emoji-overlay .emoji {
+    position: absolute;
+    animation-name: emojiFly;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.wolf-emoji-overlay .emoji.spin {
+    animation-name: emojiFly, spinSlow;
+}
+
+@keyframes emojiFly {
+    to {
+        top: var(--end-top, calc(100vh + 40px));
+        left: var(--end-left, -40px);
+    }
+}
+  
+  @keyframes sparkle {
   0% {
     box-shadow: 0 0 0 0 rgba(255,255,255,0.6);
   }
