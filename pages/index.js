@@ -643,8 +643,6 @@ export default function Home() {
     };
 
     const goToWelcome = () => {
-        console.log('goToWelcome called!');
-        console.trace(); // This will show you exactly what called this function
         clearAllGameState();
         setOriginalPlayerSetup([]);
         setWelcomeAnim(false);
