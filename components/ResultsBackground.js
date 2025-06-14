@@ -52,10 +52,11 @@ function ResultsBackground() {
 
   const fireworks = Array.from({ length: 8 }, (_, i) => ({
     id: `fw-${i}`,
-    content: Math.random() > 0.5 ? '🎆' : '✨',
+    content: Math.random() > 0.5 ? '✩' : '✬',
     size: 20 + Math.random() * 10,
     duration: 10 + Math.random() * 10,
   }));
+
 
   return (
     <div className="results-background pointer-events-none">

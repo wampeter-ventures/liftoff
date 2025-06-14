@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import ResultsBackground from './ResultsBackground';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Button } from './ui/button';
+import StatsDrawer from './StatsDrawer';
+import { recordGame } from '../lib/stats';
 import {
   Rocket,
   Orbit,
@@ -14,6 +16,7 @@ import {
   Dog,
   Cat,
   Ghost,
+  BarChart2,
 } from 'lucide-react';
 import GameLogic from '../lib/gameLogic';
 
@@ -28,6 +31,8 @@ function GameResults({
 }) {
     const { getCompletedRows } = GameLogic;
     const [showWolfHint, setShowWolfHint] = useState(false);
+
+    const [showStats, setShowStats] = useState(false);
 
     const allCompletedRows = getCompletedRows(rocketGrid);
     const isExplosion = firePile >= 5;
@@ -70,6 +75,44 @@ function GameResults({
     };
 
     const victoryLevel = calculateVictoryLevel();
+
+    useEffect(() => {
+
+        const planetMap = {
+            1: 'Mars',
+            2: 'Ceres',
+            3: 'Jupiter',
+            4: 'Saturn',
+            5: 'Uranus',
+            6: 'Neptune',
+            7: 'Pluto',
+            8: 'Haumea',
+            9: 'Makemake',
+            10: 'Eris',
+        };
+        let planetName = null;
+
+      
+        let success = false;
+
+        if (!isExplosion && !outOfDiceFail) {
+            if (wolfOutcome === 'success') {
+                success = true;
+                planetName = 'Wolf 1061';
+            } else if (wolfOutcome === 'fail') {
+                success = true;
+                planetName = 'Eris';
+            } else if (victoryLevel > 0) {
+                success = true;
+                planetName = planetMap[victoryLevel];
+            }
+        }
+
+        if (!(victoryLevel === 10 && onWolfStart && !wolfOutcome)) {
+            recordGame({ success, planetName });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (victoryLevel === 10 && onWolfStart && !wolfOutcome) {
@@ -116,6 +159,12 @@ function GameResults({
                     ),
                     bgColor: 'bg-green-100 dark:bg-green-900/30',
                     textColor: 'text-gray-800 dark:text-gray-200',
+                    name: 'WOLF 1061 ACHIEVED!',
+                    icon: <Planet className="h-16 w-16 sm:h-20 sm:w-20 text-green-400" />,
+                    description:
+                        'Against all odds your bonus boosters roared to life and carried the crew to Wolf 1061. Signs of life glimmer on the horizon!',
+                    bgColor: 'bg-green-100 dark:bg-green-900/30',
+                    textColor: 'text-green-700 dark:text-green-300',
                 };
             }
             return {
@@ -346,9 +395,57 @@ function GameResults({
                         >
                             Back to Base
                         </Button>
+                    </div>
+                </CardContent>
+                <CardFooter className="p-4 sm:p-5 pt-6 sm:pt-8 border-t dark:border-slate-700/50 flex flex-col gap-3">
+                    {victoryLevel === 10 && showWolfHint && !wolfOutcome && (
+                        <div className="wolf-hint text-center space-y-2">
+                            <p className="retro-space-text text-sm text-slate-600 dark:text-slate-300">
+                                URGENT: Radio signal detected from the distant planet Wolf-1061, located in the rare Goldilocks Zone.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                                <Button
+                                    size="lg"
+                                    onClick={onWolfStart}
+                                    className="w-full text-base font-semibold bg-yellow-500 hover:bg-yellow-600 text-black"
+                                >
+                                    Explore?
+                                </Button>
+                                <Button
+                                    size="lg"
+                                    onClick={onRestart}
+                                    className="w-full text-base font-semibold bg-black hover:bg-gray-800 text-white"
+                                >
+                                    Back to Base
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                    {!(
+                        victoryLevel === 10 && showWolfHint && !wolfOutcome
+                    ) && (
+                        <>
+                        <Button
+                            size="lg"
+                            onClick={onRestart}
+                            className="w-full text-base font-semibold bg-black hover:bg-gray-800 dark:bg-black dark:hover:bg-gray-800 text-white"
+                        >
+                            Back to Base{' '}
+                            <Rocket className="ml-2 h-4 w-4" />
+                        </Button>
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            onClick={() => setShowStats(true)}
+                            className="w-full text-base font-semibold"
+                        >
+                            Stats <BarChart2 className="ml-2 h-4 w-4" />
+                        </Button>
+                        </>
                     )}
                 </CardFooter>
             </Card>
+            <StatsDrawer open={showStats} onOpenChange={setShowStats} />
             </div>
         </div>
     );

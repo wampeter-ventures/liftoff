@@ -74,8 +74,10 @@ function RocketGrid({
     const headerText = React.useMemo(() => {
         if (wolfMode) return 'Mission: Wolf-1061';
         if (!boosterRowLocked) return 'Rocket Assembly';
+        if (wolfMode) return 'Mission: Wolf 1061';
         return `Mission: ${getPlanetName(rocketHeight, boosterCount)}`;
     }, [wolfMode, boosterRowLocked, rocketHeight, boosterCount]);
+
 
     const boostersPlaced = Object.keys(grid)
         .filter((k) => grid[k] && grid[k].value === 6)

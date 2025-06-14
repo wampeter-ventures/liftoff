@@ -1310,6 +1310,15 @@ body {
     opacity: 0.2;
 }
 
+.intro-rocket.liftoff {
+    animation: rocketLiftoff 3s ease-in forwards;
+}
+
+@keyframes rocketLiftoff {
+    0% { transform: translate(-50%, -50%); }
+    100% { transform: translate(-50%, -150%); }
+}
+
 .rocket-intro-image {
     max-height: 60vh;
     max-width: 300px;
@@ -1362,6 +1371,24 @@ body {
 .intro-icon {
     position: absolute;
     pointer-events: none;
+}
+
+.intro-levels-card {
+    position: absolute;
+    top: 120%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    z-index: 4;
+}
+
+.intro-levels-card.slide-up {
+    animation: levelsSlideUp 2s ease-out forwards;
+}
+
+@keyframes levelsSlideUp {
+    from { top: 120%; opacity: 0; }
+    to { top: 50%; opacity: 1; }
 }
 
 /* Intro animation keyframes */
@@ -1903,9 +1930,9 @@ body {
     justify-content: center;
     font-size: 8rem;
     font-weight: 800;
-    color: rgba(128, 128, 128, 0.8);
+    color: rgba(200, 0, 0, 0.7);
     background: rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    z-index: 9999;
     pointer-events: none;
 }
 /* Starry background for results screen */
@@ -1989,6 +2016,15 @@ body {
 }
 .wolf-mode .game-controls {
     background-color: #000;
+  
+.wolf-mode::before {
+    content: '✨✨🌟';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    pointer-events: none;
 }
 
 .wolf-hint {
@@ -2065,4 +2101,19 @@ body {
         top: var(--end-top, calc(100vh + 40px));
         left: var(--end-left, -40px);
     }
+
+  @keyframes sparkle {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255,255,255,0.6);
+  }
+  50% {
+    box-shadow: 0 0 6px 2px rgba(255,255,255,0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255,255,255,0.6);
+  }
+}
+
+.a2hs-button {
+  animation: sparkle 2s infinite;
 }
