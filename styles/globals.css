@@ -2101,7 +2101,8 @@ body {
         top: var(--end-top, calc(100vh + 40px));
         left: var(--end-left, -40px);
     }
-
+}
+  
   @keyframes sparkle {
   0% {
     box-shadow: 0 0 0 0 rgba(255,255,255,0.6);
