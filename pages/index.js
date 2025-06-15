@@ -662,7 +662,6 @@ export default function Home() {
 
     const goToWelcome = () => {
         clearAllGameState();
-        setOriginalPlayerSetup([]);
         setWelcomeAnim(false);
         setGameState('welcome');
     };
