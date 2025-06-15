@@ -662,7 +662,19 @@ export default function Home() {
 
     const goToWelcome = () => {
         clearAllGameState();
-        setOriginalPlayerSetup([]);
+        if (typeof window !== 'undefined') {
+            const stored = localStorage.getItem('playerSetup');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        setOriginalPlayerSetup(parsed);
+                    }
+                } catch (err) {
+                    console.error('Failed to load player setup', err);
+                }
+            }
+        }
         setWelcomeAnim(false);
         setGameState('welcome');
     };
