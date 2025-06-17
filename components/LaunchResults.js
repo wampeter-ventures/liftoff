@@ -99,7 +99,7 @@ function LaunchResults({ boosterRolls, success, onComplete }) {
                 <div className="launch-verdict">
                     <p className="verdict-text">
                         {success
-                            ? '🎉 Your rocket EXPLODES into the cosmos with magnificent fury! 🎉'
+                            ? '🎉 Your rocket LIFTS OFF into the cosmos… 🎉'
                             : '😭 Your rocket sulks on the launchpad, dreaming of flight but achieving only disappointment. 😭'
                         }
                     </p>
