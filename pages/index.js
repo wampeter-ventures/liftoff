@@ -4,6 +4,7 @@ import DiceRoll from '../components/DiceRoll';
 import RocketGrid from '../components/RocketGrid';
 import GameSetup, { HelpDrawer } from '../components/GameSetup';
 import GameResults from '../components/GameResults';
+import FireExplosionOverlay from '../components/FireExplosionOverlay';
 import IntroSequence from '../components/IntroSequence';
 import GameModal from '../components/GameModal';
 import WolfEmojiOverlay from '../components/WolfEmojiOverlay';
@@ -68,6 +69,7 @@ export default function Home() {
     const [isHydrated, setIsHydrated] = useState(false);
     const [showA2HS, setShowA2HS] = useState(false);
     const [launchResultsComplete, setLaunchResultsComplete] = useState(false);
+    const [fireExplosion, setFireExplosion] = useState(false);
 
     // Confirmation animation state
     const [fireFlash, setFireFlash] = useState(false);
@@ -392,8 +394,12 @@ export default function Home() {
         setFireFlash(true);
         setTimeout(() => setFireFlash(false), 900);
         if (newFirePile >= 5) {
-            setOutOfDiceFail(false);
-            setGameState('results');
+            setFireExplosion(true);
+            setTimeout(() => {
+                setOutOfDiceFail(false);
+                setGameState('results');
+                setFireExplosion(false);
+            }, 2000);
             return;
         }
         setGameHistory([
@@ -767,6 +773,8 @@ export default function Home() {
             <Head>
                 <title>Liftoff</title>
             </Head>
+
+            {fireExplosion && <FireExplosionOverlay />}
 
             {/* Game Modal */}
             <GameModal
