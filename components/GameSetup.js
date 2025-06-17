@@ -11,7 +11,6 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -88,7 +87,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   ]);
   const [error, setError] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [showTldrRules, setShowTldrRules] = useState(false);
+  const [showTldrRules, setShowTldrRules] = useState(true);
   const [showStatsDrawer, setShowStatsDrawer] = useState(false);
   const [hasLoadedPreservedSetup, setHasLoadedPreservedSetup] = useState(false);
   const { toast } = useToast();
@@ -204,7 +203,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
       });
       return;
     }
-    setShowTldrRules(false);
+    setShowTldrRules(true);
     setIsDrawerOpen(true);
   };
 
@@ -227,7 +226,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   };
 
   const handleOpenRulesDrawer = () => {
-    setShowTldrRules(false);
+    setShowTldrRules(true);
     setIsDrawerOpen(true);
   };
 
@@ -363,9 +362,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
               </DrawerTitle>
               <Button variant="outline" size="sm" onClick={() => setShowTldrRules(!showTldrRules)} className="text-xs">
                 {showTldrRules ? (
-                  <>
-                    <BookOpenText className="mr-1.5 h-3.5 w-3.5" /> Show Full Rules
-                  </>
+                  'Show Full Rules'
                 ) : (
                   <>
                     <Zap className="mr-1.5 h-3.5 w-3.5" /> Wait, What?! (TL;DR)
@@ -373,11 +370,6 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
                 )}
               </Button>
             </div>
-            <DrawerDescription className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">
-              {showTldrRules
-                ? 'The super-duper short version. No excuses now!'
-                : 'Read this, or become space dust. Your choice.'}
-            </DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">
             {showTldrRules ? renderTldrRulesLocal() : renderDetailedRulesLocal()}
@@ -535,10 +527,7 @@ export const renderDetailedRules = () => (
 
 export const renderTldrRules = () => (
   <div className="space-y-3 text-sm text-slate-700 dark:text-slate-200">
-    <p className="text-center font-bold text-lg text-amber-500 dark:text-amber-400 flex items-center justify-center">
-      <Zap className="inline h-5 w-5 mr-2" /> LIFTOFF! TL;DR <Zap className="inline h-5 w-5 ml-2" />
-    </p>
-    <div className="p-3 bg-slate-100 dark:bg-slate-700/50 rounded-lg space-y-2 text-xs sm:text-sm">
+    <div className="p-3 bg-slate-100 dark:bg-slate-700/50 rounded-lg space-y-3 text-xs sm:text-sm">
       <p className="flex items-center">
         <Target className="h-4 w-4 mr-2 text-amber-500 flex-shrink-0" />
         <strong>Goal:</strong> Launch FAR! Don't EXPLODE!
@@ -572,11 +561,15 @@ export const renderTldrRules = () => (
 
       <p className="flex items-center">
         <Skull className="h-4 w-4 mr-2 text-red-500 flex-shrink-0" />{' '}
-        <strong className="text-red-500">Danger!</strong> 5 in Fire Pile = KABOOM! (You lose!)
+        <strong className="text-red-500">Danger!</strong>
+        <br />
+        5 in Fire Pile = KABOOM! (You lose!)
       </p>
       <p className="flex items-center">
         <PartyPopper className="h-4 w-4 mr-2 text-teal-500 flex-shrink-0" />{' '}
-        <strong className="text-teal-500">Liftoff!</strong> Complete body + ≥1 Booster. Roll Boosters for a 6 = YOU WIN!
+        <strong className="text-teal-500">Liftoff!</strong>
+        <br />
+        Complete body + ≥1 Booster. Roll Boosters for a 6 = YOU WIN!
       </p>
     </div>
   </div>
@@ -584,7 +577,7 @@ export const renderTldrRules = () => (
 
 // Reusable HelpDrawer component for use during gameplay
 export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
-  const [showTldrRules, setShowTldrRules] = useState(false);
+  const [showTldrRules, setShowTldrRules] = useState(true);
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
@@ -600,9 +593,7 @@ export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
             </DrawerTitle>
             <Button variant="outline" size="sm" onClick={() => setShowTldrRules(!showTldrRules)} className="text-xs">
               {showTldrRules ? (
-                <>
-                  <BookOpenText className="mr-1.5 h-3.5 w-3.5" /> Show Full Rules
-                </>
+                'Show Full Rules'
               ) : (
                 <>
                   <Zap className="mr-1.5 h-3.5 w-3.5" /> Wait, What?! (TL;DR)
@@ -610,11 +601,6 @@ export function HelpDrawer({ isOpen, onOpenChange, showCloseOnly = false }) {
               )}
             </Button>
           </div>
-          <DrawerDescription className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">
-            {showTldrRules
-              ? 'The super-duper short version. No excuses now!'
-              : 'Read this, or become space dust. Your choice.'}
-          </DrawerDescription>
         </DrawerHeader>
         <div className="px-4 pb-4 overflow-y-auto max-h-[50vh] custom-scrollbar">
           {showTldrRules ? renderTldrRules() : renderDetailedRules()}
