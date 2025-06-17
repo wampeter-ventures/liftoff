@@ -2118,3 +2118,30 @@ body {
 .a2hs-button {
   animation: sparkle 2s infinite;
 }
+
+/* Fire explosion overlay when fire pile reaches 5 */
+.fire-explosion-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 50;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.explosion-flame {
+  position: absolute;
+  color: var(--color-fire-red);
+  animation: explosionFlameGrow 1.5s forwards;
+}
+
+@keyframes explosionFlameGrow {
+  from {
+    transform: scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(10);
+    opacity: 1;
+  }
+}
