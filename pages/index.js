@@ -1063,56 +1063,6 @@ export default function Home() {
                             </button>
                         </div>
 
-                        <div className="fire-status">
-                            <div
-                                className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''} ${fireFlash ? 'confirm-fire' : ''}`}
-                                onDragOver={(e) => {
-                                    e.preventDefault();
-                                    e.dataTransfer.dropEffect = 'move';
-                                }}
-                                onDrop={(e) => {
-                                    e.preventDefault();
-                                    try {
-                                        const dieData = JSON.parse(
-                                            e.dataTransfer.getData(
-                                                'text/plain',
-                                            ),
-                                        );
-                                        sendToFire(dieData);
-                                    } catch (error) {
-                                        console.error(
-                                            'Error dropping die to fire:',
-                                            error,
-                                        );
-                                    }
-                                }}
-                                onClick={sendSelectedToFire}
-                            >
-                                <span className="fire-label">Fire:</span>
-                                <div className="fire-dice-container">
-                                    {fireDice.map((die, index) => (
-                                        <div
-                                            key={die.id}
-                                            className={`fire-flame fire-flame-${index + 1}`}
-                                        >
-                                            <Flame
-                                                size={24}
-                                                className="flame-icon"
-                                            />
-                                        </div>
-                                    ))}
-                                    {Array.from(
-                                        { length: 5 - firePile },
-                                        (_, i) => (
-                                            <div
-                                                key={`empty-${i}`}
-                                                className="fire-slot-empty"
-                                            />
-                                        ),
-                                    )}
-                                </div>
-                            </div>
-                        </div>
 
                         <div className="game-board">
                             <div className={`rocket-section ${launchCountdown > 0 ? 'on-top' : ''}`}>
@@ -1147,26 +1097,64 @@ export default function Home() {
                             />
 
                             <div className="game-controls">
-                                {boosterRowLocked && !preparingLaunch && (
+                                <div className="button-row">
+                                    {boosterRowLocked && !preparingLaunch && (
+                                        <button
+                                            className={`btn btn-launch ${!canLaunch() ? 'btn-next-disabled' : 'btn-primary'}`}
+                                            onClick={() => {
+                                                if (canLaunch()) {
+                                                    attemptLaunch();
+                                                } else {
+                                                    setShowLaunchHelper(true);
+                                                }
+                                            }}
+                                        >
+                                            Launch
+                                        </button>
+                                    )}
                                     <button
-                                        className={`btn btn-launch ${!canLaunch() ? 'btn-next-disabled' : 'btn-primary'}`}
-                                        onClick={() => {
-                                            if (canLaunch()) {
-                                                attemptLaunch();
-                                            } else {
-                                                setShowLaunchHelper(true);
+                                        onClick={nextPlayer}
+                                        className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? 'btn-next-disabled' : ''}`}
+                                    >
+                                        Next →
+                                    </button>
+                                </div>
+                                <div className="fire-status fire-bottom">
+                                    <div
+                                        className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''} ${fireFlash ? 'confirm-fire' : ''}`}
+                                        onDragOver={(e) => {
+                                            e.preventDefault();
+                                            e.dataTransfer.dropEffect = 'move';
+                                        }}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            try {
+                                                const dieData = JSON.parse(
+                                                    e.dataTransfer.getData('text/plain'),
+                                                );
+                                                sendToFire(dieData);
+                                            } catch (error) {
+                                                console.error('Error dropping die to fire:', error);
                                             }
                                         }}
+                                        onClick={sendSelectedToFire}
                                     >
-                                        Launch
-                                    </button>
-                                )}
-                                <button
-                                    onClick={nextPlayer}
-                                    className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? 'btn-next-disabled' : ''}`}
-                                >
-                                    Next →
-                                </button>
+                                        <span className="fire-label">Fire:</span>
+                                        <div className="fire-dice-container">
+                                            {fireDice.map((die, index) => (
+                                                <div
+                                                    key={die.id}
+                                                    className={`fire-flame fire-flame-${index + 1}`}
+                                                >
+                                                    <Flame size={24} className="flame-icon" />
+                                                </div>
+                                            ))}
+                                            {Array.from({ length: 5 - firePile }, (_, i) => (
+                                                <div key={`empty-${i}`} className="fire-slot-empty" />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1204,39 +1192,6 @@ export default function Home() {
                                 </button>
                             </div>
 
-                            <div className="fire-status">
-                                <div
-                                    className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''} ${fireFlash ? 'confirm-fire' : ''}`}
-                                    onDragOver={(e) => {
-                                        e.preventDefault();
-                                        e.dataTransfer.dropEffect = 'move';
-                                    }}
-                                    onDrop={(e) => {
-                                        e.preventDefault();
-                                        try {
-                                            const dieData = JSON.parse(
-                                                e.dataTransfer.getData('text/plain'),
-                                            );
-                                            sendToFire(dieData);
-                                        } catch (error) {
-                                            console.error('Error dropping die to fire:', error);
-                                        }
-                                    }}
-                                    onClick={sendSelectedToFire}
-                                >
-                                    <span className="fire-label">Fire:</span>
-                                    <div className="fire-dice-container">
-                                        {fireDice.map((die, index) => (
-                                            <div key={die.id} className={`fire-flame fire-flame-${index + 1}`}>
-                                                <Flame size={24} className="flame-icon" />
-                                            </div>
-                                        ))}
-                                        {Array.from({ length: 5 - firePile }, (_, i) => (
-                                            <div key={`empty-${i}`} className="fire-slot-empty" />
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
 
                             <div className="game-board">
                                 <div className={`rocket-section ${launchCountdown > 0 ? 'on-top' : ''}`}>
@@ -1269,24 +1224,59 @@ export default function Home() {
                                 />
 
                                 <div className="game-controls">
-                                    {boosterRowLocked && !preparingLaunch && (
+                                    <div className="button-row">
+                                        {boosterRowLocked && !preparingLaunch && (
+                                            <button
+                                                className={`btn btn-launch ${!canLaunch() ? 'btn-next-disabled' : 'btn-primary'}`}
+                                                onClick={() => {
+                                                    if (!wolfLaunchAttempted && canLaunch()) {
+                                                        attemptLaunch();
+                                                    }
+                                                }}
+                                            >
+                                                Launch to Wolf
+                                            </button>
+                                        )}
                                         <button
-                                            className={`btn btn-launch ${!canLaunch() ? 'btn-next-disabled' : 'btn-primary'}`}
-                                            onClick={() => {
-                                                if (!wolfLaunchAttempted && canLaunch()) {
-                                                    attemptLaunch();
+                                            onClick={nextPlayer}
+                                            className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? 'btn-next-disabled' : ''}`}
+                                        >
+                                            Next →
+                                        </button>
+                                    </div>
+                                    <div className="fire-status fire-bottom">
+                                        <div
+                                            className={`fire-display fire-drop-zone ${selectedDie ? 'valid-for-selected' : ''} ${fireFlash ? 'confirm-fire' : ''}`}
+                                            onDragOver={(e) => {
+                                                e.preventDefault();
+                                                e.dataTransfer.dropEffect = 'move';
+                                            }}
+                                            onDrop={(e) => {
+                                                e.preventDefault();
+                                                try {
+                                                    const dieData = JSON.parse(
+                                                        e.dataTransfer.getData('text/plain'),
+                                                    );
+                                                    sendToFire(dieData);
+                                                } catch (error) {
+                                                    console.error('Error dropping die to fire:', error);
                                                 }
                                             }}
+                                            onClick={sendSelectedToFire}
                                         >
-                                            Launch to Wolf
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={nextPlayer}
-                                        className={`btn btn-primary ${currentDice.every((d) => !d.placed) ? 'btn-next-disabled' : ''}`}
-                                    >
-                                        Next →
-                                    </button>
+                                            <span className="fire-label">Fire:</span>
+                                            <div className="fire-dice-container">
+                                                {fireDice.map((die, index) => (
+                                                    <div key={die.id} className={`fire-flame fire-flame-${index + 1}`}>
+                                                        <Flame size={24} className="flame-icon" />
+                                                    </div>
+                                                ))}
+                                                {Array.from({ length: 5 - firePile }, (_, i) => (
+                                                    <div key={`empty-${i}`} className="fire-slot-empty" />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
