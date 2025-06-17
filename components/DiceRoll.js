@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Die from './Die';
 import GameLogic from '../lib/gameLogic';
 
 function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, rocketHeight, boosterRowLocked }) {
     const [draggedDie, setDraggedDie] = useState(null);
+    const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
+    const dragListenerRef = useRef(null);
     const [isRolling, setIsRolling] = useState(false);
     const [rollingDice, setRollingDice] = useState([]);
 
@@ -17,7 +19,14 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
 
         console.log('✅ DiceRoll setting up drag data and visual feedback');
         setDraggedDie(die);
+        setDragPos({ x: e.clientX, y: e.clientY });
+        dragListenerRef.current = (ev) => {
+            setDragPos({ x: ev.clientX, y: ev.clientY });
+        };
+        e.target.addEventListener('drag', dragListenerRef.current);
         e.dataTransfer.setData('text/plain', JSON.stringify(die));
+        // Hide default ghost image so we can use our custom preview
+        e.dataTransfer.setDragImage(new Image(), 0, 0);
         e.dataTransfer.effectAllowed = 'move';
 
         // Add visual feedback
@@ -37,6 +46,8 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
         console.log('🏁 DiceRoll handleDragEnd called');
         e.target.classList.remove('dragging');
         setDraggedDie(null);
+        e.target.removeEventListener('drag', dragListenerRef.current);
+        dragListenerRef.current = null;
         console.log('✅ Removed .dragging class and cleared draggedDie');
     };
 
@@ -73,6 +84,7 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
     const displayDice = isRolling ? rollingDice : availableDice;
 
     return (
+        <>
         <div className="dice-roll-container">
             <h3>
                 {availableDice.length > 0 ? availableDice[0].playerName : 'Available Dice'}
@@ -138,6 +150,15 @@ function DiceRoll({ dice, onDragStart, selectedDie, onSelectDie, rocketGrid, roc
                 })()}
             </div>
         </div>
+        {draggedDie && (
+            <div
+                className="drag-preview"
+                style={{ left: dragPos.x, top: dragPos.y }}
+            >
+                <Die die={draggedDie} className="available-die dragging" />
+            </div>
+        )}
+        </>
     );
 }
 
