@@ -69,6 +69,7 @@ export default function Home() {
     const [isHydrated, setIsHydrated] = useState(false);
     const [showA2HS, setShowA2HS] = useState(false);
     const [launchResultsComplete, setLaunchResultsComplete] = useState(false);
+    const [fireOverflow, setFireOverflow] = useState(false);
     const [fireExplosion, setFireExplosion] = useState(false);
 
     // Confirmation animation state
@@ -394,12 +395,16 @@ export default function Home() {
         setFireFlash(true);
         setTimeout(() => setFireFlash(false), 900);
         if (newFirePile >= 5) {
-            setFireExplosion(true);
+            setFireOverflow(true);
             setTimeout(() => {
-                setOutOfDiceFail(false);
-                setGameState('results');
-                setFireExplosion(false);
-            }, 2000);
+                setFireExplosion(true);
+                setFireOverflow(false);
+                setTimeout(() => {
+                    setOutOfDiceFail(false);
+                    setGameState('results');
+                    setFireExplosion(false);
+                }, 2000);
+            }, 4000);
             return;
         }
         setGameHistory([
@@ -1141,14 +1146,18 @@ export default function Home() {
                                     >
                                         <span className="fire-label">Fire:</span>
                                         <div className="fire-dice-container">
-                                            {fireDice.map((die, index) => (
-                                                <div
-                                                    key={die.id}
-                                                    className={`fire-flame fire-flame-${index + 1}`}
-                                                >
-                                                    <Flame size={24} className="flame-icon" />
-                                                </div>
-                                            ))}
+                                            {(() => {
+                                                const extras = fireOverflow ? fireDice.map((d, i) => ({ ...d, id: `${d.id}-extra-${i}` })) : [];
+                                                const allFlames = fireDice.concat(extras);
+                                                return allFlames.map((die, index) => (
+                                                    <div
+                                                        key={die.id}
+                                                        className={`fire-flame fire-flame-${(index % 5) + 1} ${fireOverflow || fireExplosion ? 'fire-flame-grow' : ''}`}
+                                                    >
+                                                        <Flame size={24} className="flame-icon" />
+                                                    </div>
+                                                ));
+                                            })()}
                                             {Array.from({ length: 5 - firePile }, (_, i) => (
                                                 <div key={`empty-${i}`} className="fire-slot-empty" />
                                             ))}
@@ -1266,11 +1275,15 @@ export default function Home() {
                                         >
                                             <span className="fire-label">Fire:</span>
                                             <div className="fire-dice-container">
-                                                {fireDice.map((die, index) => (
-                                                    <div key={die.id} className={`fire-flame fire-flame-${index + 1}`}>
-                                                        <Flame size={24} className="flame-icon" />
-                                                    </div>
-                                                ))}
+                                                {(() => {
+                                                    const extras = fireOverflow ? fireDice.map((d, i) => ({ ...d, id: `${d.id}-extra-${i}` })) : [];
+                                                    const allFlames = fireDice.concat(extras);
+                                                    return allFlames.map((die, index) => (
+                                                        <div key={die.id} className={`fire-flame fire-flame-${(index % 5) + 1} ${fireOverflow || fireExplosion ? 'fire-flame-grow' : ''}`}>
+                                                            <Flame size={24} className="flame-icon" />
+                                                        </div>
+                                                    ));
+                                                })()}
                                                 {Array.from({ length: 5 - firePile }, (_, i) => (
                                                     <div key={`empty-${i}`} className="fire-slot-empty" />
                                                 ))}

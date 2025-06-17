@@ -1474,6 +1474,20 @@ body {
     filter: drop-shadow(0 0 4px currentColor);
 }
 
+.fire-flame-grow {
+    animation: fireFlameGrow 4s forwards;
+    z-index: 9999;
+}
+
+@keyframes fireFlameGrow {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(2.5);
+    }
+}
+
 /* Progressive flame colors and animations */
 .fire-flame-1 {
     color: #FFC107; /* Yellow */
@@ -2134,18 +2148,38 @@ body {
 .fire-explosion-overlay {
   position: fixed;
   inset: 0;
-  background: linear-gradient(to top, #ff4400, #ff0000);
-  transform-origin: bottom;
-  animation: fireGrow 1.5s forwards;
-  z-index: 50;
+  background: rgba(0, 0, 0, 0);
+  z-index: 9999;
   pointer-events: none;
+  overflow: hidden;
+  animation: explosionOverlayFade 2s forwards;
 }
 
-@keyframes fireGrow {
+.explosion-flame {
+  position: absolute;
+  color: var(--color-fire-red);
+  animation: explosionFlameGrow 2.5s forwards;
+}
+
+@keyframes explosionOverlayFade {
   from {
-    transform: scaleY(0);
+    background: rgba(0, 0, 0, 0);
   }
   to {
-    transform: scaleY(1);
+    background: rgba(0, 0, 0, 0.85);
+  }
+}
+
+@keyframes explosionFlameGrow {
+  0% {
+    transform: scale(0.2);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(3);
+  }
+  100% {
+    transform: scale(12);
+    opacity: 1;
   }
 }
