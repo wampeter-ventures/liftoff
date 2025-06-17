@@ -19,6 +19,7 @@ function FireExplosionOverlay() {
       ))}
     </div>
   );
+
 }
 
 export default FireExplosionOverlay;
