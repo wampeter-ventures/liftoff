@@ -1459,6 +1459,20 @@ body {
     border-radius: 4px;
 }
 
+.fire-flame-grow {
+    animation: fireFlameGrow 0.8s forwards;
+    z-index: 9999;
+}
+
+@keyframes fireFlameGrow {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(2.5);
+    }
+}
+
 .flame-icon {
     filter: drop-shadow(0 0 4px currentColor);
 }
@@ -2117,4 +2131,34 @@ body {
 
 .a2hs-button {
   animation: sparkle 2s infinite;
+}
+
+/* Fire explosion overlay when fire pile reaches 5 */
+.fire-explosion-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.explosion-flame {
+  position: absolute;
+  color: var(--color-fire-red);
+  animation: explosionFlameGrow 2.5s forwards;
+}
+
+@keyframes explosionFlameGrow {
+  0% {
+    transform: scale(0.2);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(3);
+  }
+  100% {
+    transform: scale(12);
+    opacity: 1;
+  }
 }
