@@ -203,7 +203,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
       });
       return;
     }
-    setShowTldrRules(false);
+    setShowTldrRules(true);
     setIsDrawerOpen(true);
   };
 
@@ -226,7 +226,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
   };
 
   const handleOpenRulesDrawer = () => {
-    setShowTldrRules(false);
+    setShowTldrRules(true);
     setIsDrawerOpen(true);
   };
 
@@ -527,7 +527,7 @@ export const renderDetailedRules = () => (
 
 export const renderTldrRules = () => (
   <div className="space-y-3 text-sm text-slate-700 dark:text-slate-200">
-    <div className="p-3 bg-slate-100 dark:bg-slate-700/50 rounded-lg space-y-2 text-xs sm:text-sm">
+    <div className="p-3 bg-slate-100 dark:bg-slate-700/50 rounded-lg space-y-3 text-xs sm:text-sm">
       <p className="flex items-center">
         <Target className="h-4 w-4 mr-2 text-amber-500 flex-shrink-0" />
         <strong>Goal:</strong> Launch FAR! Don't EXPLODE!
@@ -559,13 +559,21 @@ export const renderTldrRules = () => (
         </ol>
       </div>
 
-      <p className="flex items-center">
+      <p className="flex items-start">
         <Skull className="h-4 w-4 mr-2 text-red-500 flex-shrink-0" />{' '}
-        <strong className="text-red-500">Danger!</strong> 5 in Fire Pile = KABOOM! (You lose!)
+        <span>
+          <strong className="text-red-500">Danger!</strong>
+          <br />
+          5 in Fire Pile = KABOOM! (You lose!)
+        </span>
       </p>
-      <p className="flex items-center">
+      <p className="flex items-start">
         <PartyPopper className="h-4 w-4 mr-2 text-teal-500 flex-shrink-0" />{' '}
-        <strong className="text-teal-500">Liftoff!</strong> Complete body + ≥1 Booster. Roll Boosters for a 6 = YOU WIN!
+        <span>
+          <strong className="text-teal-500">Liftoff!</strong>
+          <br />
+          Complete body + ≥1 Booster. Roll Boosters for a 6 = YOU WIN!
+        </span>
       </p>
     </div>
   </div>
