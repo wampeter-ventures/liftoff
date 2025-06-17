@@ -1144,7 +1144,7 @@ export default function Home() {
                                             {fireDice.map((die, index) => (
                                                 <div
                                                     key={die.id}
-                                                    className={`fire-flame fire-flame-${index + 1}`}
+                                                    className={`fire-flame fire-flame-${index + 1} ${fireExplosion ? 'fire-flame-grow' : ''}`}
                                                 >
                                                     <Flame size={24} className="flame-icon" />
                                                 </div>
@@ -1267,7 +1267,7 @@ export default function Home() {
                                             <span className="fire-label">Fire:</span>
                                             <div className="fire-dice-container">
                                                 {fireDice.map((die, index) => (
-                                                    <div key={die.id} className={`fire-flame fire-flame-${index + 1}`}>
+                                                    <div key={die.id} className={`fire-flame fire-flame-${index + 1} ${fireExplosion ? 'fire-flame-grow' : ''}`}>
                                                         <Flame size={24} className="flame-icon" />
                                                     </div>
                                                 ))}
