@@ -609,6 +609,13 @@ body {
     transition: none; /* Disable transitions during drag for responsiveness */
 }
 
+.drag-preview {
+    position: fixed;
+    pointer-events: none;
+    z-index: 2000;
+    transform: translate(-50%, -50%);
+}
+
 .die {
     position: relative;
     transition: transform 0.1s ease, opacity 0.1s ease;
