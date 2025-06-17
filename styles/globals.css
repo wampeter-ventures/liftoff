@@ -678,6 +678,8 @@ body {
 /* Controls */
 .game-controls {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 12px;
     justify-content: center;
     margin-top: 8px;
@@ -686,6 +688,15 @@ body {
     background-color: var(--color-background);
     z-index: 20;
     padding: 8px 0;
+}
+
+.button-row {
+    display: flex;
+    gap: 12px;
+}
+
+.fire-bottom {
+    padding: 16px 0;
 }
 
 /* Buttons */
@@ -2117,4 +2128,24 @@ body {
 
 .a2hs-button {
   animation: sparkle 2s infinite;
+}
+
+/* Fire explosion overlay when fire pile reaches 5 */
+.fire-explosion-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to top, #ff4400, #ff0000);
+  transform-origin: bottom;
+  animation: fireGrow 1.5s forwards;
+  z-index: 50;
+  pointer-events: none;
+}
+
+@keyframes fireGrow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
 }
