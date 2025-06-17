@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, className = '', isSelected = false }) {
+function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, className = '', isSelected = false }) {
     const [isDragging, setIsDragging] = useState(false);
     const [dragStartPos, setDragStartPos] = useState(null);
 
@@ -219,6 +219,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onClick, classNam
             className={`die ${className} ${die.placed ? 'placed' : ''} ${isBooster ? 'booster-die' : ''} ${isFireDie ? 'fire-die' : ''} ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''} player-${die.playerId}`}
             draggable={draggable && !die.placed}
             onDragStart={handleDragStart}
+            onDrag={onDrag}
             onDragEnd={handleDragEnd}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
