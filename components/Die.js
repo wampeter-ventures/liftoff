@@ -74,6 +74,11 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, 
         setDragStartPos({ x: touch.clientX, y: touch.clientY });
         setIsDragging(false);
 
+        // Select immediately so long presses still register
+        if (onClick) {
+            onClick(die);
+        }
+
         // Prevent default to avoid scrolling
         e.preventDefault();
     };
