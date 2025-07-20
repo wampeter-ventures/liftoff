@@ -259,6 +259,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, 
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
             onClick={handleClick}
             style={{
                 cursor: draggable && !die.placed ? 'grab' : (onClick ? 'pointer' : 'default')
