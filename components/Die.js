@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, className = '', isSelected = false }) {
     const [isDragging, setIsDragging] = useState(false);
     const [dragStartPos, setDragStartPos] = useState(null);
+    const longPressTimeout = useRef(null);
 
     const renderPips = (value) => {
         const pipConfigs = {
@@ -74,12 +75,24 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, 
         setDragStartPos({ x: touch.clientX, y: touch.clientY });
         setIsDragging(false);
 
+        // Trigger a click if the user holds without dragging
+        longPressTimeout.current = setTimeout(() => {
+            if (!isDragging && onClick) {
+                onClick(die);
+            }
+        }, 200);
+
         // Prevent default to avoid scrolling
         e.preventDefault();
     };
 
     const handleTouchMove = (e) => {
         if (!draggable || die.placed || !dragStartPos) return;
+
+        if (longPressTimeout.current) {
+            clearTimeout(longPressTimeout.current);
+            longPressTimeout.current = null;
+        }
 
         const touch = e.touches[0];
         const deltaX = Math.abs(touch.clientX - dragStartPos.x);
@@ -151,6 +164,11 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, 
     };
 
     const handleTouchEnd = (e) => {
+        if (longPressTimeout.current) {
+            clearTimeout(longPressTimeout.current);
+            longPressTimeout.current = null;
+        }
+
         if (!draggable || die.placed) return;
 
         if (isDragging) {
