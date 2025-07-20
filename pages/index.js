@@ -976,7 +976,7 @@ export default function Home() {
             )}
 
             {gameState === 'setup' && (
-                <div className="fixed inset-0 bg-black">
+                <div className="fixed inset-0 bg-black overflow-y-auto">
                     <StarryBackground />
                     <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
                         <GameSetup
