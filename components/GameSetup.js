@@ -302,7 +302,7 @@ function GameSetup({ onStartGame, onBack, preservedPlayerSetup }) {
           </div>
           <div>
             <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Configure Bays</h3>
-            <div className="space-y-2 max-h-[calc(100vh-400px)] min-h-[100px] overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-2 pr-1">
               {players.map((player, index) => (
                 <div key={player.id} className="p-3 border rounded-md bg-slate-50 dark:bg-slate-700/60">
                   <div className="flex space-x-3">

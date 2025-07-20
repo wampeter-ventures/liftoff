@@ -978,7 +978,7 @@ export default function Home() {
             {gameState === 'setup' && (
                 <div className="fixed inset-0 bg-black">
                     <StarryBackground />
-                    <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+                    <div className="relative z-10 flex justify-center items-start overflow-y-auto min-h-screen p-4">
                         <GameSetup
                             onStartGame={startGame}
                             onBack={goToWelcome}
