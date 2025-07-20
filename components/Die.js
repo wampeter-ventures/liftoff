@@ -144,8 +144,10 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, 
                 onDrag({ clientX: touch.clientX, clientY: touch.clientY });
             }
 
-            // Find element under touch point
+            // Temporarily ignore this die to detect underlying drop target
+            e.target.style.pointerEvents = 'none';
             const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            e.target.style.pointerEvents = '';
 
             // Clear previous drag-over states
             document.querySelectorAll('.drag-over').forEach(el => {
@@ -197,7 +199,10 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, 
             });
 
             const touch = e.changedTouches[0];
+            // Temporarily ignore this die to detect underlying drop target
+            e.target.style.pointerEvents = 'none';
             const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            e.target.style.pointerEvents = '';
 
             // Find drop target
             let dropTarget = elementBelow;
