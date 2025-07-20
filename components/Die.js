@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, className = '', isSelected = false }) {
     const [isDragging, setIsDragging] = useState(false);
     const [dragStartPos, setDragStartPos] = useState(null);
+    const longPressTimeout = useRef(null);
+    const longPressTriggered = useRef(false);
 
     const renderPips = (value) => {
         const pipConfigs = {
@@ -74,12 +76,27 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, 
         setDragStartPos({ x: touch.clientX, y: touch.clientY });
         setIsDragging(false);
 
+        // Trigger a click if the user holds without dragging
+        longPressTriggered.current = false;
+        longPressTimeout.current = setTimeout(() => {
+            longPressTriggered.current = true;
+            if (!isDragging && onClick) {
+                onClick(die);
+            }
+        }, 200);
+
         // Prevent default to avoid scrolling
         e.preventDefault();
     };
 
     const handleTouchMove = (e) => {
         if (!draggable || die.placed || !dragStartPos) return;
+
+        if (longPressTimeout.current) {
+            clearTimeout(longPressTimeout.current);
+            longPressTimeout.current = null;
+            longPressTriggered.current = false;
+        }
 
         const touch = e.touches[0];
         const deltaX = Math.abs(touch.clientX - dragStartPos.x);
@@ -151,7 +168,20 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, 
     };
 
     const handleTouchEnd = (e) => {
+        if (longPressTimeout.current) {
+            clearTimeout(longPressTimeout.current);
+            longPressTimeout.current = null;
+        }
+
         if (!draggable || die.placed) return;
+
+        if (longPressTriggered.current && !isDragging) {
+            longPressTriggered.current = false;
+            setIsDragging(false);
+            setDragStartPos(null);
+            e.preventDefault();
+            return;
+        }
 
         if (isDragging) {
             console.log('📱 Mobile drag ended');
@@ -205,6 +235,7 @@ function Die({ die, draggable = false, onDragStart, onDragEnd, onDrag, onClick, 
 
         setIsDragging(false);
         setDragStartPos(null);
+        longPressTriggered.current = false;
         e.preventDefault();
     };
 
